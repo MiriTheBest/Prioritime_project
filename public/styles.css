@@ -1,0 +1,150 @@
+body {
+  background-color: #e8f9fd;
+  color: #2155cd;
+  min-height: 100vh; /* Minimum height of the viewport */
+}
+
+#prioritime-heading {
+  font-family: "Borel";
+  font-size: 5vh;
+  margin-top: 20px;
+}
+
+.authorization-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+}
+
+.header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.header h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.content {
+  padding: 2rem;
+  border-radius: 5px;
+}
+
+.content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.authorization-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.authorization-options button,
+.month-menu button,
+.day-menu button:not(.round-button),
+.add-menu button {
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 5px;
+  background-color: #0aa1dd;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.authorization-options button:hover,
+.month-menu button:hover,
+.day-menu button:hover,
+.add-menu button:hover {
+  background-color: #33479b;
+}
+.responsive-icon {
+  width: 100px; /* Default width */
+}
+
+@media (max-width: 768px) {
+  .responsive-icon {
+    width: 150px; /* Smaller width for smaller screens */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+  .responsive-icon {
+    width: 250px; /* Medium width for medium screens (optional) */
+  }
+}
+
+.day-container,
+.month-page {
+  height: calc(100vh - 120px); /* Adjust offset as needed */
+  display: flex; /* Allow stacking elements vertically */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  margin-top: 10px;
+}
+
+.day-calendar-wrapper,
+.month-calendar-wrapper {
+  width: 80%; /* Adjust width as desired */
+  height: 100%; /* Ensure full height within the wrapper */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border: 1px solid #ddd; /* Optional border for visual separation */
+}
+
+.icon-column,
+.month-icon-column {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 1rem;
+}
+
+.day-calendar,
+.month-calendar {
+  flex: 2;
+}
+
+.add-menu {
+  margin-top: 150px;
+}
+.input-container {
+  width: 80%; /* Adjust width as desired */
+  height: 95%; /* Ensure full height within the wrapper */
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.add-wrapper {
+  display: flex;
+  gap: 4rem;
+  margin-left: 8rem;
+  margin-right: 8rem;
+  align-items: stretch;
+  height: calc(100vh - 100px); /* Adjust offset as needed */
+  justify-content: center; /* Center content horizontally */
+  overflow-y: auto;
+}
+
+.month-menu,
+.add-menu {
+  width: 25vw;
+  height: fit-content;
+  display: flex; /* Use flexbox for vertical layout */
+  flex-direction: column; /* Arrange buttons vertically */
+  float: right;
+  gap: 1rem;
+}
+
+.month-calendar {
+  height: 90%;
+}
+
+.ant-picker-cell {
+  height: 70px; /* Adjust height as needed */
+}

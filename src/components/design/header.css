@@ -1,0 +1,41 @@
+/* Header.css */
+.header-up {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #0aa1dd;
+  height: 10vh;
+}
+
+.logo-container {
+  height: 100%; /* Make the logo container height equal to the header height */
+}
+
+.logo {
+  height: 100%; /* Set the logo height to fill its container */
+  max-height: 100px; /* Optionally, set a max height for the logo */
+}
+
+.buttons-container {
+  display: flex;
+  align-items: center;
+}
+
+.regular-button {
+  margin-right: 10px;
+  padding: 8px 16px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+}
+
+.round-button-header {
+  padding: 10px;
+  border-radius: 50%;
+  background-color: #333;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+}

@@ -1,0 +1,31 @@
+/* FAQ.css */
+
+.faq-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+}
+
+.faq-header {
+  display: flex;
+  align-items: flex-start; /* Align items to the top */
+  margin-bottom: 20px;
+  gap: 3rem;
+}
+
+.faq-image {
+  margin-right: 20px; /* Adjust spacing between image and title */
+}
+
+.faq-content {
+  flex-grow: 1; /* Allow content to grow and take available space */
+}
+
+.faq-list {
+  width: 70%; /* Ensure accordions take full width */
+}
+
+.faq-list .MuiAccordion-root + .MuiAccordion-root {
+  margin-top: 10px; /* Adjust as needed */
+}
