@@ -59,6 +59,7 @@ function App() {
               </>
             )
           }
+          //<LoginPage onAuthorization={handleAuthorization} /> uppp
         />
         <Route path="/day" element={<DayPage />} />
         <Route path="/month" element={<MonthPage />} />
@@ -66,8 +67,8 @@ function App() {
         <Route path="/add_event" element={<AddEventPage />} />
         <Route path="/tasks" element={<TaskPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/login" element={<SignInSide />} />
-        <Route path="/signup" element={<SignUp />} />
+        <Route path="/login" element={<SignInSide onAuthorization={handleAuthorization} />} />
+        <Route path="/signup" element={<SignUp onAuthorization={handleAuthorization} />} />
       </Routes>
       <Footer />
     </Router>

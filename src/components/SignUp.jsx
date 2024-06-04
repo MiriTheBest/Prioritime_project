@@ -18,7 +18,7 @@ import axios from 'axios';
 
 const defaultTheme = createTheme();
 
-export default function SignUp() {
+export default function SignUp({onAuthorization}) {
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -31,7 +31,9 @@ export default function SignUp() {
         try {
           const response = await axios.post(API_URL + '/register/', userData);
           console.log(response.data); // Assuming backend returns some data upon successful registration
-          // Optionally, redirect the user to another page after successful registration
+          const token = response.data; // Assuming your backend returns a token upon successful login
+          localStorage.setItem('token', token);
+          onAuthorization(true);
         } catch (error) {
           console.error('Registration failed:', error);
           // Handle registration failure (e.g., show error message to user)
