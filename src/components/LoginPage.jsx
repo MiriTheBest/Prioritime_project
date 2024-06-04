@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -19,24 +17,15 @@ import axios from 'axios';
 const defaultTheme = createTheme();
 
 export default function SignInSide({ onAuthorization }) {
-    const [formData, setFormData] = useState({
-      email: '',
-      password: '',
-      rememberMe: false
-    });
-    const [error, setError] = useState('');
-
-  useEffect(() => {
-    const storedCredentials = localStorage.getItem('credentials');
-    if (storedCredentials) {
-      const { email, password } = JSON.parse(storedCredentials);
-      setFormData({ ...formData, email, password, rememberMe: true });
-    }
-  }, []);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    const { name, value, checked } = e.target;
-    setFormData({ ...formData, [name]: name === 'rememberMe' ? checked : value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (event) => {
@@ -46,11 +35,6 @@ export default function SignInSide({ onAuthorization }) {
       const response = await axios.post(endpoint, formData);
       const token = response.data; // Assuming your backend returns a token upon successful login
       localStorage.setItem('token', token);
-      if (formData.rememberMe) {
-        localStorage.setItem('credentials', JSON.stringify({ email: formData.email, password: formData.password }));
-      } else {
-        localStorage.removeItem('credentials');
-      }
       onAuthorization(true);
     } catch (error) {
       setError(error.response.data.message); // Assuming your backend returns error messages
@@ -101,6 +85,8 @@ export default function SignInSide({ onAuthorization }) {
                 name="email"
                 autoComplete="email"
                 autoFocus
+                value={formData.email}
+                onChange={handleChange}
               />
               <TextField
                 margin="normal"
@@ -111,11 +97,14 @@ export default function SignInSide({ onAuthorization }) {
                 type="password"
                 id="password"
                 autoComplete="current-password"
+                value={formData.password}
+                onChange={handleChange}
               />
-              <FormControlLabel
-                control={<Checkbox value="remember" color="primary" />}
-                label="Remember me"
-              />
+              {error && (
+                <Typography color="error" variant="body2">
+                  {error}
+                </Typography>
+              )}
               <Button
                 type="submit"
                 fullWidth
@@ -131,7 +120,7 @@ export default function SignInSide({ onAuthorization }) {
                   </Link>
                 </Grid>
                 <Grid item>
-                <RouterLink to="/signup" variant="body2">
+                  <RouterLink to="/signup" variant="body2">
                     {"Don't have an account? Sign Up"}
                   </RouterLink>
                 </Grid>
