@@ -216,23 +216,23 @@ const DayPage = () => {
         handleAutomate={handleAutomate}
         handleDeleteDay={handleDelete}
       />
-      {clickedEvent && (
-        <>
-          <EditEventModal
-            open={isEditEventModalOpen}
-            onClose={() => setIsEditEventModalOpen(false)}
-            event={clickedEvent}
-            onSave={handleSave}
-            onSaveAndAutomate={handleSaveAndAutomate}
-          />
-          <EditTaskModal
-            open={isEditTaskModalOpen}
-            onClose={() => setIsEditTaskModalOpen(false)}
-            task={clickedEvent}
-            onSave={handleSave}
-          />
-        </>
-      )}
+       {(clickedEvent && isEditEventModalOpen) && (
+      <EditEventModal
+        open={isEditEventModalOpen}
+        onClose={() => setIsEditEventModalOpen(false)}
+        event={clickedEvent}
+        onSave={handleSave}
+        onSaveAndAutomate={handleSaveAndAutomate}
+      />
+    )}
+    {(clickedEvent && isEditTaskModalOpen) && (
+      <EditTaskModal
+        open={isEditTaskModalOpen}
+        onClose={() => setIsEditTaskModalOpen(false)}
+        task={clickedEvent}
+        onSave={handleSave}
+      />
+    )}
     </div>
   );
 };
