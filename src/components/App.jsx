@@ -20,13 +20,13 @@ import SignUp from "./SignUp";
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // User authentication state
   const [selectedDate, setSelectedDate] = useState(new Date()); // Selected date for DayPage
-  /*
+
   useEffect(() => {
     // Check for existing authentication (e.g., local storage, cookies)
     const storedAuth = localStorage.getItem('isAuthenticated');
     setIsAuthenticated(storedAuth === 'true');
   }, []);  // Run only on initial render
-*/
+
   const handleAuthorization = (success) => {
     setIsAuthenticated(success);
     if (success) {
@@ -55,11 +55,10 @@ function App() {
               </>
             ) : (
               <>
-                <AuthorizationPage onAuthorization={handleAuthorization} />
+                <SignInSide onAuthorization={handleAuthorization} />
               </>
             )
           }
-          //<LoginPage onAuthorization={handleAuthorization} /> uppp
         />
         <Route path="/day" element={<DayPage />} />
         <Route path="/month" element={<MonthPage />} />
@@ -67,7 +66,6 @@ function App() {
         <Route path="/add_event" element={<AddEventPage />} />
         <Route path="/tasks" element={<TaskPage />} />
         <Route path="/faq" element={<FAQPage />} />
-        <Route path="/login" element={<SignInSide onAuthorization={handleAuthorization} />} />
         <Route path="/signup" element={<SignUp onAuthorization={handleAuthorization} />} />
       </Routes>
       <Footer />

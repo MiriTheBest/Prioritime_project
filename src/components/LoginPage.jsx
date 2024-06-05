@@ -33,7 +33,7 @@ export default function SignInSide({ onAuthorization }) {
     try {
       const endpoint = API_URL + '/login'; // Assuming login endpoint
       const response = await axios.post(endpoint, formData);
-      const token = response.data; // Assuming your backend returns a token upon successful login
+      const token = response.data.token; // Assuming your backend returns a token upon successful login
       localStorage.setItem('token', token);
       onAuthorization(true);
     } catch (error) {

@@ -6,38 +6,38 @@ import axios from "axios";
 import moment from "moment";
 
 const MonthPage = () => {
-  const eventData = [
-    { id: 1, title: "Task 1", date: "2024-05-25", type: "task" },
-    { id: 2, title: "Event 2", date: "2024-05-25", type: "event" },
-    { id: 3, title: "Event 3", date: "2024-05-25", type: "event" },
-    // Add more events as needed
-  ];
-
-  //const [eventData, setEventData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(null);
   const [disabledDates, setDisabledDates] = useState([]);
   const [eventList, setEventData] = useState([]);
-  
+  const [currentYearMonth, setCurrentYearMonth] = useState(moment().format("YYYY-MM"));
+
+  const fetchEventData = async (yearMonth) => {
+    try {
+      console.log(yearMonth)
+      const token = localStorage.getItem('token')
+      const response = await axios.get(
+        `${API_URL}/get_monthly_schedule/${yearMonth}`,
+        {
+          headers: {
+            Authorization: `${token}` // Add token to Authorization header
+          }
+        }
+      );
+      setEventData(response.data.days); // Update event data state with fetched data
+    } catch (error) {
+      console.error("Error fetching event data:", error);
+    }
+  };
+
   useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        // Generate current year and month in YY-MM format
-        const currentYearMonth = moment().format("YY-MM");
-
-        const response = await axios.get(
-          `${API_URL}/get_monthly_schedule/${currentYearMonth}`
-        );
-        setEventData(response.data); // Update event data state with fetched data
-      } catch (error) {
-        console.error("Error fetching event data:", error);
-      }
-    };
-
-    fetchEventData();
-  }, []); // Empty dependency array ensures useEffect runs only once on component mount
+    fetchEventData(currentYearMonth);
+  }, [currentYearMonth]); // Fetch data whenever currentYearMonth changes
 
   const onPanelChange = (value, mode) => {
-    // Clear selected date on mode change (optional)
+    if (mode === "month") {
+      const newYearMonth = value.format("YYYY-MM");
+      setCurrentYearMonth(newYearMonth);
+    }
     setSelectedDate(null);
   };
 
@@ -48,9 +48,8 @@ const MonthPage = () => {
   };
 
   const handleReAutomate = () => {
-    // Your logic for re-automating
     console.log("Re-automating this month");
-    fetchEventData();
+    fetchEventData(currentYearMonth);
   };
 
   const handleSetDayOff = () => {
@@ -61,27 +60,31 @@ const MonthPage = () => {
       ]);
       setSelectedDate(null); // Clear selected date after setting day off
       console.log("Disabled dates:", disabledDates);
-      fetchEventData();
+      fetchEventData(currentYearMonth);
     }
   };
 
-  // Cell renderer that displays badges in month view and placeholder in year view
   const cellRender = (date, mode) => {
     if (mode === "year") {
       return <span>...</span>; // Placeholder content in year view
     } else {
-      const formattedDate = date.format("YYYY-MM-DD");
-      const eventsOnDate = eventData.filter(
-        (event) => event.date === formattedDate
-      );
+      const dayOfMonth = date.date();
+      const isCurrentMonth = date.format("YYYY-MM") === currentYearMonth;
 
-      // Create an array of Badge components wrapped in divs for vertical display
+      // Only render events for the current month
+      if (!isCurrentMonth) {
+        return null;
+      }
+
+      const eventsOnDate = eventList.find(day => day.date === dayOfMonth)?.event_list || [];
+      //console.log("Date:", dayOfMonth, "Events:", eventsOnDate); // Debugging statement
+
       if (eventsOnDate.length > 0) {
         return eventsOnDate.map((event) => (
-          <div key={event.id} style={{ marginBottom: "8px" }}>
+          <div key={event._id} style={{ marginBottom: "8px" }}>
             <Badge
-              status={event.type === "task" ? "success" : "warning"}
-              text={event.title}
+              status={event.item_type === "task" ? "success" : "warning"}
+              text={event.name}
               style={{ marginRight: "8px" }}
             />
           </div>

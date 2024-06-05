@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -9,17 +9,15 @@ import { API_URL } from "./api/config";
 import EditTaskModal from "./design/EditTaskModal";
 import EditEventModal from "./design/EditEventModal";
 import { deleteData } from "./api/deleteData";
+import axios from "axios";
 
 const DayPage = () => {
   const location = useLocation();
   const selectedDate = location.state?.selectedDate; // Access state from location
 
-    // State to store fetched events
+  // State to store fetched events
   const [events, setEvents] = useState([]);
   const [clickedEvent, setClickedEvent] = useState(null);
-
-  // State to store event names for display in the calendar
-  const [eventNames, setEventNames] = useState([]);
 
   // State to control the visibility of the modals
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
@@ -30,73 +28,86 @@ const DayPage = () => {
     console.log("Automating this day");
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     let idOrIdDateString;
     if (clickedEvent) {
       if (clickedEvent.allDay) {
         idOrIdDateString = clickedEvent.id;
       } else {
         const startDateString = clickedEvent.start.toISOString().split("T")[0];
-        idOrIdDateString = `${id}/${startDateString}`;
+        idOrIdDateString = `${clickedEvent.id}/${startDateString}`;
       }
-      deleteData(idOrIdDateString);
-    console.log("Deleting this day");
+      await deleteData(idOrIdDateString);
+      console.log("Deleting this day");
     }
     fetchTasksAndEvents();
   };
 
   const fetchTasksAndEvents = async () => {
     try {
-    const date = new Date(selectedDate).toISOString().split('T')[0];
+      console.log(selectedDate)
+      const date = new Date(selectedDate).toISOString().split('T')[0];
+      const token = localStorage.getItem('token');
+      const taskResponse = await axios.get(
+        `${API_URL}/get_task_list/${date}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        }
+      ); // Fetch tasks separately
+      const taskData = taskResponse.data;
 
-    const taskResponse = await axios.get(`${API_URL}/get_task_list/${date}`); // Fetch tasks separately
-    const taskData = taskResponse.data;
-
-    const response = await axios.get(`${API_URL}/get_schedule/${date}`);
-    const data = response.data;
-    const eventList = data.get('event_list');
+      const response = await axios.get(
+        `${API_URL}/get_schedule/${date}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+          },
+        }
+      );
+      console.log(response.data)
+      const eventList = response.data.event_list;
+      console.log(taskData)
 
       // Transform tasks and events into FullCalendar's event format
       const transformedEvents = eventList.map(item => {
-          return {
-            id: item.id,
-            title: item.name,
-            start: item.start_time.toISOString(),
-            end: item.end_time.toISOString(),
-            duration: item.duration,
-            category: item.category,
-            description: item.details,
-            location: item.location,
-            frequency: item.frequency,
-            reminders: item.reminders,
-            tags: item.tags,
-            allDay: false
-          };
-
+        return {
+          id: item._id,
+          title: item.name,
+          start: item.start_time,
+          end: item.end_time,
+          duration: item.duration,
+          category: item.category,
+          description: item.details,
+          location: item.location,
+          frequency: item.frequency,
+          reminders: item.reminders,
+          tags: item.tags,
+          allDay: false
+        };
       }).filter(event => event !== null);
 
-      const allDayTasks = taskData.task_list.filter(task => {
-      }).map(task => ({
-        id: task.id,
+      const allDayTasks = taskData.task_list.map(task => ({
+        id: task._id,
         title: task.name, // Use task name for all-day display
         allDay: true, // Mark as all-day task
-        start: new Date(selectedDate).toISOString(), // Use deadline as start
-        category: item.category,
-        location: item.location,
-        description: item.details,
-        reminders: item.reminders,
-        frequency: item.frequency,
-        tags: item.tags,
-        status: item.status,
+        start: task.deadline, // Use deadline as start
+        category: task.category,
+        location: task.location,
+        description: task.details,
+        reminders: task.reminders,
+        frequency: task.frequency,
+        tags: task.tags,
+        status: task.status,
       }));
 
       // Combine events and all-day tasks
       const combinedEvents = [...transformedEvents, ...allDayTasks];
 
       setEvents(combinedEvents);
-      const extractedNames = combinedEvents.map(event => event.title);
-      setEventNames(extractedNames);
-
     } catch (error) {
       console.error('Error fetching tasks and events:', error);
     }
@@ -104,7 +115,7 @@ const DayPage = () => {
 
   useEffect(() => {
     fetchTasksAndEvents(); // Call the function to fetch data when the component mounts
-  }, []);
+  }, [selectedDate]);
 
   const handleEventClick = (info) => {
     // Store the clicked event in state
@@ -119,8 +130,8 @@ const DayPage = () => {
         setIsEditEventModalOpen(true);
       }
     }
-    fetchTasksAndEvents();
   };
+
   const handleSave = async (updatedEvent) => {
     // Add oldDate attribute to updatedEvent
     const updatedEventWithOldDate = {
@@ -131,12 +142,12 @@ const DayPage = () => {
     try {
       // Send updatedEventWithOldDate to backend
       let response;
-      if (updatedItem.allDay) {
+      if (updatedEvent.allDay) {
         // If it's a task (allDay is true), send a PUT request to the tasks endpoint
-        response = await axios.put(API_URL + '/update_task', updatedItemWithOldDate);
-     } else {
+        response = await axios.put(`${API_URL}/update_task`, updatedEventWithOldDate);
+      } else {
         // If it's an event (allDay is false), send a PUT request to the events endpoint
-        response = await axios.put(API_URL + '/update_event', updatedItemWithOldDate);
+        response = await axios.put(`${API_URL}/update_event`, updatedEventWithOldDate);
       }
       if (response.status === 200) {
         // Update state if the request was successful
@@ -171,12 +182,7 @@ const DayPage = () => {
           initialDate={selectedDate}
           height="100%"
           eventClick={handleEventClick}
-          ///events = {eventNames}
-          events={[
-            // Sample events (optional)
-            { title: "Event 1", start: "2024-05-24T10:00:00" },
-            { title: "Event 2", start: "2024-05-24T14:00:00" },
-          ]}
+          events={events}
         />
       </div>
       <DayIconColumn
