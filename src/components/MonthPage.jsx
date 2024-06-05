@@ -7,14 +7,13 @@ import moment from "moment";
 
 const MonthPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [disabledDates, setDisabledDates] = useState([]);
   const [eventList, setEventData] = useState([]);
   const [currentYearMonth, setCurrentYearMonth] = useState(moment().format("YYYY-MM"));
 
   const fetchEventData = async (yearMonth) => {
     try {
-      console.log(yearMonth)
-      const token = localStorage.getItem('token')
+      console.log(yearMonth);
+      const token = localStorage.getItem('token');
       const response = await axios.get(
         `${API_URL}/get_monthly_schedule/${yearMonth}`,
         {
@@ -25,10 +24,6 @@ const MonthPage = () => {
       );
       const fetchedDays = response.data.days;
       setEventData(fetchedDays); // Update event data state with fetched data
-
-      // Extract and set disabled dates
-      const fetchedDisabledDates = fetchedDays.filter(day => day.day_off).map(day => `${currentYearMonth}-${String(day.date).padStart(2, '0')}`);
-      setDisabledDates(fetchedDisabledDates);
     } catch (error) {
       console.error("Error fetching event data:", error);
     }
@@ -78,8 +73,8 @@ const MonthPage = () => {
 
   const handleSetDayOff = () => {
     if (selectedDate) {
-      const isCurrentlyDisabled = disabledDates.includes(selectedDate);
-      const newDayOffStatus = !isCurrentlyDisabled;
+      const dayData = eventList.find(day => `${currentYearMonth}-${String(day.date).padStart(2, '0')}` === selectedDate);
+      const newDayOffStatus = !dayData?.day_off;
       setDayOff(selectedDate, newDayOffStatus).then(() => {
         fetchEventData(currentYearMonth); // Refresh the data to update UI
       });
@@ -117,7 +112,7 @@ const MonthPage = () => {
 
       // Render indication for day off
       if (isDayOff) {
-        return <Badge status="default" text="Day Off" />;
+        return <Badge status="error" text="Day Off" />;
       }
 
       return null; // Return null for empty dates to avoid unnecessary elements
@@ -132,9 +127,6 @@ const MonthPage = () => {
             onSelect={onSelect}
             cellRender={cellRender}
             onPanelChange={onPanelChange}
-            disabledDate={(current) =>
-              disabledDates.includes(current.format("YYYY-MM-DD"))
-            }
           />
         </div>
       </div>
