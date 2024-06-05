@@ -18,6 +18,8 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import dayjs from "dayjs";
+import sendUpdatedData from "../api/sendUpdatedData";
+import { deleteData } from "../api/deleteData";
 
 const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => {
   const [name, setName] = useState(event.name || "");
