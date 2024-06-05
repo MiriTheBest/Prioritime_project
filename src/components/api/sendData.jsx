@@ -16,7 +16,7 @@ const sendData = async (newData) => {
     //   throw new Error("Error adding task/event");
     // }
 
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('token');
     if(newData.type == 'event') {
       const response = await axios.post(
         URL_event,
