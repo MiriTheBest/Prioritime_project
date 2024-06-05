@@ -87,35 +87,30 @@ const MonthPage = () => {
     } else {
       const dayOfMonth = date.date();
       const isCurrentMonth = date.format("YYYY-MM") === currentYearMonth;
-
+  
       // Only render events for the current month
       if (!isCurrentMonth) {
         return null;
       }
-
+  
       const dayData = eventList.find(day => day.date === dayOfMonth);
       const eventsOnDate = dayData?.event_list || [];
       const isDayOff = dayData?.day_off || false;
-
-      // Render events on the date
-      if (eventsOnDate.length > 0) {
-        return eventsOnDate.map((event) => (
-          <div key={event._id} style={{ marginBottom: "8px" }}>
-            <Badge
-              status={event.item_type === "task" ? "success" : "warning"}
-              text={event.name}
-              style={{ marginRight: "8px" }}
-            />
-          </div>
-        ));
-      }
-
-      // Render indication for day off
-      if (isDayOff) {
-        return <Badge status="error" text="Day Off" />;
-      }
-
-      return null; // Return null for empty dates to avoid unnecessary elements
+  
+      return (
+        <div>
+          {eventsOnDate.length > 0 && eventsOnDate.map((event) => (
+            <div key={event._id} style={{ marginBottom: "8px" }}>
+              <Badge
+                status={event.item_type === "task" ? "success" : "warning"}
+                text={event.name}
+                style={{ marginRight: "8px" }}
+              />
+            </div>
+          ))}
+          {isDayOff && <Badge status="error" text="Day Off" />}
+        </div>
+      );
     }
   };
 
