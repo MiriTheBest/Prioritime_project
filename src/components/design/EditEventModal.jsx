@@ -24,8 +24,8 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   const [name, setName] = useState(event.name || "");
   const [duration, setDuration] = useState(event.duration || "");
 
-  const startDateTime = event.start_time ? new Date(event.start_time) : new Date();
-  const endDateTime = event.end_time ? new Date(event.end_time) : new Date();
+  const startDateTime = event.start_time ? dayjs(event.start_time).toDate() : new Date();
+  const endDateTime = event.end_time ? dayjs(event.end_time).toDate() : new Date();
   
   const [startDate, setStartDate] = useState(startDateTime);
   const [startTime, setStartTime] = useState(startDateTime);
