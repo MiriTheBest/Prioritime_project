@@ -123,17 +123,29 @@ const DayPage = () => {
   }, [selectedDate]);
 
   const handleEventClick = (info) => {
-    // Store the clicked event in state
-    setClickedEvent(info.event);
-    setClickedEventId(info.event.id); // Track clicked event ID
+    // Reset color of previously clicked event if it's the same as the current one
+    if (clickedEventId === info.event.id) {
+      const resetEvents = events.map((event) => ({
+        ...event,
+        backgroundColor: event.defaultBackgroundColor,
+        borderColor: event.defaultBorderColor,
+      }));
+      setEvents(resetEvents);
+      setClickedEvent(null);
+      setClickedEventId(null);
+    } else {
+      // Store the clicked event in state
+      setClickedEvent(info.event);
+      setClickedEventId(info.event.id); // Track clicked event ID
 
-    // Update the event color to indicate selection
-    const updatedEvents = events.map(event =>
-      event.id === info.event.id
-        ? { ...event, backgroundColor: 'green', borderColor: 'green' } // Change color
-        : { ...event, backgroundColor: event.defaultBackgroundColor, borderColor: event.defaultBorderColor } // Reset others
-    );
-    setEvents(updatedEvents);
+      // Update the event color to indicate selection
+      const updatedEvents = events.map((event) =>
+        event.id === info.event.id
+          ? { ...event, backgroundColor: "green", borderColor: "green" } // Change color
+          : { ...event, backgroundColor: event.defaultBackgroundColor, borderColor: event.defaultBorderColor } // Reset others
+      );
+      setEvents(updatedEvents);
+    }
   };
 
   const handleEdit = () => {
