@@ -28,10 +28,16 @@ export default function SignUp({onAuthorization}) {
           email: formData.get('email'),
           password: formData.get('password'),
         };
+
+        if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
+          alert('All fields are required.');
+          return;
+      }
+      
         try {
           const response = await axios.post(API_URL + '/register/', userData);
           console.log(response.data); // Assuming backend returns some data upon successful registration
-          const token = response.data; // Assuming your backend returns a token upon successful login
+          const token = response.data.token; // Assuming your backend returns a token upon successful login
           localStorage.setItem('token', token);
           onAuthorization(true);
         } catch (error) {

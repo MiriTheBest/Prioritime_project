@@ -23,7 +23,12 @@ const MonthPage = () => {
           }
         }
       );
-      setEventData(response.data.days); // Update event data state with fetched data
+      const fetchedDays = response.data.days;
+      setEventData(fetchedDays); // Update event data state with fetched data
+
+      // Extract and set disabled dates
+      const fetchedDisabledDates = fetchedDays.filter(day => day.day_off).map(day => `${currentYearMonth}-${String(day.date).padStart(2, '0')}`);
+      setDisabledDates(fetchedDisabledDates);
     } catch (error) {
       console.error("Error fetching event data:", error);
     }
@@ -52,15 +57,32 @@ const MonthPage = () => {
     fetchEventData(currentYearMonth);
   };
 
+  const setDayOff = async (date, isDayOff) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await axios.put(
+        `${API_URL}/set_day_off/${date}`,
+        { day_off: isDayOff },
+        {
+          headers: {
+            Authorization: `${token}`, // Add token to Authorization header
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error("Error setting day off:", error);
+    }
+  };
+
   const handleSetDayOff = () => {
     if (selectedDate) {
-      setDisabledDates((prevDisabledDates) => [
-        ...prevDisabledDates,
-        selectedDate,
-      ]);
-      setSelectedDate(null); // Clear selected date after setting day off
-      console.log("Disabled dates:", disabledDates);
-      fetchEventData(currentYearMonth);
+      const isCurrentlyDisabled = disabledDates.includes(selectedDate);
+      const newDayOffStatus = !isCurrentlyDisabled;
+      setDayOff(selectedDate, newDayOffStatus).then(() => {
+        fetchEventData(currentYearMonth); // Refresh the data to update UI
+      });
     }
   };
 
@@ -76,9 +98,11 @@ const MonthPage = () => {
         return null;
       }
 
-      const eventsOnDate = eventList.find(day => day.date === dayOfMonth)?.event_list || [];
-      //console.log("Date:", dayOfMonth, "Events:", eventsOnDate); // Debugging statement
+      const dayData = eventList.find(day => day.date === dayOfMonth);
+      const eventsOnDate = dayData?.event_list || [];
+      const isDayOff = dayData?.day_off || false;
 
+      // Render events on the date
       if (eventsOnDate.length > 0) {
         return eventsOnDate.map((event) => (
           <div key={event._id} style={{ marginBottom: "8px" }}>
@@ -89,6 +113,11 @@ const MonthPage = () => {
             />
           </div>
         ));
+      }
+
+      // Render indication for day off
+      if (isDayOff) {
+        return <Badge status="default" text="Day Off" />;
       }
 
       return null; // Return null for empty dates to avoid unnecessary elements
