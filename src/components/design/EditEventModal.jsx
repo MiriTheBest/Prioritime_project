@@ -56,8 +56,8 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       ...event,
       name,
       duration,
-      start_time,
-      end_time,
+      start_time: `${startDate}T${startTime}:00`, // Concatenate date and time strings
+      end_time: `${endDate}T${endTime}:00`,
       location,
       description: details,
       isRecurring,
