@@ -24,12 +24,13 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   const [name, setName] = useState(event.name || "");
   const [duration, setDuration] = useState(event.duration || "");
 
-  const [startDate, setStartDate] = useState(dayjs(startDateTime).toDate()); // Convert string to Date object
-  const [startTime, setStartTime] = useState(dayjs(startDateTime).toDate()); // Convert string to Date object
+  const startDateTime = event.start_time ? new Date(event.start_time) : new Date();
+  const endDateTime = event.end_time ? new Date(event.end_time) : new Date();
   
-  const [endDate, setEndDate] = useState(dayjs(endDateTime).toDate()); // Convert string to Date object
-  const [endTime, setEndTime] = useState(dayjs(endDateTime).toDate()); // Convert string to Date object  
-  
+  const [startDate, setStartDate] = useState(startDateTime);
+  const [startTime, setStartTime] = useState(startDateTime);
+  const [endDate, setEndDate] = useState(endDateTime);
+  const [endTime, setEndTime] = useState(endDateTime);  
 
   const [location, setLocation] = useState(event.location || "");
   const [details, setDetails] = useState(event.description || "");
