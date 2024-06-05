@@ -24,14 +24,11 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   const [name, setName] = useState(event.name || "");
   const [duration, setDuration] = useState(event.duration || "");
 
-  const startDateTime = event.start_time;
-  const endDateTime = event.end_time;
+  const [startDate, setStartDate] = useState(dayjs(startDateTime).toDate()); // Convert string to Date object
+  const [startTime, setStartTime] = useState(dayjs(startDateTime).toDate()); // Convert string to Date object
   
-  const startDate = dayjs(startDateTime).format('YYYY-MM-DD');
-  const startTime = dayjs(startDateTime).format('HH:mm');
-  
-  const endDate = dayjs(endDateTime).format('YYYY-MM-DD');
-  const endTime = dayjs(endDateTime).format('HH:mm');
+  const [endDate, setEndDate] = useState(dayjs(endDateTime).toDate()); // Convert string to Date object
+  const [endTime, setEndTime] = useState(dayjs(endDateTime).toDate()); // Convert string to Date object  
   
 
   const [location, setLocation] = useState(event.location || "");
@@ -55,8 +52,8 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       ...event,
       name,
       duration,
-      start_time: `${startDate}T${startTime}:00`, // Concatenate date and time strings
-      end_time: `${endDate}T${endTime}:00`,
+      start_time: dayjs(startDate).toISOString(), // Convert start date to ISO string
+      end_time: dayjs(endDate).toISOString(), 
       location,
       description: details,
       isRecurring,
@@ -147,7 +144,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             <DatePicker
               label="Start Date"
               value={startDate}
-              onChange={(newValue) => setStartDate(dayjs(newValue).format('YYYY-MM-DD'))}
+              onChange={(newValue) => setStartDate(newValue)}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -158,6 +155,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
                 />
               )}
             />
+
             <TimePicker
               label="Start Time"
               value={startTime}
@@ -172,36 +170,37 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
                 />
               )}
             />
-          </div>
-          <div className="date-time-pickers">
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={(newValue) => setEndDate(dayjs(newValue).format('YYYY-MM-DD'))}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="End Date"
-                  fullWidth
-                  margin="normal"
-                  sx={{ backgroundColor: "white" }}
-                />
-              )}
-            />
-            <TimePicker
-              label="End Time"
-              value={endTime}
-              onChange={(newValue) => setEndTime(newValue)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="End Time"
-                  fullWidth
-                  margin="normal"
-                  sx={{ backgroundColor: "white" }}
-                />
-              )}
-            />
+
+                      </div>
+                      <div className="date-time-pickers">
+              <DatePicker
+                label="End Date"
+                value={endDate}
+                onChange={(newValue) => setEndDate(newValue)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="End Date"
+                    fullWidth
+                    margin="normal"
+                    sx={{ backgroundColor: "white" }}
+                  />
+                )}
+              />
+              <TimePicker
+                label="End Time"
+                value={endTime}
+                onChange={(newValue) => setEndTime(newValue)}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="End Time"
+                    fullWidth
+                    margin="normal"
+                    sx={{ backgroundColor: "white" }}
+                  />
+                )}
+              />
             <FormControlLabel
               control={
                 <Checkbox
