@@ -18,6 +18,7 @@ const DayPage = () => {
   // State to store fetched events
   const [events, setEvents] = useState([]);
   const [clickedEvent, setClickedEvent] = useState(null);
+  const [clickedEventId, setClickedEventId] = useState(null); // State to track clicked event ID
 
   // State to control the visibility of the modals
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
@@ -86,7 +87,9 @@ const DayPage = () => {
           frequency: item.frequency,
           reminders: item.reminders,
           tags: item.tags,
-          allDay: false
+          allDay: false,
+          backgroundColor: item.backgroundColor || '', // Use existing color or default
+          borderColor: item.borderColor || '', // Use existing color or default
         };
       }).filter(event => event !== null);
 
@@ -102,6 +105,8 @@ const DayPage = () => {
         frequency: task.frequency,
         tags: task.tags,
         status: task.status,
+        backgroundColor: task.backgroundColor || '', // Use existing color or default
+        borderColor: task.borderColor || '', // Use existing color or default
       }));
 
       // Combine events and all-day tasks
@@ -120,6 +125,15 @@ const DayPage = () => {
   const handleEventClick = (info) => {
     // Store the clicked event in state
     setClickedEvent(info.event);
+    setClickedEventId(info.event.id); // Track clicked event ID
+
+    // Update the event color to indicate selection
+    const updatedEvents = events.map(event =>
+      event.id === info.event.id
+        ? { ...event, backgroundColor: 'green', borderColor: 'green' } // Change color
+        : { ...event, backgroundColor: event.defaultBackgroundColor, borderColor: event.defaultBorderColor } // Reset others
+    );
+    setEvents(updatedEvents);
   };
 
   const handleEdit = () => {
