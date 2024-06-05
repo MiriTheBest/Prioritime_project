@@ -24,16 +24,15 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   const [name, setName] = useState(event.name || "");
   const [duration, setDuration] = useState(event.duration || "");
 
-  const startDateString = event.start.toISOString().split("T")[0];
-  const startTimeString = event.start.toISOString().split("T")[1].slice(0, 5); // Get first 5 characters for time (HH:mm)
-  const [startDate, setStartDate] = useState(startDateString);
-  const [startTime, setStartTime] = useState(startTimeString);
-
-
-  const endDateString = event.end.toISOString().split("T")[0];
-  const endTimeString = event.end.toISOString().split("T")[1].slice(0, 5); // Get first 5 characters for time (HH:mm)
-  const [endDate, setEndDate] = useState(endDateString);
-  const [endTime, setEndTime] = useState(endTimeString);
+  const startDateTime = event.start_time;
+  const endDateTime = event.end_time;
+  
+  const startDate = dayjs(startDateTime).format('YYYY-MM-DD');
+  const startTime = dayjs(startDateTime).format('HH:mm');
+  
+  const endDate = dayjs(endDateTime).format('YYYY-MM-DD');
+  const endTime = dayjs(endDateTime).format('HH:mm');
+  
 
   const [location, setLocation] = useState(event.location || "");
   const [details, setDetails] = useState(event.description || "");
@@ -152,6 +151,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  label="Start Date"
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
@@ -165,6 +165,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  label="Start Time"
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
@@ -180,6 +181,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  label="End Date"
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
@@ -193,6 +195,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
               renderInput={(params) => (
                 <TextField
                   {...params}
+                  label="End Time"
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
