@@ -23,10 +23,18 @@ import sendUpdatedData from "../api/sendUpdatedData";
 const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => {
   const [name, setName] = useState(event.name || "");
   const [duration, setDuration] = useState(event.duration || "");
-  const [startDate, setStartDate] = useState(event.start_time ? dayjs(event.start_time).format('YYYY-MM-DD') : null);
-  const [startTime, setStartTime] = useState(event.start_time ? dayjs(event.start_time) : null);
-  const [endDate, setEndDate] = useState(event.end_time ? dayjs(event.end_time).format('YYYY-MM-DD') : null);
-  const [endTime, setEndTime] = useState(event.end_time ? dayjs(event.end_time) : null);
+
+  const startDateString = event.start.toISOString().split("T")[0];
+  const startTimeString = event.start.toISOString().split("T")[1].slice(0, 5); // Get first 5 characters for time (HH:mm)
+  const [startDate, setStartDate] = useState(startDateString);
+  const [startTime, setStartTime] = useState(startTimeString);
+
+
+  const endDateString = event.end.toISOString().split("T")[0];
+  const endTimeString = event.end.toISOString().split("T")[1].slice(0, 5); // Get first 5 characters for time (HH:mm)
+  const [endDate, setEndDate] = useState(endDateString);
+  const [endTime, setEndTime] = useState(endTimeString);
+
   const [location, setLocation] = useState(event.location || "");
   const [details, setDetails] = useState(event.description || "");
   const [isRecurring, setIsRecurring] = useState(event.isRecurring || false);
