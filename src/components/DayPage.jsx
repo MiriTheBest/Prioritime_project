@@ -87,6 +87,7 @@ const DayPage = () => {
           frequency: item.frequency,
           reminders: item.reminders,
           tags: item.tags,
+          type: item.item_type,
           allDay: false,
           backgroundColor: item.backgroundColor || '', // Use existing color or default
           borderColor: item.borderColor || '', // Use existing color or default

@@ -17,27 +17,25 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
+import dayjs from "dayjs";
 
 const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => {
-  const [name, setName] = useState(event.name || ""); // State for name, pre-populated with existing name or empty string
-  const [duration, setDuration] = useState(event.duration || ""); // Pre-populate with existing duration
-  const [selectedDate, setSelectedDate] = useState(
-    event.deadline?.date || null,
-  ); // Pre-populate with existing deadline date
-  const [selectedTime, setSelectedTime] = useState(
-    event.deadline?.time || null,
-  ); // Pre-populate with existing deadline time
-  const [location, setLocation] = useState(event.location || ""); // Pre-populate with existing location
-  const [details, setDetails] = useState(event.description || ""); // Pre-populate with existing description
-  const [isRecurring, setIsRecurring] = useState(event.isRecurring || false); // Initialize based on task property
+  const [name, setName] = useState(event.name || "");
+  const [duration, setDuration] = useState(event.duration || "");
+  const [startDate, setStartDate] = useState(event.start_time ? dayjs(event.start_time).format('YYYY-MM-DD') : null);
+  const [startTime, setStartTime] = useState(event.start_time ? dayjs(event.start_time) : null);
+  const [endDate, setEndDate] = useState(event.end_time ? dayjs(event.end_time).format('YYYY-MM-DD') : null);
+  const [endTime, setEndTime] = useState(event.end_time ? dayjs(event.end_time) : null);
+  const [location, setLocation] = useState(event.location || "");
+  const [details, setDetails] = useState(event.description || "");
+  const [isRecurring, setIsRecurring] = useState(event.isRecurring || false);
   const [frequency, setFrequency] = useState(event.frequency || "");
-  const [selectedCategory, setSelectedCategory] = useState(
-    event.selectedCategory || "",
-  );
+  const [selectedCategory, setSelectedCategory] = useState(event.selectedCategory || "");
   const [tags, setTags] = useState(event.tags || []);
   const [reminder, setReminder] = useState(event.reminder || "");
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
+  const [type, setType] = useState(event.item_type || "");
 
   // Update isRecurring state if task.isRecurring changes
   useEffect(() => {
@@ -49,10 +47,8 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       ...event,
       name,
       duration,
-      deadline: {
-        date: selectedDate,
-        time: selectedTime,
-      },
+      start_time,
+      end_time,
       location,
       description: details,
       isRecurring,
@@ -60,6 +56,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       selectedCategory,
       tags,
       reminder,
+      type,
     };
 
     try {
@@ -68,7 +65,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       console.error("Error handling event update:", error);
     }
 
-    onSave(updatedTask);
+    onSave(updatedEvent);
     onClose();
   };
 
@@ -115,10 +112,10 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: 500,
-          backgroundColor: "#f5f5f5", // Set background color (optional)
+          backgroundColor: "#f5f5f5",
           boxShadow: 24,
           p: 4,
-          borderRadius: 10, // Rounded corners
+          borderRadius: 10,
           padding: 20,
         }}
       >
@@ -130,7 +127,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
           id="name"
           name="name"
           placeholder="Enter event name"
-          value={name} // Use state variable for name
+          value={name}
           onChange={(e) => setName(e.target.value)}
           fullWidth
           margin="normal"
@@ -142,7 +139,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             <DatePicker
               label="Start Date"
               value={startDate}
-              onChange={(newValue) => setStartDate(newValue)}
+              onChange={(newValue) => setStartDate(dayjs(newValue).format('YYYY-MM-DD'))}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -170,7 +167,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             <DatePicker
               label="End Date"
               value={endDate}
-              onChange={(newValue) => setEndDate(newValue)}
+              onChange={(newValue) => setEndDate(dayjs(newValue).format('YYYY-MM-DD'))}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -224,7 +221,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             <MenuItem value="everyMonth">Every Month</MenuItem>
           </Select>
         )}
-
         <Select
           label="Category"
           value={selectedCategory}
@@ -279,7 +275,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
         <div
           style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
         >
-          {/* Add Tag */}
           <div style={{ display: "flex", alignItems: "center" }}>
             <AddIcon />
             <TextField
@@ -291,7 +286,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
               onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
             />
           </div>
-          {/* Add Reminder */}
           <div
             style={{
               display: "flex",
@@ -323,7 +317,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             </Menu>
           </div>
         </div>
-        {/* Tags Display */}
         <div style={{ marginTop: "10px" }}>
           {tags.map((tag, index) => (
             <Chip
@@ -334,7 +327,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             />
           ))}
         </div>
-
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <Button variant="contained" color="primary" onClick={handleSave}>
             Save
