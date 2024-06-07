@@ -33,7 +33,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
     try {
       const response = await axios.get(API_URL + '/get_preferences', {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: token
         }
       });
       setActivities(response.data.activities);
@@ -47,7 +47,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
     try {
       await axios.post(API_URL + '/preferences', preferences, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: token
         }
       });
     } catch (error) {
@@ -72,6 +72,12 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleEditActivity = (index) => {
     setNewActivity(activities[index]);
     setEditIndex(index);
+  };
+
+  const handleDeleteActivity = async (index) => {
+    const updatedActivities = activities.filter((_, i) => i !== index);
+    setActivities(updatedActivities);
+    await savePreferences({ activities: updatedActivities, daysOff });
   };
 
   const handleAddDayOff = () => {

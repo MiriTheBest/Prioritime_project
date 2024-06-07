@@ -69,9 +69,7 @@ const DayPage = () => {
           },
         }
       );
-      console.log(response.data)
       const eventList = response.data.event_list;
-      console.log(taskData)
 
       // Transform tasks and events into FullCalendar's event format
       const transformedEvents = eventList.map(item => {

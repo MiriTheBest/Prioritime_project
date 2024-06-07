@@ -1,4 +1,4 @@
-import React, { useState } from "react"; // Import only useState hook
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -10,10 +10,15 @@ import MenuItem from "@mui/material/MenuItem";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import MainDrawer from "./MainDrawer";
 import PreferencesModal from "./PreferencesModal";
+import ProfileModal from "./ProfileModal";
+import { useNavigate } from "react-router-dom";
 
-export default function ButtonAppBar({ isAuthenticated, token }) {
+export default function ButtonAppBar({ isAuthenticated, token, onLogout }) {  // Added onLogout prop
   const [anchorEl, setAnchorEl] = useState(null);
   const [preferencesOpen, setPreferencesOpen] = useState(false); // State for PreferencesModal
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -32,25 +37,45 @@ export default function ButtonAppBar({ isAuthenticated, token }) {
     setPreferencesOpen(false);
   };
 
+  const handleProfileOpen = () => {
+    setProfileOpen(true);
+    handleClose();
+  };
+
+  const handleProfileClose = () => {
+    setProfileOpen(false);
+  };
+
   const [isOpen, setIsOpen] = useState(false);
 
   const handleDrawerOpen = () => setIsOpen(true);
   const handleDrawerClose = () => setIsOpen(false);
 
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    localStorage.removeItem("token");
+    onLogout();
+    navigate("/");
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ mr: 2 }}
-            onClick={handleDrawerOpen} // Trigger drawer open on button click
-          >
-            <MenuIcon />
-          </IconButton>
+          {isAuthenticated ? ( // Render MenuIcon only if authenticated
+            <IconButton
+              size="large"
+              edge="start"
+              color="inherit"
+              aria-label="menu"
+              sx={{ mr: 2 }}
+              onClick={handleDrawerOpen} // Trigger drawer open on button click
+            >
+              <MenuIcon />
+            </IconButton>
+          ) : (
+            <div style={{ width: 40, height: 40 }} /> // Placeholder for disabled icon
+          )}
 
           <MainDrawer open={isOpen} onClose={handleDrawerClose} />
 
@@ -92,13 +117,14 @@ export default function ButtonAppBar({ isAuthenticated, token }) {
             open={Boolean(anchorEl)}
             onClose={handleClose}
           >
-            <MenuItem onClick={handleClose}>Profile</MenuItem>
+            <MenuItem onClick={handleProfileOpen}>Profile</MenuItem>
             <MenuItem onClick={handlePreferencesOpen}>Preferences</MenuItem> {/* Open PreferencesModal on click */}
-            <MenuItem onClick={handleClose}>Log Out</MenuItem>
+            <MenuItem onClick={handleLogout}>Log Out</MenuItem> {/* Log Out */}
           </Menu>
         </Toolbar>
       </AppBar>
       <PreferencesModal open={preferencesOpen} onClose={handlePreferencesClose} token={token} /> {/* Add PreferencesModal */}
+      <ProfileModal open={profileOpen} onClose={handleProfileClose} token={token} />
     </Box>
   );
 }

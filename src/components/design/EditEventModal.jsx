@@ -21,29 +21,32 @@ import dayjs from "dayjs";
 import sendUpdatedData from "../api/sendUpdatedData";
 
 const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => {
-  const [name, setName] = useState(event.name || "");
-  const [duration, setDuration] = useState(event.duration || "");
+  const settings = { collapseExtendedProps: true };
+  event = event.toPlainObject(settings);
+  console.log('event', event);
+  const [name, setName] = useState(event.title || "");
+  const [duration, setDuration] = useState("");
 
-  const startDateTime = event.start_time ? dayjs(event.start_time).toDate() : new Date();
-  const endDateTime = event.end_time ? dayjs(event.end_time).toDate() : new Date();
-  
+  const startDateTime = event.start ? dayjs(event.start) : new Date();
+  const endDateTime = event.end ? dayjs(event.end) : new Date();
+
   const [startDate, setStartDate] = useState(startDateTime);
   const [startTime, setStartTime] = useState(startDateTime);
   const [endDate, setEndDate] = useState(endDateTime);
-  const [endTime, setEndTime] = useState(endDateTime);  
+  const [endTime, setEndTime] = useState(endDateTime);
+  console.log(startDate, startTime, endDate, endTime);
 
   const [location, setLocation] = useState(event.location || "");
-  const [details, setDetails] = useState(event.description || "");
-  const [isRecurring, setIsRecurring] = useState(event.isRecurring || false);
+  const [details, setDetails] = useState("");
+  const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState(event.frequency || "");
-  const [selectedCategory, setSelectedCategory] = useState(event.selectedCategory || "");
+  const [selectedCategory, setSelectedCategory] = useState(event.category || "");
   const [tags, setTags] = useState(event.tags || []);
-  const [reminder, setReminder] = useState(event.reminder || "");
+  const [reminder, setReminder] = useState(event.reminders || "");
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
-  const [type, setType] = useState(event.item_type || "");
+  const [type, setType] = useState(event.type || "");
 
-  // Update isRecurring state if task.isRecurring changes
   useEffect(() => {
     setIsRecurring(event.isRecurring || false);
   }, [event.isRecurring]);
@@ -53,8 +56,8 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       ...event,
       name,
       duration,
-      start_time: dayjs(startDate).toISOString(), // Convert start date to ISO string
-      end_time: dayjs(endDate).toISOString(), 
+      start_time: dayjs(startDate).toISOString(),
+      end_time: dayjs(endDate).toISOString(),
       location,
       description: details,
       isRecurring,
@@ -66,7 +69,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
     };
 
     try {
-      await sendUpdatedData(updatedEvent); // Call sendUpdatedTask function with updatedTask
+      await sendUpdatedData(updatedEvent);
     } catch (error) {
       console.error("Error handling event update:", error);
     }
@@ -75,7 +78,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
     onClose();
   };
 
-  // Handle functions for reminders
   const handleReminderClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -91,7 +93,8 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
 
   const handleAddTag = () => {
     if (tagInput.trim() !== "") {
-      setTags([...tags, tagInput.trim()]); // Use tagInput.trim() here
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");  // Clear the input after adding
     }
   };
 
@@ -171,48 +174,47 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
                 />
               )}
             />
-
-                      </div>
-                      <div className="date-time-pickers">
-              <DatePicker
-                label="End Date"
-                value={endDate}
-                onChange={(newValue) => setEndDate(newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="End Date"
-                    fullWidth
-                    margin="normal"
-                    sx={{ backgroundColor: "white" }}
-                  />
-                )}
-              />
-              <TimePicker
-                label="End Time"
-                value={endTime}
-                onChange={(newValue) => setEndTime(newValue)}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="End Time"
-                    fullWidth
-                    margin="normal"
-                    sx={{ backgroundColor: "white" }}
-                  />
-                )}
-              />
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={isRecurring}
-                  onChange={(e) => setIsRecurring(e.target.checked)}
+          </div>
+          <div className="date-time-pickers">
+            <DatePicker
+              label="End Date"
+              value={endDate}
+              onChange={(newValue) => setEndDate(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="End Date"
+                  fullWidth
+                  margin="normal"
+                  sx={{ backgroundColor: "white" }}
                 />
-              }
-              label="Recurring"
+              )}
+            />
+            <TimePicker
+              label="End Time"
+              value={endTime}
+              onChange={(newValue) => setEndTime(newValue)}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="End Time"
+                  fullWidth
+                  margin="normal"
+                  sx={{ backgroundColor: "white" }}
+                />
+              )}
             />
           </div>
         </LocalizationProvider>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+            />
+          }
+          label="Recurring"
+        />
         {isRecurring && (
           <Select
             value={frequency}
@@ -281,81 +283,97 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
           size="small"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
-          style={{ width: "100%", margin: "10px 0" }}
+          fullWidth
+          margin="normal"
           sx={{ backgroundColor: "white" }}
         />
-        <div
-          style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
-        >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <AddIcon />
-            <TextField
-              placeholder="Add Tag"
-              size="small"
-              value={tagInput}
-              onChange={handleTagInput}
-              onBlur={handleAddTag}
-              onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginLeft: "10px",
-            }}
-          >
-            <AddCommentIcon fontSize="small" />
-            <Button size="small" onClick={handleReminderClick}>
-              {reminder ? `Reminder: ${reminder}` : "Add Reminder"}
-            </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleReminderClose}
-            >
-              <MenuItem onClick={() => handleReminderSelect("15 min")}>
-                15 min
-              </MenuItem>
-              <MenuItem onClick={() => handleReminderSelect("30 min")}>
-                30 min
-              </MenuItem>
-              <MenuItem onClick={() => handleReminderSelect("1 hour")}>
-                1 hour
-              </MenuItem>
-              <MenuItem onClick={() => handleReminderSelect("1 day")}>
-                1 day
-              </MenuItem>
-            </Menu>
-          </div>
-        </div>
-        <div style={{ marginTop: "10px" }}>
+        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
           {tags.map((tag, index) => (
             <Chip
               key={index}
-              label={`#${tag}`}
+              label={tag}
               onDelete={() => handleDeleteTag(index)}
-              style={{ marginRight: "5px", backgroundColor: "#79DAE8" }}
+              sx={{ marginRight: "5px", marginBottom: "5px" }}
             />
           ))}
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="contained" color="primary" onClick={handleSave}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <TextField
+            label="Add Tag"
+            value={tagInput}
+            onChange={handleTagInput}
+            size="small"
+            sx={{ flex: 1, marginRight: "10px", backgroundColor: "white" }}
+          />
+          <Button
+            onClick={handleAddTag}
+            variant="contained"
+            color="primary"
+            size="small"
+            startIcon={<AddIcon />}
+          >
+            Add Tag
+          </Button>
+        </div>
+        <TextField
+          label="Type"
+          id="type"
+          name="type"
+          placeholder="Enter event type"
+          value={type}
+          onChange={(e) => setType(e.target.value)}
+          fullWidth
+          margin="normal"
+          size="small"
+          sx={{ backgroundColor: "white" }}
+        />
+        <Button
+          onClick={handleReminderClick}
+          variant="contained"
+          color="primary"
+          size="small"
+          startIcon={<AddCommentIcon />}
+        >
+          Add Reminder
+        </Button>
+        <Menu
+          anchorEl={anchorEl}
+          open={Boolean(anchorEl)}
+          onClose={handleReminderClose}
+        >
+          <MenuItem onClick={() => handleReminderSelect("5 minutes before")}>
+            5 minutes before
+          </MenuItem>
+          <MenuItem onClick={() => handleReminderSelect("10 minutes before")}>
+            10 minutes before
+          </MenuItem>
+          <MenuItem onClick={() => handleReminderSelect("15 minutes before")}>
+            15 minutes before
+          </MenuItem>
+          <MenuItem onClick={() => handleReminderSelect("30 minutes before")}>
+            30 minutes before
+          </MenuItem>
+        </Menu>
+        <div style={{ marginTop: "10px", marginBottom: "10px" }}>
+          <Typography variant="body1">Selected Reminder: {reminder}</Typography>
+        </div>
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
+          <Button
+            onClick={handleSave}
+            variant="contained"
+            color="primary"
+            size="small"
+          >
             Save
           </Button>
           <Button
-            variant="outlined"
+            onClick={() => {
+              handleSave();
+              onSaveAndAutomate();
+            }}
+            variant="contained"
             color="secondary"
-            style={{ marginLeft: 10 }}
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="outlined"
-            color="green"
-            style={{ marginLeft: 10 }}
-            onClick={onSaveAndAutomate}
+            size="small"
           >
             Save & Automate
           </Button>
@@ -365,4 +383,4 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   );
 };
 
-export default EditEventModal;
+export default EditEventModal;
