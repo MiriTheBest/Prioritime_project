@@ -38,7 +38,7 @@ const MonthIconColumn = ({
     <div className="month-icon-column">
       <ModalConfirm
         isOpen={isDayOffModalOpen}
-        actionName="set a day off"
+        actionName="set/cancel a day off"
         onClose={() => setIsDayOffModalOpen(false)}
         onConfirm={() => {
           setIsDayOffModalOpen(false);

@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+import { Snackbar, Alert } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -19,6 +19,9 @@ import axios from 'axios';
 const defaultTheme = createTheme();
 
 export default function SignUp({onAuthorization}) {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [message, setMessage] = useState("");
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
@@ -30,7 +33,9 @@ export default function SignUp({onAuthorization}) {
         };
 
         if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
-          alert('All fields are required.');
+          setMessage("All fields are required");
+          setSnackbarOpen(true); // Show the snackbar alert
+          setTimeout(() => setSnackbarOpen(false), 5000);
           return;
       }
       
@@ -40,6 +45,9 @@ export default function SignUp({onAuthorization}) {
           const token = response.data.token; // Assuming your backend returns a token upon successful login
           localStorage.setItem('token', token);
           onAuthorization(true);
+          setMessage("Please go to your profile and fill the preferences for successful automation");
+          setSnackbarOpen(true); // Show the snackbar alert
+          setTimeout(() => setSnackbarOpen(false), 10000);
         } catch (error) {
           console.error('Registration failed:', error);
           // Handle registration failure (e.g., show error message to user)
@@ -132,6 +140,11 @@ export default function SignUp({onAuthorization}) {
             </Grid>
           </Box>
         </Box>
+        <Snackbar open={snackbarOpen} autoHideDuration={10000}>
+          <Alert severity="error" sx={{ width: '100%' }}>
+            {message}
+          </Alert>
+        </Snackbar>
       </Container>
     </ThemeProvider>
   );

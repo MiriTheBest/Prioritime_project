@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, Badge } from "antd";
 import MonthIconColumn from "./design/MonthIconColumn";
 import { API_URL } from "./api/config";
+import { automateMonth } from "./api/automateMonth";
 import axios from "axios";
 import moment from "moment";
 
@@ -9,11 +10,11 @@ const MonthPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [eventList, setEventData] = useState([]);
   const [currentYearMonth, setCurrentYearMonth] = useState(moment().format("YYYY-MM"));
+  const token = localStorage.getItem('token');
 
   const fetchEventData = async (yearMonth) => {
     try {
       console.log(yearMonth);
-      const token = localStorage.getItem('token');
       const response = await axios.get(
         `${API_URL}/get_monthly_schedule/${yearMonth}`,
         {
@@ -49,12 +50,12 @@ const MonthPage = () => {
 
   const handleReAutomate = () => {
     console.log("Re-automating this month");
+    automateMonth(token, currentYearMonth);
     fetchEventData(currentYearMonth);
   };
 
   const setDayOff = async (date, isDayOff) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await axios.put(
         `${API_URL}/set_day_off/${date}`,
         { day_off: isDayOff },

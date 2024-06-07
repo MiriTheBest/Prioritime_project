@@ -38,7 +38,7 @@ const DayPage = () => {
         const startDateString = clickedEvent.start.toISOString().split("T")[0];
         idOrIdDateString = `${clickedEvent.id}/${startDateString}`;
       }
-      await deleteData(idOrIdDateString);
+      await deleteData(idOrIdDateString, clickedEvent.type);
       console.log("Deleting this day");
     }
     fetchTasksAndEvents();
