@@ -85,7 +85,7 @@ const DayPage = () => {
           frequency: item.frequency,
           reminders: item.reminders,
           tags: item.tags,
-          type: "event",
+          type: item.item_type,
           allDay: false,
           backgroundColor: item.backgroundColor || '', // Use existing color or default
           borderColor: item.borderColor || '', // Use existing color or default
@@ -165,7 +165,7 @@ const DayPage = () => {
       let response;
 
       let apiUrl;
-      if (updatedEvent.type == "event") {
+      if (!updatedEvent.type) {
         apiUrl = `${API_URL}/update_event/${selectedDate}`;
         response = await axios.put(apiUrl, updatedEventWithOldDate, {
           headers: {
