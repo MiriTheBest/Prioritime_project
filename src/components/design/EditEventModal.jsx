@@ -50,17 +50,17 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   const handleSave = async () => {
     const updatedEvent = {
       ...event,
-      name,
+      title: name,
       duration,
-      start_time: dayjs(startDateTimeValue).toISOString(),
-      end_time: dayjs(endDateTimeValue).toISOString(),
+      start: dayjs(startDateTimeValue).toISOString(),
+      end: dayjs(endDateTimeValue).toISOString(),
       location,
       description: details,
       isRecurring,
       frequency,
-      selectedCategory,
+      category: selectedCategory,
       tags,
-      reminder,
+      reminders: reminder,
       type,
     };
 
