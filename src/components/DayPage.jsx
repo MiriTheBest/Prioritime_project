@@ -14,7 +14,7 @@ import axios from "axios";
 const DayPage = () => {
   const location = useLocation();
   const selectedDate = location.state?.selectedDate; // Access state from location
-
+  const token = localStorage.getItem('token');
   // State to store fetched events
   const [events, setEvents] = useState([]);
   const [clickedEvent, setClickedEvent] = useState(null);
@@ -48,7 +48,6 @@ const DayPage = () => {
     try {
       console.log(selectedDate)
       const date = new Date(selectedDate).toISOString().split('T')[0];
-      const token = localStorage.getItem('token');
       const taskResponse = await axios.get(
         `${API_URL}/get_task_list/${date}`,
         {
