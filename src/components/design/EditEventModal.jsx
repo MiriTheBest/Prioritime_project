@@ -64,12 +64,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       type,
     };
 
-    try {
-      await sendUpdatedData(updatedEvent);
-    } catch (error) {
-      console.error("Error handling event update:", error);
-    }
-
     onSave(updatedEvent);
     onClose();
   };
