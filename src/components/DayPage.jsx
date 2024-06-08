@@ -85,7 +85,7 @@ const DayPage = () => {
           frequency: item.frequency,
           reminders: item.reminders,
           tags: item.tags,
-          type: item.item_type,
+          type: "event",
           allDay: false,
           backgroundColor: item.backgroundColor || '', // Use existing color or default
           borderColor: item.borderColor || '', // Use existing color or default
@@ -163,17 +163,30 @@ const DayPage = () => {
     try {
       // Send updatedEventWithOldDate to backend
       let response;
+
       let apiUrl;
-      if (updatedEvent.allDay) {
-        apiUrl = `${API_URL}/update_task/${selectedDate}`;
-      } else {
+      if (updatedEvent.type == "event") {
         apiUrl = `${API_URL}/update_event/${selectedDate}`;
+        response = await axios.put(apiUrl, updatedEventWithOldDate, {
+          headers: {
+            Authorization: token
+          }
+        }
+        );
+      } else {
+        apiUrl = `${API_URL}/update_task/${selectedDate}`;
+        response = await axios.put(apiUrl, updatedEventWithOldDate, {
+          headers: {
+            Authorization: token
+          }
+        }
+        );
       }
 
       if (response.status === 200) {
         // Update state if the request was successful
         setEvents(events.map(event => 
-          (event.id === updatedEvent.id ? updatedEvent : event)
+          (event.id === updatedEvent.id ? updatedEventWithOldDate : event)
         ));
         setIsEditEventModalOpen(false);
         setIsEditTaskModalOpen(false);
