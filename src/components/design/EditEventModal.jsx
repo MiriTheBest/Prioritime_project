@@ -12,9 +12,8 @@ import {
   Chip,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimePicker } from "@mui/x-date-pickers/TimePicker";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import dayjs from "dayjs";
@@ -25,16 +24,13 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   event = event.toPlainObject(settings);
   console.log('event', event);
   const [name, setName] = useState(event.title || "");
-  const [duration, setDuration] = useState("");
+  const [duration, setDuration] = useState(event.duration || "");
 
   const startDateTime = event.start ? dayjs(event.start) : new Date();
   const endDateTime = event.end ? dayjs(event.end) : new Date();
 
-  const [startDate, setStartDate] = useState(startDateTime);
-  const [startTime, setStartTime] = useState(startDateTime);
-  const [endDate, setEndDate] = useState(endDateTime);
-  const [endTime, setEndTime] = useState(endDateTime);
-  console.log(startDate, startTime, endDate, endTime);
+  const [startDateTimeValue, setStartDateTimeValue] = useState(startDateTime);
+  const [endDateTimeValue, setEndDateTimeValue] = useState(endDateTime);
 
   const [location, setLocation] = useState(event.location || "");
   const [details, setDetails] = useState("");
@@ -56,8 +52,8 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
       ...event,
       name,
       duration,
-      start_time: dayjs(startDate).toISOString(),
-      end_time: dayjs(endDate).toISOString(),
+      start_time: dayjs(startDateTimeValue).toISOString(),
+      end_time: dayjs(endDateTimeValue).toISOString(),
       location,
       description: details,
       isRecurring,
@@ -145,59 +141,28 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <div className="date-time-pickers">
-            <DatePicker
-              label="Start Date"
-              value={startDate}
-              onChange={(newValue) => setStartDate(newValue)}
+            <DateTimePicker
+              label="Start Date & Time"
+              value={startDateTimeValue}
+              onChange={(newValue) => setStartDateTimeValue(newValue)}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Start Date"
+                  label="Start Date & Time"
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
                 />
               )}
             />
-
-            <TimePicker
-              label="Start Time"
-              value={startTime}
-              onChange={(newValue) => setStartTime(newValue)}
+            <DateTimePicker
+              label="End Date & Time"
+              value={endDateTimeValue}
+              onChange={(newValue) => setEndDateTimeValue(newValue)}
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Start Time"
-                  fullWidth
-                  margin="normal"
-                  sx={{ backgroundColor: "white" }}
-                />
-              )}
-            />
-          </div>
-          <div className="date-time-pickers">
-            <DatePicker
-              label="End Date"
-              value={endDate}
-              onChange={(newValue) => setEndDate(newValue)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="End Date"
-                  fullWidth
-                  margin="normal"
-                  sx={{ backgroundColor: "white" }}
-                />
-              )}
-            />
-            <TimePicker
-              label="End Time"
-              value={endTime}
-              onChange={(newValue) => setEndTime(newValue)}
-              renderInput={(params) => (
-                <TextField
-                  {...params}
-                  label="End Time"
+                  label="End Date & Time"
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
@@ -315,18 +280,6 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             Add Tag
           </Button>
         </div>
-        <TextField
-          label="Type"
-          id="type"
-          name="type"
-          placeholder="Enter event type"
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          fullWidth
-          margin="normal"
-          size="small"
-          sx={{ backgroundColor: "white" }}
-        />
         <Button
           onClick={handleReminderClick}
           variant="contained"
@@ -383,4 +336,4 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
   );
 };
 
-export default EditEventModal;
+export default EditEventModal;
