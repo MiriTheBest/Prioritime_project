@@ -161,13 +161,11 @@ const DayPage = () => {
   const handleSave = async (updatedEvent) => {
     
     try {
-      // Send updatedEventWithOldDate to backend
       let response;
-
       let apiUrl;
       if (!updatedEvent.type) {
         apiUrl = `${API_URL}/update_event/${selectedDate}`;
-        response = await axios.put(apiUrl, updatedEventWithOldDate, {
+        response = await axios.put(apiUrl, updatedEvent, {
           headers: {
             Authorization: token
           }
@@ -175,7 +173,7 @@ const DayPage = () => {
         );
       } else {
         apiUrl = `${API_URL}/update_task/${selectedDate}`;
-        response = await axios.put(apiUrl, updatedEventWithOldDate, {
+        response = await axios.put(apiUrl, updatedEvent, {
           headers: {
             Authorization: token
           }
