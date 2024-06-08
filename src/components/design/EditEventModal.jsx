@@ -121,7 +121,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
           boxShadow: 24,
           p: 4,
           borderRadius: 10,
-          padding: 20,
+          padding: 30,
         }}
       >
         <Typography variant="h6" id="edit-event-modal-title">
@@ -140,7 +140,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
           sx={{ backgroundColor: "white" }}
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <div className="date-time-pickers">
+          <div className="date-time-pickers" style={{ marginTop: "10px" }} >
             <DateTimePicker
               label="Start Date & Time"
               value={startDateTimeValue}
@@ -165,7 +165,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
                   label="End Date & Time"
                   fullWidth
                   margin="normal"
-                  sx={{ backgroundColor: "white" }}
+                  sx={{ backgroundColor: "white", marginLeft: "10px" }}
                 />
               )}
             />
@@ -285,6 +285,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
           variant="contained"
           color="primary"
           size="small"
+          sx={{ marginTop: "10px" }}
           startIcon={<AddCommentIcon />}
         >
           Add Reminder

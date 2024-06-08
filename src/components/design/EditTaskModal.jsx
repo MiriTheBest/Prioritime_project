@@ -22,8 +22,13 @@ import { convertMinToDuration } from "../functions/convertMintoDuration";
 import { convertDurationToMin } from "../functions/convertDurationToMin";
 
 const EditTaskModal = ({ open, onClose, task, onSave }) => {
+  const settings = { collapseExtendedProps: true };
+  task = task.toPlainObject(settings);
+
   const [name, setName] = useState(task.name || ""); // State for name, pre-populated with existing name or empty string
-  const [duration, setDuration] = useState(convertMinToDuration(task.duration) || ""); // Pre-populate with existing duration
+  const taskDuration  = convertMinToDuration(task.duration);
+  console.log("Duration: ", taskDuration);
+  const [duration, setDuration] = useState( taskDuration|| ""); // Pre-populate with existing duration
   const [selectedDate, setSelectedDate] = useState(task.deadline?.date || null); // Pre-populate with existing deadline date
   const [selectedTime, setSelectedTime] = useState(task.deadline?.time || null); // Pre-populate with existing deadline time
   const [location, setLocation] = useState(task.location || ""); // Pre-populate with existing location

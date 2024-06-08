@@ -159,26 +159,21 @@ const DayPage = () => {
   };
 
   const handleSave = async (updatedEvent) => {
-    // Add oldDate attribute to updatedEvent
-    const updatedEventWithOldDate = {
-      ...updatedEvent,
-      oldDate: selectedDate.toISOString(),
-    };
-
+    
     try {
       // Send updatedEventWithOldDate to backend
       let response;
+      let apiUrl;
       if (updatedEvent.allDay) {
-        // If it's a task (allDay is true), send a PUT request to the tasks endpoint
-        response = await axios.put(`${API_URL}/update_task`, updatedEventWithOldDate);
+        apiUrl = `${API_URL}/update_task/${selectedDate}`;
       } else {
-        // If it's an event (allDay is false), send a PUT request to the events endpoint
-        response = await axios.put(`${API_URL}/update_event`, updatedEventWithOldDate);
+        apiUrl = `${API_URL}/update_event/${selectedDate}`;
       }
+
       if (response.status === 200) {
         // Update state if the request was successful
         setEvents(events.map(event => 
-          (event.id === updatedEvent.id ? updatedEventWithOldDate : event)
+          (event.id === updatedEvent.id ? updatedEvent : event)
         ));
         setIsEditEventModalOpen(false);
         setIsEditTaskModalOpen(false);

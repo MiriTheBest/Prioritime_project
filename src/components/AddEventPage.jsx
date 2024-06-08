@@ -12,11 +12,15 @@ import {
   Select,
   Menu,
   Chip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 
 const AddEventPage = () => {
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [message, setMessage] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [startTime, setStartTime] = useState(null);
   const [endDate, setEndDate] = useState(null);
@@ -82,24 +86,12 @@ const AddEventPage = () => {
   const handleSave = async () => {
     // 1. Extract task data from form fields
     const name = nameRef.current.value;
-    if (!name) {
-      // If name is empty, show an error message and return without saving
-      alert("Name is required.");
+    if (!name || !startDate || !endDate) {
+      setMessage("Name and dates are required");
+      setSnackbarOpen(true); // Show the snackbar alert
+      setTimeout(() => setSnackbarOpen(false), 5000);
       return;
   }
-
-  if (!startDate) {
-    // If start date is not selected, show an error message and return without saving
-    alert("Start date is required.");
-    return;
-}
-
-// Validate end date
-if (!endDate) {
-    // If end date is not selected, show an error message and return without saving
-    alert("End date is required.");
-    return;
-}
 
     // Get date and time from date pickers (assuming using @mui/x-date-pickers)
     const startDateValue = startDate ? startDate.toDate() : null;
