@@ -116,7 +116,7 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 500,
+          width: 700,
           backgroundColor: "#f5f5f5",
           boxShadow: 24,
           p: 4,
