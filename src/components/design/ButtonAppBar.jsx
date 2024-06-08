@@ -13,11 +13,11 @@ import PreferencesModal from "./PreferencesModal";
 import ProfileModal from "./ProfileModal";
 import { useNavigate } from "react-router-dom";
 
-export default function ButtonAppBar({ isAuthenticated, token, onLogout }) {  // Added onLogout prop
+export default function ButtonAppBar({ isAuthenticated, onLogout }) {  // Added onLogout prop
   const [anchorEl, setAnchorEl] = useState(null);
   const [preferencesOpen, setPreferencesOpen] = useState(false); // State for PreferencesModal
   const [profileOpen, setProfileOpen] = useState(false);
-
+  const token = localStorage.getItem('token');
   const navigate = useNavigate();
 
   const handleMenu = (event) => {

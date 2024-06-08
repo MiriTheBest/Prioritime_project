@@ -32,7 +32,6 @@ function App() {
     if (success) {
       // Store authentication state (e.g., local storage)
       localStorage.setItem("isAuthenticated", "true");
-      const token = localStorage.getItem('token');
     } else {
       // Handle failed authorization
       localStorage.removeItem("isAuthenticated");
@@ -51,7 +50,7 @@ function App() {
 
   return (
     <Router>
-      <ButtonAppBar isAuthenticated={isAuthenticated}  token = {token} onLogout={handleLogout}/>
+      <ButtonAppBar isAuthenticated={isAuthenticated}  onLogout={handleLogout}/>
       <Routes>
         <Route
           path="/"
