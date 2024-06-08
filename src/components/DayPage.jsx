@@ -162,7 +162,7 @@ const DayPage = () => {
     try {
       let response;
       let apiUrl;
-      if (!updatedEvent.type) {
+      if (!updatedEvent.allDay) {
         apiUrl = `${API_URL}/update_event/${selectedDate}`;
         response = await axios.put(apiUrl, updatedEvent, {
           headers: {
