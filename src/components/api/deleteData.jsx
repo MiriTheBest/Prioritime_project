@@ -1,30 +1,32 @@
 import axios from 'axios';
-import { API_URL } from "./config";; // Assuming you have API_URL defined in your configuration file
+import { API_URL } from "./config";
 
 const deleteData = async (idOrIdDateString, type) => {
     try {
         let response;
         const token = localStorage.getItem('token')
         if (idOrIdDateString.includes('/')) {
-            response = await axios.delete(`${API_URL}/delete_event/` + idOrIdDateString, type,
+          response = await axios.delete(
+            `${API_URL}/delete_event/${idOrIdDateString}?type=${type}`,
             {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: token,
-                  // Add any other headers here if needed
-                },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: token,
+                // Add any other headers here if needed
               },
-            );
+            },
+          );
         } else {
-            response = await axios.delete(`${API_URL}/delete_task/` + idOrIdDateString, type,
+          response = await axios.delete(
+            `${API_URL}/delete_event/${idOrIdDateString}?type=${type}`, 
             {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: token,
-                  // Add any other headers here if needed
-                },
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: token,
+                // Add any other headers here if needed
               },
-            );
+            },
+          );
         }
         
         // Check response here
@@ -39,4 +41,4 @@ const deleteData = async (idOrIdDateString, type) => {
     }
 };
 
-export { deleteData};
+export { deleteData};

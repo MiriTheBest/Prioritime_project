@@ -17,11 +17,10 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import AddIcon from "@mui/icons-material/Add";
-import AddCommentIcon from "@mui/icons-material/AddComment";
 import { convertMinToDuration } from "../functions/convertMintoDuration";
 import { convertDurationToMin } from "../functions/convertDurationToMin";
 
-const EditTaskModal = ({ open, onClose, task, onSave }) => {
+const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   const settings = { collapseExtendedProps: true };
   task = task.toPlainObject(settings);
 
@@ -39,7 +38,6 @@ const EditTaskModal = ({ open, onClose, task, onSave }) => {
     task.selectedCategory || "",
   );
   const [tags, setTags] = useState(task.tags || []);
-  const [reminder, setReminder] = useState(task.reminder || "");
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
 
@@ -48,12 +46,12 @@ const EditTaskModal = ({ open, onClose, task, onSave }) => {
     setIsRecurring(task.isRecurring || false);
   }, [task.isRecurring]);
 
-  const handleSave = async () => {
+  const handleSave = async (automate) => {
     duration = convertDurationToMin(duration);
     const updatedTask = {
       ...task,
-      name,
-      duration,
+      title: name,
+      duration: duration,
       deadline: {
         date: selectedDate,
         time: selectedTime,
@@ -62,36 +60,20 @@ const EditTaskModal = ({ open, onClose, task, onSave }) => {
       description: details,
       isRecurring,
       frequency,
-      selectedCategory,
+      selectedCategory: selectedCategory,
       tags,
-      reminder,
+      type,
     };
 
-    try {
-      await sendUpdatedData(updatedTask); // Call sendUpdatedTask function with updatedTask
-      // Handle success (e.g., show success message, refresh data, etc.)
-    } catch (error) {
-      console.error("Error handling task update:", error);
-      // Handle error (e.g., show error message, allow retry, etc.)
-    }
+    if(automate)
+      onSaveAndAutomate(updatedTask);
 
-    onSave(updatedTask);
+    else
+      onSave(updatedTask);
+
     onClose();
   };
 
-  // Handle functions for reminders
-  const handleReminderClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleReminderClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleReminderSelect = (value) => {
-    setReminder(value);
-    handleReminderClose();
-  };
 
   const handleAddTag = () => {
     if (tagInput.trim() !== "") {
@@ -280,37 +262,6 @@ const EditTaskModal = ({ open, onClose, task, onSave }) => {
               onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
             />
           </div>
-          {/* Add Reminder */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginLeft: "10px",
-            }}
-          >
-            <AddCommentIcon fontSize="small" />
-            <Button size="small" onClick={handleReminderClick}>
-              {reminder ? `Reminder: ${reminder}` : "Add Reminder"}
-            </Button>
-            <Menu
-              anchorEl={anchorEl}
-              open={Boolean(anchorEl)}
-              onClose={handleReminderClose}
-            >
-              <MenuItem onClick={() => handleReminderSelect("15 min")}>
-                15 min
-              </MenuItem>
-              <MenuItem onClick={() => handleReminderSelect("30 min")}>
-                30 min
-              </MenuItem>
-              <MenuItem onClick={() => handleReminderSelect("1 hour")}>
-                1 hour
-              </MenuItem>
-              <MenuItem onClick={() => handleReminderSelect("1 day")}>
-                1 day
-              </MenuItem>
-            </Menu>
-          </div>
         </div>
         {/* Tags Display */}
         <div style={{ marginTop: "10px" }}>
@@ -325,8 +276,16 @@ const EditTaskModal = ({ open, onClose, task, onSave }) => {
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="contained" color="primary" onClick={handleSave}>
+          <Button variant="contained" color="primary" onClick={handleSave(false)}>
             Save
+          </Button>
+          <Button
+            onClick={() => {handleSave(true)}}
+            variant="contained"
+            color="secondary"
+            size="small"
+          >
+            Save & Automate
           </Button>
           <Button
             variant="outlined"

@@ -19,7 +19,7 @@ import AddCommentIcon from "@mui/icons-material/AddComment";
 import dayjs from "dayjs";
 import sendUpdatedData from "../api/sendUpdatedData";
 
-const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => {
+const EditEventModal = ({ open, onClose, event, onSave }) => {
   const settings = { collapseExtendedProps: true };
   event = event.toPlainObject(settings);
   console.log('event', event);
@@ -315,15 +315,12 @@ const EditEventModal = ({ open, onClose, event, onSave, onSaveAndAutomate }) => 
             Save
           </Button>
           <Button
-            onClick={() => {
-              handleSave();
-              onSaveAndAutomate();
-            }}
-            variant="contained"
+            variant="outlined"
             color="secondary"
-            size="small"
+            style={{ marginLeft: 10 }}
+            onClick={onClose}
           >
-            Save & Automate
+            Cancel
           </Button>
         </div>
       </div>

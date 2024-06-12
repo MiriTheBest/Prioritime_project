@@ -1,10 +1,8 @@
 import axios from "axios";
 import { API_URL } from "./config";
 
-const saveAutomateTask = async (newData) => {
+const saveAutomateTask = async (newData, token) => {
   try {
-
-    const token = localStorage.getItem('token');
     const response = await axios.post(
       API_URL + '/save_and_automate',
       newData,

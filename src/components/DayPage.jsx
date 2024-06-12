@@ -9,7 +9,10 @@ import { API_URL } from "./api/config";
 import EditTaskModal from "./design/EditTaskModal";
 import EditEventModal from "./design/EditEventModal";
 import { deleteData } from "./api/deleteData";
+import { saveAutomateTask } from "./api/saveAutomateTask";
 import axios from "axios";
+import { TokenClass } from "typescript";
+import sendUpdatedData from "./api/sendUpdatedData";
 
 const DayPage = () => {
   const location = useLocation();
@@ -29,15 +32,21 @@ const DayPage = () => {
     console.log("Automating this day");
   };
 
+  function createStringForUrl(clickedEvent) {
+    let idOrIdDateString;
+    if (clickedEvent.allDay) {
+      idOrIdDateString = clickedEvent.id;
+    } else {
+      const startDateString = clickedEvent.start.toISOString().split("T")[0];
+      idOrIdDateString = `${clickedEvent.id}/${startDateString}`;
+    }
+    return idOrIdDateString;
+  }
+
   const handleDelete = async () => {
     let idOrIdDateString;
     if (clickedEvent) {
-      if (clickedEvent.allDay) {
-        idOrIdDateString = clickedEvent.id;
-      } else {
-        const startDateString = clickedEvent.start.toISOString().split("T")[0];
-        idOrIdDateString = `${clickedEvent.id}/${startDateString}`;
-      }
+      idOrIdDateString = createStringForUrl(clickedEvent);
       await deleteData(idOrIdDateString, clickedEvent.type);
       console.log("Deleting this day");
     }
@@ -158,12 +167,12 @@ const DayPage = () => {
   };
 
   const handleSave = async (updatedEvent) => {
-    
+    let urlConcatStr = createStringForUrl(updatedEvent);
     try {
       let response;
       let apiUrl;
       if (!updatedEvent.allDay) {
-        apiUrl = `${API_URL}/update_event/${selectedDate}`;
+        apiUrl = `${API_URL}/update_event/${urlConcatStr}`;
         response = await axios.put(apiUrl, updatedEvent, {
           headers: {
             Authorization: token
@@ -171,15 +180,9 @@ const DayPage = () => {
         }
         );
       } else {
-        apiUrl = `${API_URL}/update_task/${selectedDate}`;
-        response = await axios.put(apiUrl, updatedEvent, {
-          headers: {
-            Authorization: token
-          }
-        }
-        );
+        apiUrl = `${API_URL}/update_task/${urlConcatStr}`;
+        response = sendUpdatedData(updatedEvent, token, apiUrl);
       }
-
       if (response.status === 200) {
         // Update state if the request was successful
         setEvents(events.map(event => 
@@ -194,8 +197,9 @@ const DayPage = () => {
     fetchTasksAndEvents();
   };
 
-  const handleSaveAndAutomate = (updatedEvent) => {
-    console.log('Save & Automate clicked for event:', updatedEvent);
+  const handleSaveAndAutomate = (updatedTask) => {
+    console.log('Save & Automate task:', updatedEvent);
+    saveAutomateTask(updatedTask, token);
     fetchTasksAndEvents();
   };
 
@@ -226,8 +230,7 @@ const DayPage = () => {
         open={isEditEventModalOpen}
         onClose={() => setIsEditEventModalOpen(false)}
         event={clickedEvent}
-        onSave={handleSave}
-        onSaveAndAutomate={handleSaveAndAutomate}
+        onSave={handleSave}        
       />
     )}
     {(clickedEvent && isEditTaskModalOpen) && (
@@ -236,6 +239,7 @@ const DayPage = () => {
         onClose={() => setIsEditTaskModalOpen(false)}
         task={clickedEvent}
         onSave={handleSave}
+        onSaveAndAutomate={handleSaveAndAutomate}
       />
     )}
     </div>

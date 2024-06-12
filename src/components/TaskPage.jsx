@@ -60,6 +60,7 @@ const TaskPage = () => {
       status: "pending",
     },
   ]);
+  const token = localStorage.getItem('token');
   const [searchText, setSearchText] = useState("");
   const [sortMethod, setSortMethod] = useState("name"); // Default sort by name
   const [sortAnchorEl, setSortAnchorEl] = useState(null); // Anchor element for sort menu
@@ -70,7 +71,11 @@ const TaskPage = () => {
     // Fetch tasks from API when component mounts
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(API_URL + '/get_task_list');
+        const response = await axios.get(API_URL + '/get_task_list', {
+          headers: {
+            Authorization: token,
+          }
+        });
         setTasks(response.data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -93,11 +98,6 @@ const TaskPage = () => {
   };
 
   const handleMarkDone = async (task) => {
-    /* const updatedTasks = tasks.map((t) =>
-      t.id === task.id ? { ...t, status: "done" } : t,
-    );
-    setTasks(updatedTasks);
-    await sendUpdatedData(task); */
     try {
       // Construct the URL with the task ID
       const url = `${API_URL}/delete_task/${task.id}`;
@@ -115,7 +115,10 @@ const TaskPage = () => {
   const handleSave = (updatedTask) => {
     // Find the task to update based on its ID
     const taskIndex = tasks.findIndex((task) => task.id === updatedTask.id);
+    const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
+    const response = sendUpdatedData(updatedTask, token, apiUrl);
 
+    if (response.status === 200) {
     if (taskIndex !== -1) {
       // Update the task in the state
       const newTasks = [...tasks];
@@ -125,6 +128,7 @@ const TaskPage = () => {
       console.error("Task with ID", updatedTask.id, "not found");
     }
     fetchTasks();
+  }
   };
 
   // Filter tasks based on search text and status
