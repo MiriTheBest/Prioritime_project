@@ -52,8 +52,8 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
       ...event,
       title: name,
       duration,
-      start: dayjs(startDateTimeValue).toISOString(),
-      end: dayjs(endDateTimeValue).toISOString(),
+      start: dayjs(startDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"), // Removing timezone
+      end: dayjs(endDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"),
       location,
       description: details,
       isRecurring,

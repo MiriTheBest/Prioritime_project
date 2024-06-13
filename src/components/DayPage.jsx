@@ -32,13 +32,13 @@ const DayPage = () => {
     console.log("Automating this day");
   };
 
-  function createStringForUrl(clickedEvent) {
+  function createStringForUrl(clickedEvent, originalEvent) {
     let idOrIdDateString;
     if (clickedEvent.allDay) {
       idOrIdDateString = clickedEvent.id;
     } else {
-      const startDateString = clickedEvent.start.toISOString().split("T")[0];
-      idOrIdDateString = `${clickedEvent.id}/${startDateString}`;
+      //const startDateString = clickedEvent.start.toISOString().split("T")[0];
+      idOrIdDateString = `${clickedEvent.id}/${originalEvent.start}`;
     }
     return idOrIdDateString;
   }
@@ -58,7 +58,7 @@ const DayPage = () => {
       console.log(selectedDate)
       const date = new Date(selectedDate).toISOString().split('T')[0];
       const taskResponse = await axios.get(
-        `${API_URL}/get_task_list/${date}`,
+        `${API_URL}/get_task_list/?date=${date}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -167,7 +167,9 @@ const DayPage = () => {
   };
 
   const handleSave = async (updatedEvent) => {
-    let urlConcatStr = createStringForUrl(updatedEvent);
+    const originalEvent = events.find(event => event.id === updatedEvent.id);
+    let urlConcatStr = createStringForUrl(updatedEvent, originalEvent);
+
     try {
       let response;
       let apiUrl;
@@ -184,13 +186,17 @@ const DayPage = () => {
         response = sendUpdatedData(updatedEvent, token, apiUrl);
       }
       if (response.status === 200) {
-        // Update state if the request was successful
+      // Remove event from current view if the date is changed
+      if (originalEvent.start !== updatedEvent.start) {
+        setEvents(events.filter(event => event.id !== updatedEvent.id));
+      } else {
         setEvents(events.map(event => 
-          (event.id === updatedEvent.id ? updatedEventWithOldDate : event)
+          (event.id === updatedEvent.id ? updatedEventData : event)
         ));
-        setIsEditEventModalOpen(false);
-        setIsEditTaskModalOpen(false);
       }
+      setIsEditEventModalOpen(false);
+      setIsEditTaskModalOpen(false);
+    }
     } catch (error) {
       console.error('Error updating event:', error);
     }
