@@ -1,10 +1,10 @@
 import axios from "axios";
 import { API_URL } from "./config";
 
-const automateMonth = async (token, yearMonth) => {
+const automateMonthorDay = async (token, date) => {
 try {
     const response = await axios.post(
-      `${API_URL}/re-automate/${yearMonth}`,
+      `${API_URL}/re-automate/${date}`,
       {
         headers: {
           Authorization: `${token}` // Add token to Authorization header
@@ -16,4 +16,4 @@ try {
   }
 }
 
-export {automateMonth};
+export {automateMonthOrDay};

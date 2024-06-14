@@ -13,6 +13,7 @@ import { saveAutomateTask } from "./api/saveAutomateTask";
 import axios from "axios";
 import { TokenClass } from "typescript";
 import sendUpdatedData from "./api/sendUpdatedData";
+import { automateMonthOrDay } from "./api/automateMonthOrDay";
 
 const DayPage = () => {
   const location = useLocation();
@@ -28,8 +29,9 @@ const DayPage = () => {
   const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
 
   const handleAutomate = () => {
-    // Your logic for re-automating
-    console.log("Automating this day");
+    const formattedDate = selectedDate.toISOString().slice(0, 10);
+    automateMonthOrDay(token, formattedDate);
+    fetchTasksAndEvents();
   };
 
   function createStringForUrl(clickedEvent, originalEvent) {

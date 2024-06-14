@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Calendar, Badge } from "antd";
 import MonthIconColumn from "./design/MonthIconColumn";
 import { API_URL } from "./api/config";
-import { automateMonth } from "./api/automateMonth";
+import { automateMonthOrDay } from "./api/automateMonthOrDay";
 import axios from "axios";
 import moment from "moment";
 
@@ -50,7 +50,7 @@ const MonthPage = () => {
 
   const handleReAutomate = () => {
     console.log("Re-automating this month");
-    automateMonth(token, currentYearMonth);
+    automateMonthOrDay(token, currentYearMonth);
     fetchEventData(currentYearMonth);
   };
 
