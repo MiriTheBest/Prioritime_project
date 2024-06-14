@@ -8,23 +8,23 @@ import moment from "moment";
 
 const MonthPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [eventList, setEventList] = useState([]);
+  const [eventList, setEventData] = useState([]);
   const [currentYearMonth, setCurrentYearMonth] = useState(moment().format("YYYY-MM"));
   const token = localStorage.getItem('token');
 
-  // Function to fetch event data for the current month
   const fetchEventData = async (yearMonth) => {
     try {
+      console.log(yearMonth);
       const response = await axios.get(
         `${API_URL}/get_monthly_schedule/${yearMonth}`,
         {
           headers: {
-            Authorization: token
+            Authorization: `${token}` // Add token to Authorization header
           }
         }
       );
       const fetchedDays = response.data.days;
-      setEventList(fetchedDays); // Update event data state with fetched data
+      setEventData(fetchedDays); // Update event data state with fetched data
     } catch (error) {
       console.error("Error fetching event data:", error);
     }
@@ -34,7 +34,20 @@ const MonthPage = () => {
     fetchEventData(currentYearMonth);
   }, [currentYearMonth]); // Fetch data whenever currentYearMonth changes
 
-  // Function to handle re-automating the current month
+  const onPanelChange = (value, mode) => {
+    if (mode === "month") {
+      const newYearMonth = value.format("YYYY-MM");
+      setCurrentYearMonth(newYearMonth);
+    }
+    setSelectedDate(null);
+  };
+
+  const onSelect = (date) => {
+    const formattedDate = date.format("YYYY-MM-DD");
+    setSelectedDate(formattedDate);
+    console.log("Selected date:", formattedDate);
+  };
+
   const handleReAutomate = async () => {
     try {
       console.log("Re-automating this month");
@@ -46,7 +59,6 @@ const MonthPage = () => {
     }
   };
 
-  // Function to set day off status for selected date
   const setDayOff = async (date, isDayOff) => {
     try {
       const response = await axios.put(
@@ -54,52 +66,43 @@ const MonthPage = () => {
         { day_off: isDayOff },
         {
           headers: {
-            Authorization: token,
+            Authorization: `${token}`, // Add token to Authorization header
             'Content-Type': 'application/json'
           }
         }
       );
       console.log(response.data);
-      // Refresh event data after setting day off
-      await fetchEventData(currentYearMonth);
     } catch (error) {
       console.error("Error setting day off:", error);
     }
   };
 
-  // Callback function for calendar panel change
-  const onPanelChange = (value, mode) => {
-    if (mode === "month") {
-      const newYearMonth = value.format("YYYY-MM");
-      setCurrentYearMonth(newYearMonth);
+  const handleSetDayOff = () => {
+    if (selectedDate) {
+      const dayData = eventList.find(day => `${currentYearMonth}-${String(day.date).padStart(2, '0')}` === selectedDate);
+      const newDayOffStatus = !dayData?.day_off;
+      setDayOff(selectedDate, newDayOffStatus).then(() => {
+        fetchEventData(currentYearMonth); // Refresh the data to update UI
+      });
     }
-    setSelectedDate(null);
   };
 
-  // Callback function for calendar date selection
-  const onSelect = (date) => {
-    const formattedDate = date.format("YYYY-MM-DD");
-    setSelectedDate(formattedDate);
-    console.log("Selected date:", formattedDate);
-  };
-
-  // Custom cell render function for calendar
   const cellRender = (date, mode) => {
     if (mode === "year") {
       return <span>...</span>; // Placeholder content in year view
     } else {
       const dayOfMonth = date.date();
       const isCurrentMonth = date.format("YYYY-MM") === currentYearMonth;
-
+  
       // Only render events for the current month
       if (!isCurrentMonth) {
         return null;
       }
-
+  
       const dayData = eventList.find(day => day.date === dayOfMonth);
       const eventsOnDate = dayData?.event_list || [];
       const isDayOff = dayData?.day_off || false;
-
+  
       return (
         <div>
           {eventsOnDate.length > 0 && eventsOnDate.map((event) => (
