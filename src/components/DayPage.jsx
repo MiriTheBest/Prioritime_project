@@ -28,10 +28,15 @@ const DayPage = () => {
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
   const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
 
-  const handleAutomate = () => {
+  const handleAutomate = async () => {
     const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
-    automateMonthOrDay(token, formattedDate);
-    fetchTasksAndEvents();
+    try {
+      await automateMonthOrDay(token, formattedDate);
+      // Fetch updated event data after re-automation
+      await fetchTasksAndEvents();
+    } catch (error) {
+      console.error("Error re-automating month:", error);
+    }
   };
 
   function createStringForUrl(clickedEvent, originalEvent) {
