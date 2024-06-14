@@ -5,6 +5,7 @@ const automateMonthOrDay = async (token, date) => {
 try {
     const response = await axios.post(
       `${API_URL}/re_automate/${date}`,
+      {},
       {
         headers: {
           Authorization: `${token}` // Add token to Authorization header
