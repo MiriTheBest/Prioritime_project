@@ -44,8 +44,8 @@ const DayPage = () => {
     if (clickedEvent.allDay) {
       idOrIdDateString = clickedEvent.id;
     } else {
-      //const startDateString = clickedEvent.start.toISOString().split("T")[0];
-      idOrIdDateString = `${clickedEvent.id}/${originalEvent.start}`;
+      const startDateString = originalEvent.start.toISOString().split("T")[0];
+      idOrIdDateString = `${clickedEvent.id}/${startDateString}`;
     }
     return idOrIdDateString;
   }
