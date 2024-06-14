@@ -33,6 +33,7 @@ const AddPage = () => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [alertMessage, setAlertMessage] = useState("");
+  const token = localStorage.getItem('token');
 
   const handleTagInput = (e) => {
     setTagInput(e.target.value);
@@ -101,7 +102,7 @@ const AddPage = () => {
       type: "task",
     };
 
-    await saveAndAlert(taskData, setAlertSeverity, setAlertMessage, setAlertOpen);
+    await saveAndAlert(taskData, setAlertSeverity, setAlertMessage, setAlertOpen, token);
   };
 
   return (

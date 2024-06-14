@@ -1,15 +1,15 @@
 import { saveAutomateTask } from "../api/saveAutomateTask";
 import sendData from "../api/sendData";
 
-const saveAndAlert = async (formData, setAlertSeverity, setAlertMessage, setAlertOpen) => {
+const saveAndAlert = async (formData, setAlertSeverity, setAlertMessage, setAlertOpen, token) => {
   try {
     let response;
     if (formData.status === "pending") {
-      response = await sendData(formData);
+      response = await sendData(formData, token);
       setAlertSeverity("success");
       setAlertMessage("Task saved successfully!");
     } else {
-      response = await saveAutomateTask(formData);
+      response = await saveAutomateTask(formData, token);
       setAlertSeverity("success");
       setAlertMessage("Task saved and automated successfully!");
     }

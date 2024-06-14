@@ -1,25 +1,27 @@
 import axios from "axios";
 import { API_URL } from "./config";
 
-const URL_task = axios.create({
-  baseURL: API_URL + "/add_task",
-});
-const URL_event = axios.create({
-  baseURL: API_URL + "/add_event",
-});
-
-const sendData = async (newData) => {
+const sendData = async (newData, token) => {
   try {
-    // Your logic to check if the task already exists
-    //if its event check that possible to add
-    // if (taskAlreadyExists(newData)) {
-    //   throw new Error("Error adding task/event");
-    // }
+    let response;
 
-    const token = localStorage.getItem('token');
-    if(newData.type == 'event') {
-      const response = await axios.post(
-        URL_event,
+    if (newData.type === 'event') {
+      // Send data to event endpoint
+      response = await axios.post(
+        `${API_URL}/add_event`,
+        newData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: token,
+            // Add any other headers here if needed
+          },
+        },
+      );
+    } else {
+      // Send data to task endpoint
+      response = await axios.post(
+        `${API_URL}/add_task`,
         newData,
         {
           headers: {
@@ -31,26 +33,12 @@ const sendData = async (newData) => {
       );
     }
 
-    else{
-
-    const response = await axios.post(
-      URL_task,
-      newData,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: token,
-          // Add any other headers here if needed
-        },
-      },
-    );
-  }
-    console.log("Task saved successfully:", response.data);
+    console.log("Data saved successfully:", response.data);
+    return response.data;
   } catch (error) {
-    console.error("Error saving task:", error);
+    console.error("Error saving data:", error);
     throw error; // Throw the error for the calling component to handle
   }
-
 };
 
 export default sendData;
