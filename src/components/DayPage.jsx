@@ -53,7 +53,7 @@ const DayPage = () => {
   const handleDelete = async () => {
     let idOrIdDateString;
     if (clickedEvent) {
-      idOrIdDateString = createStringForUrl(clickedEvent);
+      idOrIdDateString = createStringForUrl(clickedEvent, clickedEvent);
       await deleteData(idOrIdDateString, clickedEvent.type);
       console.log("Deleting this day");
     }
