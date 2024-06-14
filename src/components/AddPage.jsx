@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import saveAndAlert from "./functions/saveAndAlert";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -16,13 +16,15 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import AddAlert from "./design/AddAlert";
 import { convertDurationToMin } from "./functions/convertDurationToMin";
+import dayjs from 'dayjs';
 
 const AddPage = () => {
+  const [name, setName] = useState("");
   const [selectedDate, setSelectedDate] = useState(null); // State for date
   const [selectedTime, setSelectedTime] = useState(null); // State for time
-  const durationRef = useRef(null); // Use ref for non-controlled duration input
-  const locationRef = useRef(null); // Use ref for non-controlled location input
-  const detailsRef = useRef(null); // Use ref for non-controlled details input
+  const [duration, setDuration] = useState("");
+  const [location, setLocation] = useState("");
+  const [details, setDetails] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("once");
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -48,79 +50,51 @@ const AddPage = () => {
     setTags(updatedTags);
   };
 
-
   const handleReset = () => {
+    setName("");
     setSelectedDate(null);
     setSelectedTime(null);
-    durationRef.current.value = "";
-    locationRef.current.value = "";
-    detailsRef.current.value = "";
+    setDuration("");
+    setLocation("");
+    setDetails("");
     setIsRecurring(false);
     setFrequency("once");
+    setSelectedCategory("");
     setTags([]);
-    setReminder("");
     setTagInput("");
   };
 
   const handleSave = async (status) => {
-    const nameInput = document.getElementById("name");
-    const name = nameInput ? nameInput.value.trim() : '';
-
     if (!name) {
-        // If name is empty, show an error message and return without saving
-        alert("Name is required.");
-        return;
+      // If name is empty, show an error message and return without saving
+      alert("Name is required.");
+      return;
     }
 
-    const selectedDateValue = selectedDate ? selectedDate.toDate() : null; 
-    const selectedTimeValue = selectedTime ? selectedTime.toDate() : null; 
-    
-    const durationElement = document.getElementById("duration").value;
-    const duration = durationElement ? durationElement.value : null;
+    const selectedDateValue = selectedDate ? selectedDate.toDate() : null;
+    const selectedTimeValue = selectedTime ? selectedTime.toDate() : null;
 
-    if(duration) 
-      duration = convertDurationToMin(duration);
-    
-    const locationElement = document.getElementById("location");
-    const location = locationElement ? locationElement.value : null;
+    let durationInMin = duration ? convertDurationToMin(duration) : null;
 
-    const detailsElement = document.getElementById("details").value;
-    const details = detailsElement ? detailsElement.value : null;
-
-    const isRecurringElement = document.getElementById("isRecurring").checked;
-    const isRecurring = isRecurringElement ? isRecurringElement.checked : null;
-
-    const frequency = isRecurring
-      ? document.getElementById("frequency").value
-      : "once";
-    const selectedCategoryElement = document.getElementById("selectedCategory").value;
-    const selectedCategory = selectedCategoryElement ? selectedCategoryElement.value : null;
-
-    const tags = [...tags];
-
-    const selectedDateTime = selectedDateValue ? new Date(selectedDateValue) : null;
-
+    let selectedDateTime = selectedDateValue ? new Date(selectedDateValue) : null;
     if (selectedDateTime && selectedTimeValue) {
       selectedDateTime.setHours(selectedTimeValue.getHours());
       selectedDateTime.setMinutes(selectedTimeValue.getMinutes());
       selectedDateTime.setSeconds(selectedTimeValue.getSeconds());
     }
 
-    if(selectedDateTime) {
-      selectedDateTime = selectedDateTime.toISOString;
+    if (selectedDateTime) {
+      selectedDateTime = selectedDateTime.toISOString();
     }
-    
-    // 2. Validate data (optional)
-    // ... perform validation checks (e.g., required fields, valid date/time format)
 
-    // 3. Prepare data for database
+    // Prepare data for database
     const taskData = {
       name,
       selectedDateTime,
-      duration,
+      duration: durationInMin,
       location,
       details,
-      frequency,
+      frequency: isRecurring ? frequency : "once",
       selectedCategory,
       tags,
       status,
@@ -129,7 +103,6 @@ const AddPage = () => {
 
     await saveAndAlert(taskData, setAlertSeverity, setAlertMessage, setAlertOpen);
   };
-
 
   return (
     <div className="add-wrapper">
@@ -147,6 +120,8 @@ const AddPage = () => {
           label="Name"
           id="name"
           name="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           fullWidth
           sx={{ backgroundColor: "white" }}
         />
@@ -155,7 +130,8 @@ const AddPage = () => {
           id="duration"
           name="duration"
           placeholder="Enter duration (e.g., 1 hour)"
-          inputRef={durationRef}
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
           fullWidth
           margin="normal"
           sx={{ backgroundColor: "white" }}
@@ -209,17 +185,15 @@ const AddPage = () => {
             }}
           >
             <MenuItem value="">Select Frequency</MenuItem>
-            <MenuItem value="everyDay">Every Day</MenuItem>
-            <MenuItem value="everyWeek">Every Week</MenuItem>
-            <MenuItem value="every2Weeks">Every 2 Weeks</MenuItem>
-            <MenuItem value="everyMonth">Every Month</MenuItem>
+            <MenuItem value="Every Day">Every Day</MenuItem>
+            <MenuItem value="Every Week">Every Week</MenuItem>
+            <MenuItem value="Every 2 Weeks">Every 2 Weeks</MenuItem>
+            <MenuItem value="Every Month">Every Month</MenuItem>
           </Select>
         )}
-
         <Select
           label="Category"
           value={selectedCategory}
-          placeholder="Select Category"
           onChange={(e) => setSelectedCategory(e.target.value)}
           fullWidth
           displayEmpty
@@ -247,51 +221,49 @@ const AddPage = () => {
           id="location"
           name="location"
           placeholder="Enter location (optional)"
-          inputRef={locationRef}
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
           fullWidth
           margin="normal"
           sx={{ backgroundColor: "white" }}
         />
-        <TextField // Replaced TextareaAutosize with TextField
+        <TextField
           label="Details"
           id="details"
           name="details"
           placeholder="Add additional details (optional)"
-          inputRef={detailsRef}
-          multiline // Enables multiline input
-          rows={3} // Sets the initial number of rows
+          value={details}
+          onChange={(e) => setDetails(e.target.value)}
+          multiline
+          rows={3}
           style={{ width: "100%", margin: "10px 0" }}
-          sx={{ backgroundColor: "white" }} // White background for details
+          sx={{ backgroundColor: "white" }}
         />
         <div style={{ display: "flex", alignItems: "center" }}>
-  <div style={{ marginRight: "10px" }}>
-    {/* Add Tag */}
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <AddIcon />
-      <TextField
-        placeholder="Add Tag"
-        size="small"
-        value={tagInput}
-        onChange={handleTagInput}
-        onBlur={handleAddTag}
-        onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
-      />
-    </div>
-  </div>
-
-  {/* Tags Display */}
-  <div style={{ display: "flex", flexWrap: "wrap", marginTop: "10px" }}>
-    {tags.map((tag, index) => (
-      <Chip
-        key={index}
-        label={`#${tag}`}
-        onDelete={() => handleDeleteTag(index)}
-        style={{ marginRight: "5px", marginBottom: "5px", backgroundColor: "#79DAE8" }}
-      />
-    ))}
-  </div>
-</div>
-
+          <div style={{ marginRight: "10px" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <AddIcon />
+              <TextField
+                placeholder="Add Tag"
+                size="small"
+                value={tagInput}
+                onChange={handleTagInput}
+                onBlur={handleAddTag}
+                onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+              />
+            </div>
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", marginTop: "10px" }}>
+            {tags.map((tag, index) => (
+              <Chip
+                key={index}
+                label={`#${tag}`}
+                onDelete={() => handleDeleteTag(index)}
+                style={{ marginRight: "5px", marginBottom: "5px", backgroundColor: "#79DAE8" }}
+              />
+            ))}
+          </div>
+        </div>
       </div>
       <div className="add-menu">
         <Button variant="contained" type="button" onClick={() => handleSave("pending")}>
