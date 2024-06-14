@@ -16,7 +16,6 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import AddAlert from "./design/AddAlert";
 import { convertDurationToMin } from "./functions/convertDurationToMin";
-import dayjs from 'dayjs';
 
 const AddPage = () => {
   const [name, setName] = useState("");
@@ -26,7 +25,7 @@ const AddPage = () => {
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
-  const [frequency, setFrequency] = useState("once");
+  const [frequency, setFrequency] = useState("Once");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [tags, setTags] = useState([]); // State for tags
   const [tagInput, setTagInput] = useState(""); // State for tag input
@@ -59,7 +58,7 @@ const AddPage = () => {
     setLocation("");
     setDetails("");
     setIsRecurring(false);
-    setFrequency("once");
+    setFrequency("Once");
     setSelectedCategory("");
     setTags([]);
     setTagInput("");
@@ -95,7 +94,7 @@ const AddPage = () => {
       duration: durationInMin,
       location,
       details,
-      frequency: isRecurring ? frequency : "once",
+      frequency: isRecurring ? frequency : "Once",
       selectedCategory,
       tags,
       status: status,
@@ -103,6 +102,7 @@ const AddPage = () => {
     };
 
     await saveAndAlert(taskData, setAlertSeverity, setAlertMessage, setAlertOpen, token);
+    handleReset();
   };
 
   return (
