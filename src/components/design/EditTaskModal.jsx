@@ -189,10 +189,10 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
             }}
           >
             <MenuItem value="">Select Frequency</MenuItem>
-            <MenuItem value="everyDay">Every Day</MenuItem>
-            <MenuItem value="everyWeek">Every Week</MenuItem>
-            <MenuItem value="every2Weeks">Every 2 Weeks</MenuItem>
-            <MenuItem value="everyMonth">Every Month</MenuItem>
+            <MenuItem value="Every Day">Every Day</MenuItem>
+            <MenuItem value="Every Week">Every Week</MenuItem>
+            <MenuItem value="Every 2 Weeks">Every 2 Weeks</MenuItem>
+            <MenuItem value="Every Month">Every Month</MenuItem>
           </Select>
         )}
 

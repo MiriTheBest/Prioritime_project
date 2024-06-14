@@ -11,7 +11,7 @@ import EditEventModal from "./design/EditEventModal";
 import { deleteData } from "./api/deleteData";
 import { saveAutomateTask } from "./api/saveAutomateTask";
 import axios from "axios";
-import { TokenClass } from "typescript";
+import moment from 'moment';
 import sendUpdatedData from "./api/sendUpdatedData";
 import { automateMonthOrDay } from "./api/automateMonthOrDay";
 
@@ -29,7 +29,7 @@ const DayPage = () => {
   const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
 
   const handleAutomate = () => {
-    const formattedDate = format(new Date(selectedDate), 'yyyy-MM-dd');
+    const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
     automateMonthOrDay(token, formattedDate);
     fetchTasksAndEvents();
   };
