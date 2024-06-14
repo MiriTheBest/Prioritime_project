@@ -22,44 +22,7 @@ import { API_URL } from "./api/config";
 import axios from "axios";
 
 const TaskPage = () => {
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      name: "Learn React",
-      duration: "2 hours",
-      description: "Go through the React tutorial.",
-      category: "School",
-      tags: ["react", "important"],
-      status: "pending",
-    },
-    {
-      id: 2,
-      name: "Build a to-do app",
-      duration: "1 day",
-      description: "Create a simple app to manage tasks.",
-      category: "School",
-      tags: ["react", "important"],
-      status: "pending",
-    },
-    {
-      id: 3,
-      name: "Grocery shopping",
-      duration: "30 minutes",
-      description: "Pick up milk, bread, and vegetables.",
-      category: "Personal",
-      tags: ["grocery"],
-      status: "pending",
-    },
-    {
-      id: 4,
-      name: "Procrastinate",
-      duration: "5 hours",
-      description: "Do nothing",
-      category: "Personal",
-      tags: [],
-      status: "pending",
-    },
-  ]);
+  const [tasks, setTasks] = useState([]);
   const token = localStorage.getItem('token');
   const [searchText, setSearchText] = useState("");
   const [sortMethod, setSortMethod] = useState("name"); // Default sort by name
