@@ -3,27 +3,37 @@ import sendData from "../api/sendData";
 
 const saveAndAlert = async (formData, setAlertSeverity, setAlertMessage, setAlertOpen) => {
   try {
-    if(formData.type == "pending") {
-      const response = await sendData(formData);
+    let response;
+    if (formData.status === "pending") {
+      response = await sendData(formData);
       setAlertSeverity("success");
       setAlertMessage("Task saved successfully!");
-      setAlertOpen(true);
-    }
-    else{
-      const response = await saveAutomateTask(formData);
+    } else {
+      response = await saveAutomateTask(formData);
       setAlertSeverity("success");
       setAlertMessage("Task saved and automated successfully!");
-      setAlertOpen(true);
     }
-    
+
+    setAlertOpen(true);
+
+    // Automatically close the alert after 5 seconds
+    setTimeout(() => {
+      setAlertOpen(false);
+    }, 5000);
+
   } catch (error) {
     console.error("Error handling task save:", error);
     setAlertSeverity("error");
     setAlertMessage(
-      error.response.data.message ||
-        "Error saving task. Please try again later.",
+      error.response?.data?.message ||
+      "Error saving task. Please try again later."
     );
     setAlertOpen(true);
+
+    // Automatically close the alert after 5 seconds
+    setTimeout(() => {
+      setAlertOpen(false);
+    }, 5000);
   }
 };
 

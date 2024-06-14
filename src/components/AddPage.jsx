@@ -97,7 +97,7 @@ const AddPage = () => {
       frequency: isRecurring ? frequency : "once",
       selectedCategory,
       tags,
-      status,
+      status: status,
       type: "task",
     };
 
