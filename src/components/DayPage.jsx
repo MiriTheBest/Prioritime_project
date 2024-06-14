@@ -11,6 +11,7 @@ import EditEventModal from "./design/EditEventModal";
 import { deleteData } from "./api/deleteData";
 import { saveAutomateTask } from "./api/saveAutomateTask";
 import axios from "axios";
+import dayjs from 'dayjs';
 import moment from 'moment';
 import sendUpdatedData from "./api/sendUpdatedData";
 import { automateMonthOrDay } from "./api/automateMonthOrDay";
@@ -44,21 +45,25 @@ const DayPage = () => {
     if (clickedEvent.allDay) {
       idOrIdDateString = clickedEvent.id;
     } else {
-      const startDateString = originalEvent.start.toISOString().split("T")[0];
-      idOrIdDateString = `${clickedEvent.id}/${startDateString}`;
+      //const startDateString = clickedEvent.start.toISOString().split("T")[0];
+      idOrIdDateString = `${clickedEvent.id}/${originalEvent.start}`;
     }
     return idOrIdDateString;
   }
 
   const handleDelete = async () => {
-    let idOrIdDateString;
-    if (clickedEvent) {
-      idOrIdDateString = createStringForUrl(clickedEvent, clickedEvent);
-      await deleteData(idOrIdDateString, clickedEvent.type);
-      console.log("Deleting this day");
+    try {
+      if (clickedEvent) {
+        const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");
+        const urlConcatStr = createStringForUrl(clickedEvent, { ...clickedEvent, start: formattedStart });
+        await deleteData(urlConcatStr, clickedEvent.type);
+        fetchTasksAndEvents();
+      }
+    } catch (error) {
+      console.error("Error deleting event:", error);
     }
-    fetchTasksAndEvents();
   };
+  
 
   const fetchTasksAndEvents = async () => {
     try {
