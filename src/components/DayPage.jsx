@@ -29,7 +29,7 @@ const DayPage = () => {
   const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
 
   const handleAutomate = () => {
-    const formattedDate = selectedDate.toISOString().slice(0, 10);
+    const formattedDate = format(new Date(selectedDate), 'yyyy-MM-dd');
     automateMonthOrDay(token, formattedDate);
     fetchTasksAndEvents();
   };
