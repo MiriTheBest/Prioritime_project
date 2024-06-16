@@ -33,7 +33,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
   const [endDateTimeValue, setEndDateTimeValue] = useState(endDateTime);
 
   const [location, setLocation] = useState(event.location || "");
-  const [details, setDetails] = useState("");
+  const [details, setDetails] = useState(event.description || "");
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState(event.frequency || "");
   const [selectedCategory, setSelectedCategory] = useState(event.category || "");

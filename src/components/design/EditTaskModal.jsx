@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import sendUpdatedData from "../api/sendUpdatedData";
 import {
   Modal,
   Typography,
@@ -23,19 +22,17 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   const settings = { collapseExtendedProps: true };
   task = task.toPlainObject(settings);
 
-  const [name, setName] = useState(task.name || ""); // State for name, pre-populated with existing name or empty string
+  const [name, setName] = useState(task.title || ""); // State for name, pre-populated with existing name or empty string
   const taskDuration = task.duration ? convertMinToDuration(task.duration) : "";
-  console.log("Duration: ", task.duration);
   const [duration, setDuration] = useState(taskDuration || ""); // Pre-populate with existing duration
+
   const [selectedDate, setSelectedDate] = useState(task.deadline?.date || null); // Pre-populate with existing deadline date
   const [selectedTime, setSelectedTime] = useState(task.deadline?.time || null); // Pre-populate with existing deadline time
   const [location, setLocation] = useState(task.location || ""); // Pre-populate with existing location
   const [details, setDetails] = useState(task.description || ""); // Pre-populate with existing description
   const [isRecurring, setIsRecurring] = useState(task.isRecurring || false); // Initialize based on task property
   const [frequency, setFrequency] = useState(task.frequency || "");
-  const [selectedCategory, setSelectedCategory] = useState(
-    task.selectedCategory || "",
-  );
+  const [selectedCategory, setSelectedCategory] = useState(task.selectedCategory || "");
   const [tags, setTags] = useState(task.tags || []);
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
@@ -46,11 +43,12 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   }, [task.isRecurring]);
 
   const handleSave = async (automate) => {
-    let duration = convertDurationToMin(duration); // Use let instead of const
+    let durationInMin = convertDurationToMin(duration);
+
     const updatedTask = {
       ...task,
       title: name,
-      duration: duration,
+      duration: durationInMin,
       deadline: {
         date: selectedDate,
         time: selectedTime,
@@ -59,7 +57,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
       description: details,
       isRecurring,
       frequency,
-      selectedCategory: selectedCategory,
+      selectedCategory,
       tags,
     };
 
@@ -74,7 +72,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
 
   const handleAddTag = () => {
     if (tagInput.trim() !== "") {
-      setTags([...tags, tagInput.trim()]); // Use tagInput.trim() here
+      setTags([...tags, tagInput.trim()]);
+      setTagInput("");
     }
   };
 
@@ -86,6 +85,18 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   const handleTagInput = (event) => {
     setTagInput(event.target.value);
   };
+
+  const handleCategoryChange = (event) => {
+    const { value } = event.target;
+    setSelectedCategory(value);
+
+    if (value === "other") {
+      // Initialize custom category with current task's category if it's not one of the predefined ones
+      setCustomCategory(task.selectedCategory || "");
+    }
+  };
+
+  const [customCategory, setCustomCategory] = useState("");
 
   return (
     <Modal
@@ -101,10 +112,10 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
           left: "50%",
           transform: "translate(-50%, -50%)",
           width: 500,
-          backgroundColor: "#f5f5f5", // Set background color (optional)
+          backgroundColor: "#f5f5f5",
           boxShadow: 24,
           p: 4,
-          borderRadius: 10, // Rounded corners
+          borderRadius: 10,
           padding: 20,
         }}
       >
@@ -116,7 +127,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
           id="name"
           name="name"
           placeholder="Enter task name"
-          value={name} // Use state variable for name
+          value={name}
           onChange={(e) => setName(e.target.value)}
           fullWidth
           margin="normal"
@@ -146,7 +157,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
             <DatePicker
               label="Deadline (Date)"
               value={selectedDate}
-              sx={{ backgroundColor: "white", marginRight: 1 }} // Add margin for spacing
+              sx={{ backgroundColor: "white", marginRight: 1 }}
               onChange={(newValue) => setSelectedDate(newValue)}
               renderInput={(params) => (
                 <TextField {...params} fullWidth margin="normal" />
@@ -155,7 +166,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
             <TimePicker
               label="Deadline (Time)"
               value={selectedTime}
-              sx={{ backgroundColor: "white", marginRight: 1 }} // Add margin for spacing
+              sx={{ backgroundColor: "white", marginRight: 1 }}
               onChange={(newValue) => setSelectedTime(newValue)}
               renderInput={(params) => (
                 <TextField {...params} fullWidth margin="normal" />
@@ -196,8 +207,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
         <Select
           label="Category"
           value={selectedCategory}
+          onChange={handleCategoryChange}
           placeholder="Select Category"
-          onChange={(e) => setSelectedCategory(e.target.value)}
           fullWidth
           size="small"
           displayEmpty
@@ -216,6 +227,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
             label="Custom Category"
             id="customCategory"
             name="customCategory"
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
             size="small"
             fullWidth
             sx={{ backgroundColor: "white" }}
@@ -244,10 +257,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
           style={{ width: "100%", margin: "10px 0" }}
           sx={{ backgroundColor: "white" }}
         />
-        <div
-          style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
-        >
-          {/* Add Tag */}
+        <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
           <div style={{ display: "flex", alignItems: "center" }}>
             <AddIcon />
             <TextField
@@ -260,7 +270,6 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
             />
           </div>
         </div>
-        {/* Tags Display */}
         <div style={{ marginTop: "10px" }}>
           {tags.map((tag, index) => (
             <Chip

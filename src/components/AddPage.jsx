@@ -21,22 +21,23 @@ import { convertDurationToMin } from "./functions/convertDurationToMin";
 
 const AddPage = () => {
   const [name, setName] = useState("");
-  const [selectedDate, setSelectedDate] = useState(null); // State for date
-  const [selectedTime, setSelectedTime] = useState(null); // State for time
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState(null);
   const [duration, setDuration] = useState("");
   const [location, setLocation] = useState("");
   const [details, setDetails] = useState("");
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("Once");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [tags, setTags] = useState([]); // State for tags
-  const [tagInput, setTagInput] = useState(""); // State for tag input
+  const [customCategory, setCustomCategory] = useState(""); // State for custom category
+  const [tags, setTags] = useState([]);
+  const [tagInput, setTagInput] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [alertMessage, setAlertMessage] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [message, setMessage] = useState("");
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
 
   const handleTagInput = (e) => {
     setTagInput(e.target.value);
@@ -64,6 +65,7 @@ const AddPage = () => {
     setIsRecurring(false);
     setFrequency("Once");
     setSelectedCategory("");
+    setCustomCategory(""); // Reset custom category state
     setTags([]);
     setTagInput("");
   };
@@ -71,7 +73,7 @@ const AddPage = () => {
   const handleSave = async (status) => {
     if (!name) {
       setMessage("Name is required");
-      setSnackbarOpen(true); // Show the snackbar alert
+      setSnackbarOpen(true);
       setTimeout(() => setSnackbarOpen(false), 5000);
       return;
     }
@@ -81,7 +83,9 @@ const AddPage = () => {
 
     let durationInMin = duration ? convertDurationToMin(duration) : null;
 
-    let selectedDateTime = selectedDateValue ? new Date(selectedDateValue) : null;
+    let selectedDateTime = selectedDateValue
+      ? new Date(selectedDateValue)
+      : null;
     if (selectedDateTime && selectedTimeValue) {
       selectedDateTime.setHours(selectedTimeValue.getHours());
       selectedDateTime.setMinutes(selectedTimeValue.getMinutes());
@@ -92,7 +96,9 @@ const AddPage = () => {
       selectedDateTime = selectedDateTime.toISOString();
     }
 
-    // Prepare data for database
+    // Determine selected category based on custom input or predefined value
+    const finalSelectedCategory = selectedCategory === "other" ? customCategory : selectedCategory;
+
     const taskData = {
       name,
       selectedDateTime,
@@ -100,13 +106,19 @@ const AddPage = () => {
       location,
       details,
       frequency: isRecurring ? frequency : "Once",
-      selectedCategory,
+      selectedCategory: finalSelectedCategory,
       tags,
       status: status,
       type: "task",
     };
 
-    await saveAndAlert(taskData, setAlertSeverity, setAlertMessage, setAlertOpen, token);
+    await saveAndAlert(
+      taskData,
+      setAlertSeverity,
+      setAlertMessage,
+      setAlertOpen,
+      token
+    );
     handleReset();
   };
 
@@ -122,7 +134,7 @@ const AddPage = () => {
       <div className="input-container">
         <h2>Add New Task</h2>
         <TextField
-          required // Mark name field as required
+          required
           label="Name"
           id="name"
           name="name"
@@ -218,6 +230,8 @@ const AddPage = () => {
             label="Custom Category"
             id="customCategory"
             name="customCategory"
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
             fullWidth
             sx={{ backgroundColor: "white" }}
           />
@@ -265,7 +279,8 @@ const AddPage = () => {
                 key={index}
                 label={`#${tag}`}
                 onDelete={() => handleDeleteTag(index)}
-                style={{ marginRight: "5px", marginBottom: "5px", backgroundColor: "#79DAE8" }}
+                style={{
+                  marginRight: "5px", marginBottom: "5px", backgroundColor: "#79DAE8" }}
               />
             ))}
           </div>

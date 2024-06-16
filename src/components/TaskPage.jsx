@@ -23,25 +23,30 @@ import axios from "axios";
 
 const TaskPage = () => {
   const [tasks, setTasks] = useState([]);
-  const token = localStorage.getItem('token');
+  const [loading, setLoading] = useState(true); // State to manage loading status
+  const token = localStorage.getItem("token");
   const [searchText, setSearchText] = useState("");
   const [sortMethod, setSortMethod] = useState("name"); // Default sort by name
   const [sortAnchorEl, setSortAnchorEl] = useState(null); // Anchor element for sort menu
   const [selectedTasks, setSelectedTasks] = useState([]);
-  const [isSelectingForAutomation, setIsSelectingForAutomation] = useState(false);
+  const [isSelectingForAutomation, setIsSelectingForAutomation] = useState(
+    false
+  );
 
   useEffect(() => {
     // Fetch tasks from API when component mounts
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(API_URL + '/get_task_list', {
+        const response = await axios.get(API_URL + "/get_task_list/", {
           headers: {
             Authorization: token,
-          }
+          },
         });
         setTasks(response.data);
+        setLoading(false); // Update loading state once tasks are fetched
       } catch (error) {
         console.error("Error fetching tasks:", error);
+        setLoading(false); // Ensure loading state is updated in case of error
       }
     };
 
@@ -75,30 +80,27 @@ const TaskPage = () => {
     }
     fetchTasks();
   };
-  const handleSave = (updatedTask) => {
-    // Find the task to update based on its ID
-    const taskIndex = tasks.findIndex((task) => task.id === updatedTask.id);
-    const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
-    const response = sendUpdatedData(updatedTask, token, apiUrl);
 
-    if (response.status === 200) {
-    if (taskIndex !== -1) {
-      // Update the task in the state
-      const newTasks = [...tasks];
-      newTasks[taskIndex] = updatedTask;
-      setTasks(newTasks);
-    } else {
-      console.error("Task with ID", updatedTask.id, "not found");
+  const handleSave = async (updatedTask) => {
+    try {
+      // Update the task on the server
+      const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
+      await sendUpdatedData(updatedTask, token, apiUrl);
+
+      // Update the task in the local state
+      setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+      alert("Task updated successfully");
+    } catch (error) {
+      console.error("Error updating task:", error);
+      alert("Failed to update task");
     }
-    fetchTasks();
-  }
   };
 
   // Filter tasks based on search text and status
   const filteredTasks = tasks.filter(
     (task) =>
       task.name.toLowerCase().includes(searchText.toLowerCase()) &&
-      task.status === "pending",
+      task.status === "pending"
   );
 
   const handleSearchChange = (event) => {
@@ -129,7 +131,7 @@ const TaskPage = () => {
       if (selectedTasks.length > 0) {
         // If already selecting and there are selected tasks
         try {
-          await axios.post(API_URL + '/automate_task', { tasks: selectedTasks });
+          await axios.post(API_URL + "/automate_task", { tasks: selectedTasks });
           alert("Tasks sent for automation");
           setSelectedTasks([]); // Clear selected tasks after sending
         } catch (error) {
@@ -159,6 +161,9 @@ const TaskPage = () => {
     console.log("Selected tasks: ", newSelectedTasks);
   };
 
+  if (loading) {
+    return <div>Loading...</div>; // Render a loading indicator while fetching tasks
+  }
 
   return (
     <div style={{ padding: "3rem" }}>
