@@ -236,7 +236,10 @@ const DayPage = () => {
           height="100%"
           eventClick={handleEventClick}
           events={events}
-          datesSet={(dateInfo) => setSelectedDate(dateInfo.start)} // Update selectedDate on date change
+          datesSet={(dateInfo) => {
+            const newSelectedDate = dayjs(dateInfo.start).format('YYYY-MM-DD');
+            setSelectedDate(newSelectedDate);
+          }} // Update selectedDate on date change
         />
       </div>
       <DayIconColumn
