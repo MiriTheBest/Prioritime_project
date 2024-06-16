@@ -9,7 +9,6 @@ import {
   Checkbox,
   MenuItem,
   Select,
-  Menu,
   Chip,
 } from "@mui/material";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -25,12 +24,9 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   task = task.toPlainObject(settings);
 
   const [name, setName] = useState(task.name || ""); // State for name, pre-populated with existing name or empty string
-  const taskDuration = null;
-  if(task.duration) {
-    taskDuration  = convertMinToDuration(task.duration);
-  }
-  console.log("Duration: ", taskDuration);
-  const [duration, setDuration] = useState( taskDuration|| ""); // Pre-populate with existing duration
+  const taskDuration = task.duration ? convertMinToDuration(task.duration) : "";
+  console.log("Duration: ", task.duration);
+  const [duration, setDuration] = useState(taskDuration || ""); // Pre-populate with existing duration
   const [selectedDate, setSelectedDate] = useState(task.deadline?.date || null); // Pre-populate with existing deadline date
   const [selectedTime, setSelectedTime] = useState(task.deadline?.time || null); // Pre-populate with existing deadline time
   const [location, setLocation] = useState(task.location || ""); // Pre-populate with existing location
@@ -50,7 +46,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   }, [task.isRecurring]);
 
   const handleSave = async (automate) => {
-    duration = convertDurationToMin(duration);
+    let duration = convertDurationToMin(duration); // Use let instead of const
     const updatedTask = {
       ...task,
       title: name,
@@ -65,18 +61,16 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
       frequency,
       selectedCategory: selectedCategory,
       tags,
-      type,
     };
 
-    if(automate)
+    if (automate) {
       onSaveAndAutomate(updatedTask);
-
-    else
+    } else {
       onSave(updatedTask);
+    }
 
     onClose();
   };
-
 
   const handleAddTag = () => {
     if (tagInput.trim() !== "") {
@@ -279,11 +273,11 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="contained" color="primary" onClick={handleSave(false)}>
+          <Button variant="contained" color="primary" onClick={() => handleSave(false)}>
             Save
           </Button>
           <Button
-            onClick={() => {handleSave(true)}}
+            onClick={() => handleSave(true)}
             variant="contained"
             color="secondary"
             size="small"
@@ -304,4 +298,4 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   );
 };
 
-export default EditTaskModal;
+export default EditTaskModal;

@@ -18,8 +18,10 @@ import { automateMonthOrDay } from "./api/automateMonthOrDay";
 
 const DayPage = () => {
   const location = useLocation();
-  const selectedDate = location.state?.selectedDate; // Access state from location
+  const initialSelectedDate = location.state?.selectedDate || new Date(); // Default to current date if not provided
+  const [selectedDate, setSelectedDate] = useState(initialSelectedDate);
   const token = localStorage.getItem('token');
+  
   // State to store fetched events
   const [events, setEvents] = useState([]);
   const [clickedEvent, setClickedEvent] = useState(null);
@@ -63,11 +65,9 @@ const DayPage = () => {
       console.error("Error deleting event:", error);
     }
   };
-  
 
   const fetchTasksAndEvents = async (date) => {
     try {
-      console.log(selectedDate)
       const formattedDate = new Date(date).toISOString().split('T')[0];
       const taskResponse = await axios.get(
         `${API_URL}/get_task_list/?date=${formattedDate}`,
@@ -124,6 +124,7 @@ const DayPage = () => {
         reminders: task.reminders,
         frequency: task.frequency,
         tags: task.tags,
+        type: task.item_type,
         status: task.status,
         backgroundColor: task.backgroundColor || '', // Use existing color or default
         borderColor: task.borderColor || '', // Use existing color or default
@@ -139,9 +140,7 @@ const DayPage = () => {
   };
 
   useEffect(() => {
-    if(selectedDate) {
     fetchTasksAndEvents(selectedDate); // fetch data when selectedDate changes
-  }
   }, [selectedDate]);
 
   const handleEventClick = (info) => {
@@ -170,7 +169,6 @@ const DayPage = () => {
       );
     }
   };
-  
 
   const handleEdit = () => {
     console.log('Edit clicked:', clickedEvent);
@@ -196,24 +194,23 @@ const DayPage = () => {
           headers: {
             Authorization: token
           }
-        }
-        );
+        });
       } else {
         apiUrl = `${API_URL}/update_task/${urlConcatStr}`;
         response = await sendUpdatedData(updatedEvent, token, apiUrl);
       }
       if (response.status === 200) {
-      // Remove event from current view if the date is changed
-      if (originalEvent.start !== updatedEvent.start) {
-        setEvents(events.filter(event => event.id !== updatedEvent.id));
-      } else {
-        setEvents(events.map(event => 
-          (event.id === updatedEvent.id ? updatedEventData : event)
-        ));
+        // Remove event from current view if the date is changed
+        if (originalEvent.start !== updatedEvent.start) {
+          setEvents(events.filter(event => event.id !== updatedEvent.id));
+        } else {
+          setEvents(events.map(event =>
+            (event.id === updatedEvent.id ? updatedEvent : event)
+          ));
+        }
+        setIsEditEventModalOpen(false);
+        setIsEditTaskModalOpen(false);
       }
-      setIsEditEventModalOpen(false);
-      setIsEditTaskModalOpen(false);
-    }
     } catch (error) {
       console.error('Error updating event:', error);
     }
@@ -229,8 +226,6 @@ const DayPage = () => {
   return (
     <div className="day-container">
       <div className="day-calendar-wrapper">
-        {" "}
-        {/* New wrapper div */}
         <FullCalendar
           plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
           initialView="timeGridDay"
@@ -241,6 +236,7 @@ const DayPage = () => {
           height="100%"
           eventClick={handleEventClick}
           events={events}
+          datesSet={(dateInfo) => setSelectedDate(dateInfo.start)} // Update selectedDate on date change
         />
       </div>
       <DayIconColumn
@@ -248,23 +244,23 @@ const DayPage = () => {
         handleAutomate={handleAutomate}
         handleDeleteDay={handleDelete}
       />
-       {(clickedEvent && isEditEventModalOpen) && (
-      <EditEventModal
-        open={isEditEventModalOpen}
-        onClose={() => setIsEditEventModalOpen(false)}
-        event={clickedEvent}
-        onSave={handleSave}        
-      />
-    )}
-    {(clickedEvent && isEditTaskModalOpen) && (
-      <EditTaskModal
-        open={isEditTaskModalOpen}
-        onClose={() => setIsEditTaskModalOpen(false)}
-        task={clickedEvent}
-        onSave={handleSave}
-        onSaveAndAutomate={handleSaveAndAutomate}
-      />
-    )}
+      {(clickedEvent && isEditEventModalOpen) && (
+        <EditEventModal
+          open={isEditEventModalOpen}
+          onClose={() => setIsEditEventModalOpen(false)}
+          event={clickedEvent}
+          onSave={handleSave}
+        />
+      )}
+      {(clickedEvent && isEditTaskModalOpen) && (
+        <EditTaskModal
+          open={isEditTaskModalOpen}
+          onClose={() => setIsEditTaskModalOpen(false)}
+          task={clickedEvent}
+          onSave={handleSave}
+          onSaveAndAutomate={handleSaveAndAutomate}
+        />
+      )}
     </div>
   );
 };
