@@ -12,6 +12,8 @@ import {
   MenuItem,
   Select,
   Chip,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddAlert from "./design/AddAlert";
@@ -32,6 +34,8 @@ const AddPage = () => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [alertMessage, setAlertMessage] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [message, setMessage] = useState("");
   const token = localStorage.getItem('token');
 
   const handleTagInput = (e) => {
@@ -66,8 +70,9 @@ const AddPage = () => {
 
   const handleSave = async (status) => {
     if (!name) {
-      // If name is empty, show an error message and return without saving
-      alert("Name is required.");
+      setMessage("Name is required");
+      setSnackbarOpen(true); // Show the snackbar alert
+      setTimeout(() => setSnackbarOpen(false), 5000);
       return;
     }
 
@@ -277,6 +282,11 @@ const AddPage = () => {
           Reset
         </Button>
       </div>
+      <Snackbar open={snackbarOpen} autoHideDuration={10000}>
+          <Alert severity="error" sx={{ width: '100%' }}>
+            {message}
+          </Alert>
+        </Snackbar>
     </div>
   );
 };

@@ -142,6 +142,7 @@ const DayPage = () => {
   }, [selectedDate]);
 
   const handleEventClick = (info) => {
+    console.log('Event clicked:', info.event);
     // If clicked event ID matches the currently selected one, deselect it
     if (clickedEventId === info.event.id) {
       setEvents(
@@ -169,6 +170,7 @@ const DayPage = () => {
   
 
   const handleEdit = () => {
+    console.log('Edit clicked:', clickedEvent);
     if (clickedEvent) {
       if (clickedEvent.allDay) {
         setIsEditTaskModalOpen(true);

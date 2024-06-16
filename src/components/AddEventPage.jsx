@@ -12,8 +12,9 @@ import {
   Select,
   Menu,
   Chip,
-  Snackbar,
   Alert,
+  Snackbar,
+
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
@@ -29,7 +30,7 @@ const AddEventPage = () => {
   const locationRef = useRef(null);
   const detailsRef = useRef(null);
   const [isRecurring, setIsRecurring] = useState(false);
-  const [frequency, setFrequency] = useState("");
+  const [frequency, setFrequency] = useState("once");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [tags, setTags] = useState([]); // State for tags
   const [reminder, setReminder] = useState(""); // State for reminder
@@ -38,6 +39,7 @@ const AddEventPage = () => {
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [alertMessage, setAlertMessage] = useState("");
+  const token = localStorage.getItem('token');
 
   const handleTagInput = (e) => {
     setTagInput(e.target.value);
@@ -151,20 +153,8 @@ const AddEventPage = () => {
       type: "event",
     };
 
-    try {
-      const response = await sendData(eventData);
-      setAlertSeverity("success");
-      setAlertMessage("Event saved successfully!");
-      setAlertOpen(true);
-    } catch (error) {
-      console.error("Error handling event save:", error);
-      setAlertSeverity("error");
-      setAlertMessage(
-        error.response.data.message ||
-          "Error saving event. Please try again later.",
-      );
-      setAlertOpen(true);
-    }
+    await saveAndAlert(eventData, setAlertSeverity, setAlertMessage, setAlertOpen, token);
+    handleReset();
   };
 
   return (
@@ -399,6 +389,11 @@ const AddEventPage = () => {
           Reset
         </Button>
       </div>
+      <Snackbar open={snackbarOpen} autoHideDuration={10000}>
+          <Alert severity="error" sx={{ width: '100%' }}>
+            {message}
+          </Alert>
+        </Snackbar>
     </div>
   );
 };

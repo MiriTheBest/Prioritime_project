@@ -4,16 +4,16 @@ import sendData from "../api/sendData";
 const saveAndAlert = async (formData, setAlertSeverity, setAlertMessage, setAlertOpen, token) => {
   try {
     let response;
-    if (formData.status === "pending") {
+    if (formData.status === "pending" || formData.type === "event") {
       response = await sendData(formData, token);
       setAlertSeverity("success");
-      setAlertMessage("Task saved successfully!");
+      setAlertMessage("Task/event saved successfully!");
     } else {
+      if(formData.status === "task") 
       response = await saveAutomateTask(formData, token);
       setAlertSeverity("success");
       setAlertMessage("Task saved and automated successfully!");
     }
-
     setAlertOpen(true);
 
     // Automatically close the alert after 5 seconds
