@@ -24,7 +24,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
     task = task.toPlainObject(settings);
   }
   const categories = ["personal", "home", "sport", "school", "work", "other"];
-  const [name, setName] = useState(task.title || ""); // State for name, pre-populated with existing name or empty string
+  const [name, setName] = useState(task.title || task.name); // State for name, pre-populated with existing name or empty string
   const [duration, setDuration] = useState(task.duration || ""); // Pre-populate with existing duration
 
   const [selectedDate, setSelectedDate] = useState(task.deadline?.date || null); // Pre-populate with existing deadline date
@@ -33,9 +33,9 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
   const [details, setDetails] = useState(task.description || ""); // Pre-populate with existing description
   const [isRecurring, setIsRecurring] = useState(task.isRecurring || false); // Initialize based on task property
   const [frequency, setFrequency] = useState(task.frequency || "");
-  const [selectedCategory, setSelectedCategory] = useState(() => {
-    if (task.selectedCategory && !categories.includes(task.selectedCategory)) {
-      return task.selectedCategory;
+  const [category, setCategory] = useState(() => {
+    if (task.category && !categories.includes(task.category)) {
+      return task.category;
     }
     return "";
   });
@@ -63,7 +63,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
       description: details,
       isRecurring,
       frequency,
-      selectedCategory,
+      category: category,
       tags,
     };
 
@@ -94,11 +94,11 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
 
   const handleCategoryChange = (event) => {
     const { value } = event.target;
-    setSelectedCategory(value);
+    setCategory(value);
 
     if (value === "other") {
       // Initialize custom category with current task's category if it's not one of the predefined ones
-      setCustomCategory(task.selectedCategory || "");
+      setCustomCategory(task.category || "");
     }
   };
 
@@ -117,12 +117,12 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 500,
+          width: 700,
           backgroundColor: "#f5f5f5",
           boxShadow: 24,
           p: 4,
           borderRadius: 10,
-          padding: 20,
+          padding: 30,
         }}
       >
         <Typography variant="h6" id="edit-task-modal-title">
@@ -212,7 +212,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
 
         <Select
           label="Category"
-          value={selectedCategory}
+          value={category}
           onChange={handleCategoryChange}
           placeholder="Select Category"
           fullWidth
@@ -226,13 +226,13 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
               {category}
             </MenuItem>
           ))}
-          {selectedCategory && !categories.includes(selectedCategory) && (
-            <MenuItem disabled value={selectedCategory}>
-              {selectedCategory} (Custom)
+          {category && !categories.includes(category) && (
+            <MenuItem disabled value={category}>
+              {category} (Custom)
             </MenuItem>
           )}
         </Select>
-        {selectedCategory === "other" && (
+        {category === "other" && (
           <TextField
             label="Custom Category"
             id="customCategory"
@@ -291,7 +291,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
           ))}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginLeft: 10 }}>
           <Button variant="contained" color="primary" onClick={() => handleSave(false)}>
             Save
           </Button>
