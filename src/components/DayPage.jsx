@@ -34,7 +34,7 @@ const DayPage = () => {
     try {
       await automateMonthOrDay(token, formattedDate);
       // Fetch updated event data after re-automation
-      await fetchTasksAndEvents();
+      await fetchTasksAndEvents(formattedDate);
     } catch (error) {
       console.error("Error re-automating month:", error);
     }
@@ -57,7 +57,7 @@ const DayPage = () => {
         const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");
         const urlConcatStr = createStringForUrl(clickedEvent, { ...clickedEvent, start: formattedStart });
         await deleteData(urlConcatStr, clickedEvent.type);
-        fetchTasksAndEvents();
+        fetchTasksAndEvents(selectedDate);
       }
     } catch (error) {
       console.error("Error deleting event:", error);
@@ -65,12 +65,12 @@ const DayPage = () => {
   };
   
 
-  const fetchTasksAndEvents = async () => {
+  const fetchTasksAndEvents = async (date) => {
     try {
       console.log(selectedDate)
-      const date = new Date(selectedDate).toISOString().split('T')[0];
+      const formattedDate = new Date(date).toISOString().split('T')[0];
       const taskResponse = await axios.get(
-        `${API_URL}/get_task_list/?date=${date}`,
+        `${API_URL}/get_task_list/?date=${formattedDate}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -81,7 +81,7 @@ const DayPage = () => {
       const taskData = taskResponse.data;
 
       const response = await axios.get(
-        `${API_URL}/get_schedule/${date}`,
+        `${API_URL}/get_schedule/${formattedDate}`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -115,6 +115,7 @@ const DayPage = () => {
       const allDayTasks = taskData.task_list.map(task => ({
         id: task._id,
         title: task.name, // Use task name for all-day display
+        duration: task.duration,
         allDay: true, // Mark as all-day task
         start: task.deadline, // Use deadline as start
         category: task.category,
@@ -138,7 +139,9 @@ const DayPage = () => {
   };
 
   useEffect(() => {
-    fetchTasksAndEvents(); // Call the function to fetch data when the component mounts
+    if(selectedDate) {
+    fetchTasksAndEvents(selectedDate); // fetch data when selectedDate changes
+  }
   }, [selectedDate]);
 
   const handleEventClick = (info) => {
@@ -197,7 +200,7 @@ const DayPage = () => {
         );
       } else {
         apiUrl = `${API_URL}/update_task/${urlConcatStr}`;
-        response = sendUpdatedData(updatedEvent, token, apiUrl);
+        response = await sendUpdatedData(updatedEvent, token, apiUrl);
       }
       if (response.status === 200) {
       // Remove event from current view if the date is changed
@@ -214,13 +217,13 @@ const DayPage = () => {
     } catch (error) {
       console.error('Error updating event:', error);
     }
-    fetchTasksAndEvents();
+    fetchTasksAndEvents(selectedDate);
   };
 
   const handleSaveAndAutomate = (updatedTask) => {
-    console.log('Save & Automate task:', updatedEvent);
+    console.log('Save & Automate task:', updatedTask);
     saveAutomateTask(updatedTask, token);
-    fetchTasksAndEvents();
+    fetchTasksAndEvents(selectedDate);
   };
 
   return (

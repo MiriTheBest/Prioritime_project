@@ -25,7 +25,10 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   task = task.toPlainObject(settings);
 
   const [name, setName] = useState(task.name || ""); // State for name, pre-populated with existing name or empty string
-  const taskDuration  = convertMinToDuration(task.duration);
+  const taskDuration = null;
+  if(task.duration) {
+    taskDuration  = convertMinToDuration(task.duration);
+  }
   console.log("Duration: ", taskDuration);
   const [duration, setDuration] = useState( taskDuration|| ""); // Pre-populate with existing duration
   const [selectedDate, setSelectedDate] = useState(task.deadline?.date || null); // Pre-populate with existing deadline date
