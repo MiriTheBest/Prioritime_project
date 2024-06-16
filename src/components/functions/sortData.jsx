@@ -35,7 +35,22 @@ export const sortTasksByTags = (tasks) => {
   // Function to check if a task has a specific tag
   const hasTag = (task, tag) => task.tags.includes(tag);
 
-  // Sort tasks with "important" tag first, then by name
+  // Function to count the number of shared tags between two tasks
+  const countSharedTags = (taskA, taskB) => {
+    const tagsA = new Set(taskA.tags);
+    const tagsB = new Set(taskB.tags);
+    let sharedCount = 0;
+
+    tagsA.forEach(tag => {
+      if (tagsB.has(tag)) {
+        sharedCount++;
+      }
+    });
+
+    return sharedCount;
+  };
+
+  // Sort tasks with "important" tag first, then by shared tags, then by name
   return tasks.slice().sort((a, b) => {
     const hasImportantTagA = hasTag(a, "important");
     const hasImportantTagB = hasTag(b, "important");
@@ -45,8 +60,16 @@ export const sortTasksByTags = (tasks) => {
     } else if (!hasImportantTagA && hasImportantTagB) {
       return 1; // Place task B before task A
     } else {
-      // If both tasks have the "important" tag or neither has it, sort by name
-      return a.name.localeCompare(b.name);
+      // If both tasks have the "important" tag or neither has it, sort by shared tags
+      const sharedTagsCountA = countSharedTags(a, b);
+      const sharedTagsCountB = countSharedTags(b, a);
+
+      if (sharedTagsCountA !== sharedTagsCountB) {
+        return sharedTagsCountB - sharedTagsCountA; // Place task with more shared tags first
+      } else {
+        // If the number of shared tags is the same, sort by name
+        return a.name.localeCompare(b.name);
+      }
     }
   });
 };
