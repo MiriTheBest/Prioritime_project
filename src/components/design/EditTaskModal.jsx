@@ -25,8 +25,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
   }
   const categories = ["personal", "home", "sport", "school", "work", "other"];
   const [name, setName] = useState(task.title || ""); // State for name, pre-populated with existing name or empty string
-  const taskDuration = task.duration ? convertMinToDuration(task.duration) : "";
-  const [duration, setDuration] = useState(taskDuration || ""); // Pre-populate with existing duration
+  const [duration, setDuration] = useState(task.duration || ""); // Pre-populate with existing duration
 
   const [selectedDate, setSelectedDate] = useState(task.deadline?.date || null); // Pre-populate with existing deadline date
   const [selectedTime, setSelectedTime] = useState(task.deadline?.time || null); // Pre-populate with existing deadline time
@@ -41,7 +40,6 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
     return "";
   });
   const [tags, setTags] = useState(task.tags || []);
-  const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
   
 

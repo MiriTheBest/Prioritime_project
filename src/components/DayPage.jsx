@@ -15,6 +15,7 @@ import dayjs from 'dayjs';
 import moment from 'moment';
 import sendUpdatedData from "./api/sendUpdatedData";
 import { automateMonthOrDay } from "./api/automateMonthOrDay";
+import { convertMinToDuration } from "./functions/convertMintoDuration";
 
 const DayPage = () => {
   const location = useLocation();
@@ -115,7 +116,7 @@ const DayPage = () => {
       const allDayTasks = taskData.task_list.map(task => ({
         id: task._id,
         title: task.name, // Use task name for all-day display
-        duration: task.duration,
+        duration: convertMinToDuration(task.duration) || '', // Convert duration using the function
         allDay: true, // Mark as all-day task
         start: task.deadline, // Use deadline as start
         category: task.category,
