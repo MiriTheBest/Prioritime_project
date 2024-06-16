@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import EditTaskModal from "./EditTaskModal"; // Assuming it's in the same directory
 
-const TaskCard = ({ task, onMarkDone, onSave, selected, onClick }) => {
+const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutomate }) => {
   // Assuming onSave prop is used for saving updated task
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -55,6 +55,8 @@ const TaskCard = ({ task, onMarkDone, onSave, selected, onClick }) => {
           onClose={() => setIsModalOpen(false)}
           task={task}
           onSave={onSave}
+          onSaveAndAutomate={onSaveAndAutomate}
+          isFromCalendar={false}
         />
       )}
     </Card>

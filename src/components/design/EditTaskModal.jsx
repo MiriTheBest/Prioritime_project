@@ -18,10 +18,12 @@ import AddIcon from "@mui/icons-material/Add";
 import { convertMinToDuration } from "../functions/convertMintoDuration";
 import { convertDurationToMin } from "../functions/convertDurationToMin";
 
-const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
-  const settings = { collapseExtendedProps: true };
-  task = task.toPlainObject(settings);
-
+const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromCalendar }) => {
+  if(isFromCalendar) {
+    const settings = { collapseExtendedProps: true };
+    task = task.toPlainObject(settings);
+  }
+  const categories = ["personal", "home", "sport", "school", "work", "other"];
   const [name, setName] = useState(task.title || ""); // State for name, pre-populated with existing name or empty string
   const taskDuration = task.duration ? convertMinToDuration(task.duration) : "";
   const [duration, setDuration] = useState(taskDuration || ""); // Pre-populate with existing duration
@@ -32,10 +34,16 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
   const [details, setDetails] = useState(task.description || ""); // Pre-populate with existing description
   const [isRecurring, setIsRecurring] = useState(task.isRecurring || false); // Initialize based on task property
   const [frequency, setFrequency] = useState(task.frequency || "");
-  const [selectedCategory, setSelectedCategory] = useState(task.selectedCategory || "");
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    if (task.selectedCategory && !categories.includes(task.selectedCategory)) {
+      return task.selectedCategory;
+    }
+    return "";
+  });
   const [tags, setTags] = useState(task.tags || []);
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
+  
 
   // Update isRecurring state if task.isRecurring changes
   useEffect(() => {
@@ -215,12 +223,16 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate }) => {
           sx={{ backgroundColor: "white", marginTop: "10px" }}
         >
           <MenuItem value="">Select Category</MenuItem>
-          <MenuItem value="personal">Personal</MenuItem>
-          <MenuItem value="home">Home</MenuItem>
-          <MenuItem value="sport">Sport</MenuItem>
-          <MenuItem value="school">School</MenuItem>
-          <MenuItem value="work">Work</MenuItem>
-          <MenuItem value="other">Other</MenuItem>
+          {categories.map((category) => (
+            <MenuItem key={category} value={category}>
+              {category}
+            </MenuItem>
+          ))}
+          {selectedCategory && !categories.includes(selectedCategory) && (
+            <MenuItem disabled value={selectedCategory}>
+              {selectedCategory} (Custom)
+            </MenuItem>
+          )}
         </Select>
         {selectedCategory === "other" && (
           <TextField

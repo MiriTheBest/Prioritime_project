@@ -20,6 +20,7 @@ import {
 } from "./functions/sortData";
 import { API_URL } from "./api/config";
 import axios from "axios";
+import { convertMinToDuration } from "./functions/convertMintoDuration";
 
 const TaskPage = () => {
   const [tasks, setTasks] = useState([]);
@@ -34,7 +35,6 @@ const TaskPage = () => {
   );
 
   useEffect(() => {
-    // Fetch tasks from API when component mounts
     const fetchTasks = async () => {
       try {
         const response = await axios.get(API_URL + "/get_task_list/", {
@@ -42,11 +42,15 @@ const TaskPage = () => {
             Authorization: token,
           },
         });
-        setTasks(response.data);
-        setLoading(false); // Update loading state once tasks are fetched
+        const tasksWithConvertedDuration = response.data.task_list.map(task => ({
+          ...task,
+          duration: convertMinToDuration(task.duration),
+        }));
+        setTasks(tasksWithConvertedDuration);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching tasks:", error);
-        setLoading(false); // Ensure loading state is updated in case of error
+        setLoading(false);
       }
     };
 
@@ -95,6 +99,23 @@ const TaskPage = () => {
       alert("Failed to update task");
     }
   };
+
+  const handleSaveAutomate = async (updatedTask) => {
+    try {
+      // Update the task on the server
+      const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
+      await sendUpdatedData(updatedTask, token, apiUrl);
+
+      // Update the task in the local state
+      setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
+      alert("Task updated successfully");
+    } catch (error) {
+      console.error("Error updating task:", error);
+      alert("Failed to update task");
+    }
+  };
+
+
 
   // Filter tasks based on search text and status
   const filteredTasks = tasks.filter(
@@ -233,9 +254,11 @@ const TaskPage = () => {
               task={task}
               onMarkDone={handleMarkDone}
               onSave={handleSave}
-              selected={selectedTasks.includes(task.id)}
+              selected={isSelectingForAutomation && selectedTasks.includes(task.id)}
               onClick={handleTaskClick}
+              onSaveAndAutomate={handleSaveAutomate}
             />
+
           </Grid>
         ))}
       </Grid>

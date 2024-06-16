@@ -262,6 +262,7 @@ const DayPage = () => {
           task={clickedEvent}
           onSave={handleSave}
           onSaveAndAutomate={handleSaveAndAutomate}
+          isFromCalendar={true}
         />
       )}
     </div>
