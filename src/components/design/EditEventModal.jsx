@@ -41,7 +41,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
   const [reminder, setReminder] = useState(event.reminders || "");
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
-
+  const [customCategory, setCustomCategory] = useState(task.category && !categories.includes(task.category) ? task.category : "");
   const [category, setCategory] = useState(() => {
     if (event.category && !categories.includes(event.category)) {
       setCustomCategory(event.category);

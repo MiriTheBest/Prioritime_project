@@ -17,6 +17,7 @@ import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 import AddIcon from "@mui/icons-material/Add";
 import { convertMinToDuration } from "../functions/convertMintoDuration";
 import { convertDurationToMin } from "../functions/convertDurationToMin";
+import dayjs from "dayjs";
 
 const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromCalendar }) => {
   if(isFromCalendar) {
