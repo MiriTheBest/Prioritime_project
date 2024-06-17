@@ -200,9 +200,9 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
         )}
         <Select
           label="Category"
-          value={selectedCategory}
+          value={category}
           placeholder="Select Category"
-          onChange={(e) => setSelectedCategory(e.target.value)}
+          onChange={(e) => setcategory(e.target.value)}
           fullWidth
           size="small"
           displayEmpty
@@ -216,7 +216,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
           <MenuItem value="work">Work</MenuItem>
           <MenuItem value="other">Other</MenuItem>
         </Select>
-        {selectedCategory === "other" && (
+        {category === "other" && (
           <TextField
             label="Custom Category"
             id="customCategory"
