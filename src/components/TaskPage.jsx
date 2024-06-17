@@ -44,6 +44,7 @@ const TaskPage = () => {
         });
         const tasksWithConvertedDuration = response.data.task_list.map(task => ({
           ...task,
+          id: task._id,
           duration: task.duration ? convertMinToDuration(task.duration) : "",
         }));
         setTasks(tasksWithConvertedDuration);
