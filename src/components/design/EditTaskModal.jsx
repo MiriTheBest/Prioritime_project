@@ -45,6 +45,10 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
   const [tags, setTags] = useState(task.tags || []);
   const [tagInput, setTagInput] = useState("");
 
+  // useEffect(() => {
+  //   setIsRecurring(task.isRecurring || false);
+  // }, [task.isRecurring]);
+
   // Function to combine date and time into a single string
   const formatDeadline = (date, time) => {
     if (!date || !time) return null;

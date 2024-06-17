@@ -17,14 +17,15 @@ import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
 import dayjs from "dayjs";
-import sendUpdatedData from "../api/sendUpdatedData";
 
 const EditEventModal = ({ open, onClose, event, onSave }) => {
   const settings = { collapseExtendedProps: true };
   event = event.toPlainObject(settings);
   console.log('event', event);
+
+  const categories = ["personal", "home", "sport", "school", "work", "other"];
+
   const [name, setName] = useState(event.title || "");
-  const [duration, setDuration] = useState(event.duration || "");
 
   const startDateTime = event.start ? dayjs(event.start) : new Date();
   const endDateTime = event.end ? dayjs(event.end) : new Date();
@@ -34,34 +35,37 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
 
   const [location, setLocation] = useState(event.location || "");
   const [details, setDetails] = useState(event.description || "");
-  const [isRecurring, setIsRecurring] = useState(false);
+  const [isRecurring, setIsRecurring] = useState((event.frequency != "Once") || false);
   const [frequency, setFrequency] = useState(event.frequency || "");
-  const [selectedCategory, setSelectedCategory] = useState(event.category || "");
   const [tags, setTags] = useState(event.tags || []);
   const [reminder, setReminder] = useState(event.reminders || "");
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
-  const [type, setType] = useState(event.type || "");
 
-  useEffect(() => {
-    setIsRecurring(event.isRecurring || false);
-  }, [event.isRecurring]);
+  const [category, setCategory] = useState(() => {
+    if (event.category && !categories.includes(event.category)) {
+      setCustomCategory(event.category);
+      return "other";
+    }
+    return event.category || "";
+  });
+
+  // useEffect(() => {
+  //   setIsRecurring(event.isRecurring || false);
+  // }, [event.isRecurring]);
 
   const handleSave = async () => {
     const updatedEvent = {
       ...event,
       title: name,
-      duration,
       start: dayjs(startDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"), // Removing timezone
       end: dayjs(endDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"),
-      location,
+      location: location,
       description: details,
-      isRecurring,
-      frequency,
-      category: selectedCategory,
-      tags,
+      frequency: isRecurring ? frequency : "Once",
+      category: category === "other" ? customCategory : category,
+      tags: tags,
       reminders: reminder,
-      type,
     };
 
     onSave(updatedEvent);
