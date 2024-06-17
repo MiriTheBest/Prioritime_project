@@ -18,6 +18,7 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import AddAlert from "./design/AddAlert";
 import { convertDurationToMin } from "./functions/convertDurationToMin";
+import dayjs from "dayjs";
 
 const AddPage = () => {
   const [name, setName] = useState("");
@@ -93,15 +94,14 @@ const AddPage = () => {
     }
 
     if (selectedDateTime) {
-      selectedDateTime = selectedDateTime.toISOString();
+      selectedDateTime = dayjs(startDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"); // Removing timezone
     }
 
     // Determine selected category based on custom input or predefined value
     const finalSelectedCategory = selectedCategory === "other" ? customCategory : selectedCategory;
-
     const taskData = {
       name,
-      selectedDateTime,
+      deadline:selectedDateTime,
       duration: durationInMin,
       location,
       details,

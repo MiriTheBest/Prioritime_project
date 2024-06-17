@@ -27,12 +27,13 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
   const [name, setName] = useState(task.title || task.name); // State for name, pre-populated with existing name or empty string
   const [duration, setDuration] = useState(task.duration || ""); // Pre-populate with existing duration
 
-  const [selectedDate, setSelectedDate] = useState(task.deadline?.date || null); // Pre-populate with existing deadline date
-  const [selectedTime, setSelectedTime] = useState(task.deadline?.time || null); // Pre-populate with existing deadline time
+  const [selectedDate, setSelectedDate] = useState(dayjs(task.deadline) || null); // Pre-populate with existing deadline date
+  const [selectedTime, setSelectedTime] = useState(dayjs(task.deadline) || null); // Pre-populate with existing deadline time
   const [location, setLocation] = useState(task.location || ""); // Pre-populate with existing location
   const [details, setDetails] = useState(task.description || ""); // Pre-populate with existing description
-  const [isRecurring, setIsRecurring] = useState(task.isRecurring || false); // Initialize based on task property
+  const [isRecurring, setIsRecurring] = useState((task.frequency != "Once") || false); // Initialize based on task property
   const [frequency, setFrequency] = useState(task.frequency || "");
+  const [customCategory, setCustomCategory] = useState(task.category && !categories.includes(task.category) ? task.category : "");
   const [category, setCategory] = useState(() => {
     if (task.category && !categories.includes(task.category)) {
       setCustomCategory(task.category);
@@ -40,33 +41,31 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
     }
     return task.category || "";
   });
-  const [customCategory, setCustomCategory] = useState(task.category && !categories.includes(task.category) ? task.category : "");
+  
   const [tags, setTags] = useState(task.tags || []);
   const [tagInput, setTagInput] = useState("");
-  
 
-  // Update isRecurring state if task.isRecurring changes
-  useEffect(() => {
-    setIsRecurring(task.isRecurring || false);
-  }, [task.isRecurring]);
+  // Function to combine date and time into a single string
+  const formatDeadline = (date, time) => {
+    if (!date || !time) return null;
+    const combined = `${date.format("YYYY-MM-DD")}T${time.format("HH:mm:ss")}`;
+    return combined;
+  };
 
   const handleSave = async (automate) => {
     let durationInMin = convertDurationToMin(duration);
+    const deadline = formatDeadline(selectedDate, selectedTime);
 
     const updatedTask = {
       ...task,
       title: name,
       duration: durationInMin,
-      deadline: {
-        date: selectedDate,
-        time: selectedTime,
-      },
-      location,
+      deadline: deadline,
+      location: location,
       description: details,
-      isRecurring,
-      frequency,
+      frequency: isRecurring ? frequency : "Once",
       category: category === "other" ? customCategory : category,
-      tags,
+      tags: tags,
     };
 
     if (automate) {
