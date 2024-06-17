@@ -41,7 +41,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
   const [reminder, setReminder] = useState(event.reminders || "");
   const [anchorEl, setAnchorEl] = useState(null);
   const [tagInput, setTagInput] = useState("");
-  const [customCategory, setCustomCategory] = useState(task.category && !categories.includes(task.category) ? task.category : "");
+  const [customCategory, setCustomCategory] = useState(event.category && !categories.includes(event.category) ? event.category : "");
   const [category, setCategory] = useState(() => {
     if (event.category && !categories.includes(event.category)) {
       setCustomCategory(event.category);
@@ -99,6 +99,15 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
 
   const handleTagInput = (event) => {
     setTagInput(event.target.value);
+  };
+
+  const handleCategoryChange = (event) => {
+    const { value } = event.target;
+    setCategory(value);
+
+    if (value !== "other") {
+      setCustomCategory("");
+    }
   };
 
   return (
@@ -202,7 +211,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
           label="Category"
           value={category}
           placeholder="Select Category"
-          onChange={(e) => setcategory(e.target.value)}
+          onChange={handleCategoryChange}
           fullWidth
           size="small"
           displayEmpty
