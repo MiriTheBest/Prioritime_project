@@ -285,14 +285,14 @@ const AddEventPage = () => {
           sx={{ backgroundColor: "white", marginTop: "10px" }}
         >
           <MenuItem value="">Select Category</MenuItem>
-          <MenuItem value="personal">Personal</MenuItem>
-          <MenuItem value="home">Home</MenuItem>
-          <MenuItem value="sport">Sport</MenuItem>
-          <MenuItem value="school">School</MenuItem>
-          <MenuItem value="work">Work</MenuItem>
-          <MenuItem value="other">Other</MenuItem>
+          <MenuItem value="Personal">Personal</MenuItem>
+          <MenuItem value="Home">Home</MenuItem>
+          <MenuItem value="Sport">Sport</MenuItem>
+          <MenuItem value="School">School</MenuItem>
+          <MenuItem value="Work">Work</MenuItem>
+          <MenuItem value="Other">Other</MenuItem>
         </Select>
-        {selectedCategory === "other" && (
+        {selectedCategory === "Other" && (
           <TextField
             label="Custom Category"
             id="customCategory"

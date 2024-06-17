@@ -23,7 +23,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
   event = event.toPlainObject(settings);
   console.log('event', event);
 
-  const categories = ["personal", "home", "sport", "school", "work", "other"];
+  const categories = ["Personal", "Home", "Sport", "School", "Work", "Other"];
 
   const [name, setName] = useState(event.title || "");
 
@@ -45,7 +45,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
   const [category, setCategory] = useState(() => {
     if (event.category && !categories.includes(event.category)) {
       setCustomCategory(event.category);
-      return "other";
+      return "Other";
     }
     return event.category || "";
   });
@@ -63,7 +63,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
       location: location,
       description: details,
       frequency: isRecurring ? frequency : "Once",
-      category: category === "other" ? customCategory : category,
+      category: category === "Other" ? customCategory : category,
       tags: tags,
       reminders: reminder,
     };
@@ -105,7 +105,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
     const { value } = event.target;
     setCategory(value);
 
-    if (value !== "other") {
+    if (value !== "Other") {
       setCustomCategory("");
     }
   };
@@ -218,18 +218,20 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
           sx={{ backgroundColor: "white", marginTop: "10px" }}
         >
           <MenuItem value="">Select Category</MenuItem>
-          <MenuItem value="personal">Personal</MenuItem>
-          <MenuItem value="home">Home</MenuItem>
-          <MenuItem value="sport">Sport</MenuItem>
-          <MenuItem value="school">School</MenuItem>
-          <MenuItem value="work">Work</MenuItem>
-          <MenuItem value="other">Other</MenuItem>
+          <MenuItem value="Personal">Personal</MenuItem>
+          <MenuItem value="Home">Home</MenuItem>
+          <MenuItem value="Sport">Sport</MenuItem>
+          <MenuItem value="School">School</MenuItem>
+          <MenuItem value="Work">Work</MenuItem>
+          <MenuItem value="Other">Other</MenuItem>
         </Select>
-        {category === "other" && (
+        {category === "Other" && (
           <TextField
             label="Custom Category"
             id="customCategory"
             name="customCategory"
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
             size="small"
             fullWidth
             sx={{ backgroundColor: "white" }}

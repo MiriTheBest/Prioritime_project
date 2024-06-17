@@ -24,7 +24,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
     const settings = { collapseExtendedProps: true };
     task = task.toPlainObject(settings);
   }
-  const categories = ["personal", "home", "sport", "school", "work", "other"];
+  const categories = ["Personal", "Home", "Sport", "School", "Work", "Other"];
   const [name, setName] = useState(task.title || task.name); // State for name, pre-populated with existing name or empty string
   const [duration, setDuration] = useState(task.duration || ""); // Pre-populate with existing duration
 
@@ -38,7 +38,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
   const [category, setCategory] = useState(() => {
     if (task.category && !categories.includes(task.category)) {
       setCustomCategory(task.category);
-      return "other";
+      return "Other";
     }
     return task.category || "";
   });
@@ -69,7 +69,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
       location: location,
       description: details,
       frequency: isRecurring ? frequency : "Once",
-      category: category === "other" ? customCategory : category,
+      category: category === "Other" ? customCategory : category,
       tags: tags,
     };
 
@@ -102,7 +102,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
     const { value } = event.target;
     setCategory(value);
 
-    if (value !== "other") {
+    if (value !== "Other") {
       setCustomCategory("");
     }
   };
@@ -235,7 +235,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
             </MenuItem>
           )}
         </Select>
-        {category === "other" && (
+        {category === "Other" && (
           <TextField
             label="Custom Category"
             id="customCategory"
