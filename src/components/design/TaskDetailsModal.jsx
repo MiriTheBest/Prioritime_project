@@ -4,24 +4,16 @@ import {
   Typography,
   TextField,
   Button,
-  FormControlLabel,
-  Checkbox,
-  MenuItem,
-  Select,
   Chip,
-} from "@mui/material";
+} from "@mui/material"; 
 
 const TaskDetailsModal = ({ open, onClose, task }) => {
   const categories = ["Personal", "Home", "Sport", "School", "Work", "Other"];
 
-  const handleClose = () => {
-    onClose();
-  };
-
   return (
     <Modal
       open={open}
-      onClose={handleClose}
+      onClose={onClose}
       aria-labelledby="task-details-modal-title"
       aria-describedby="task-details-modal-content"
     >
@@ -34,40 +26,109 @@ const TaskDetailsModal = ({ open, onClose, task }) => {
           width: 600,
           backgroundColor: "#f5f5f5",
           boxShadow: 24,
-          padding: 30,
-          border: "4px solid #0AA1DD", // Custom wide border
+          p: 4,
           borderRadius: 10,
-          padding: 30, 
+          padding: 30,
         }}
       >
         <Typography variant="h6" id="task-details-modal-title">
           Task Details
         </Typography>
-        <div style={{ marginBottom: 20 }}>
-          <img
-            src="images/wave-border.png"
-            alt="Wave Border"
-            style={{ width: "100%", height: "auto", borderRadius: 5 }}
+        <TextField
+          label="Name"
+          id="name"
+          value={task.name}
+          fullWidth
+          margin="normal"
+          size="small"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          label="Duration"
+          id="duration"
+          value={task.duration}
+          fullWidth
+          margin="normal"
+          size="small"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          label="Deadline"
+          id="deadline"
+          value={task.deadline}
+          fullWidth
+          margin="normal"
+          size="small"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          label="Location"
+          id="location"
+          value={task.location}
+          fullWidth
+          margin="normal"
+          size="small"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          label="Description"
+          id="description"
+          value={task.description}
+          multiline
+          rows={3}
+          fullWidth
+          margin="normal"
+          size="small"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        <TextField
+          label="Category"
+          id="category"
+          value={categories.includes(task.category) ? task.category : "Other"}
+          fullWidth
+          margin="normal"
+          size="small"
+          InputProps={{
+            readOnly: true,
+          }}
+        />
+        {task.category && !categories.includes(task.category) && (
+          <TextField
+            label="Custom Category"
+            id="customCategory"
+            value={task.category}
+            fullWidth
+            margin="normal"
+            size="small"
+            InputProps={{
+              readOnly: true,
+            }}
           />
+        )}
+        <div>
+          {task.tags.map((tag, index) => (
+            <Chip
+              key={index}
+              label={`#${tag}`}
+              style={{ marginRight: "5px", backgroundColor: "#79DAE8" }}
+            />
+          ))}
         </div>
-        <Typography variant="subtitle1">Name: {task.name}</Typography>
-        <Typography variant="body1">Duration: {task.duration}</Typography>
-        <Typography variant="body1">Category: {task.category}</Typography>
-        <Typography variant="body1">Location: {task.location}</Typography>
-        <Typography variant="body1">Details: {task.description}</Typography>
-        <Typography variant="body1">
-          Deadline: {task.deadline ? new Date(task.deadline).toLocaleString() : "Not specified"}
-        </Typography>
-        <Typography variant="body1">Recurring: {task.frequency}</Typography>
-        <Typography variant="body1">Tags: {task.tags.join(", ")}</Typography>
-        <Button
-          variant="outlined"
-          color="secondary"
-          style={{ marginTop: 20 }}
-          onClick={handleClose}
-        >
-          Close
-        </Button>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "10px" }}>
+          <Button variant="contained" onClick={onClose}>
+            Close
+          </Button>
+        </div>
       </div>
     </Modal>
   );
