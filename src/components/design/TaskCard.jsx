@@ -6,8 +6,8 @@ import {
   CardMedia,
   Typography,
   Button,
-  Modal,
 } from "@mui/material";
+import EditTaskModal from "./EditTaskModal";
 import TaskDetailsModal from "./TaskDetailsModal";
 
 const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutomate }) => {
@@ -50,7 +50,7 @@ const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutoma
       <Button size="small" onClick={handleShowDetailsModal} style={{ color: "#0AA1DD" }}>
           Show
         </Button>
-        
+
         <Button size="small" onClick={handleOpenEditModal}>
           Edit
         </Button>
