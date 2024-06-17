@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
   Chip,
-} from "@mui/material";
+} from "@mui/material"; 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -35,10 +35,12 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
   const [frequency, setFrequency] = useState(task.frequency || "");
   const [category, setCategory] = useState(() => {
     if (task.category && !categories.includes(task.category)) {
-      return task.category;
+      setCustomCategory(task.category);
+      return "other";
     }
-    return "";
+    return task.category || "";
   });
+  const [customCategory, setCustomCategory] = useState(task.category && !categories.includes(task.category) ? task.category : "");
   const [tags, setTags] = useState(task.tags || []);
   const [tagInput, setTagInput] = useState("");
   
@@ -63,7 +65,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
       description: details,
       isRecurring,
       frequency,
-      category: category,
+      category: category === "other" ? customCategory : category,
       tags,
     };
 
@@ -96,13 +98,10 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
     const { value } = event.target;
     setCategory(value);
 
-    if (value === "other") {
-      // Initialize custom category with current task's category if it's not one of the predefined ones
-      setCustomCategory(task.category || "");
+    if (value !== "other") {
+      setCustomCategory("");
     }
   };
-
-  const [customCategory, setCustomCategory] = useState("");
 
   return (
     <Modal
@@ -291,12 +290,13 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
           ))}
         </div>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", marginLeft: 10 }}>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
           <Button variant="contained" color="primary" onClick={() => handleSave(false)}>
             Save
           </Button>
           <Button
             onClick={() => handleSave(true)}
+            style={{ marginLeft: 10 }}
             variant="contained"
             color="secondary"
             size="small"
@@ -317,4 +317,4 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
   );
 };
 
-export default EditTaskModal;
+export default EditTaskModal;

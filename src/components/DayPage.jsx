@@ -99,9 +99,9 @@ const DayPage = () => {
           title: item.name,
           start: item.start_time,
           end: item.end_time,
-          duration: item.duration,
+          extendedProps: {duration: item.duration},
           category: item.category,
-          description: item.details,
+          description: item.description,
           location: item.location,
           frequency: item.frequency,
           reminders: item.reminders,
@@ -116,12 +116,12 @@ const DayPage = () => {
       const allDayTasks = taskData.task_list.map(task => ({
         id: task._id,
         title: task.name, // Use task name for all-day display
-        duration: convertMinToDuration(task.duration) || '', // Convert duration using the function
+        extendedProps: {duration: convertMinToDuration(task.duration) || ''}, // Convert duration using the function
         allDay: true, // Mark as all-day task
         start: task.deadline, // Use deadline as start
         category: task.category,
         location: task.location,
-        description: task.details,
+        description: task.description,
         reminders: task.reminders,
         frequency: task.frequency,
         tags: task.tags,
