@@ -37,9 +37,21 @@ export const sortTasksByTags = (tasks) => {
     return group.slice().sort((a, b) => a.name.localeCompare(b.name));
   };
 
+  // Separate tasks with tags and tasks without tags
+  const tasksWithTags = [];
+  const tasksWithoutTags = [];
+  
+  tasks.forEach((task) => {
+    if (task.tags && task.tags.length > 0) {
+      tasksWithTags.push(task);
+    } else {
+      tasksWithoutTags.push(task);
+    }
+  });
+
   // Create a map to group tasks by their tags
   const tagGroups = {};
-  tasks.forEach((task) => {
+  tasksWithTags.forEach((task) => {
     task.tags.forEach((tag) => {
       if (!tagGroups[tag]) {
         tagGroups[tag] = [];
@@ -69,6 +81,9 @@ export const sortTasksByTags = (tasks) => {
     }
   });
 
-  return uniqueTasks;
+  // Append tasks without tags to the end
+  const sortedTasksWithUntagged = uniqueTasks.concat(tasksWithoutTags);
+
+  return sortedTasksWithUntagged;
 };
 

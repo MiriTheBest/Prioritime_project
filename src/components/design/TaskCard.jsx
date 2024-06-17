@@ -6,12 +6,13 @@ import {
   CardMedia,
   Typography,
   Button,
+  Modal,
 } from "@mui/material";
-import EditTaskModal from "./EditTaskModal"; // Assuming it's in the same directory
+import TaskDetailsModal from "./TaskDetailsModal";
 
 const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutomate }) => {
-  // Assuming onSave prop is used for saving updated task
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
   const handleOpenEditModal = () => {
     setIsModalOpen(true);
@@ -19,6 +20,14 @@ const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutoma
 
   const handleMarkDone = () => {
     onMarkDone(task); // Call the provided onMarkDone prop to handle status change
+  };
+
+  const handleShowDetailsModal = () => {
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseDetailsModal = () => {
+    setIsDetailsModalOpen(false);
   };
 
   return (
@@ -38,14 +47,15 @@ const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutoma
         <Typography variant="body2">{task.description}</Typography>
       </CardContent>
       <CardActions>
+      <Button size="small" onClick={handleShowDetailsModal} style={{ color: "#0AA1DD" }}>
+          Show
+        </Button>
+        
         <Button size="small" onClick={handleOpenEditModal}>
           Edit
         </Button>
-        <Button
-          size="small"
-          style={{ color: "#CA4E79" }}
-          onClick={handleMarkDone}
-        >
+        
+        <Button size="small" onClick={handleMarkDone} style={{ color: "#CA4E79" }}>
           Done
         </Button>
       </CardActions>
@@ -57,6 +67,13 @@ const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutoma
           onSave={onSave}
           onSaveAndAutomate={onSaveAndAutomate}
           isFromCalendar={false}
+        />
+      )}
+      {isDetailsModalOpen && (
+        <TaskDetailsModal
+          open={isDetailsModalOpen}
+          onClose={handleCloseDetailsModal}
+          task={task}
         />
       )}
     </Card>
