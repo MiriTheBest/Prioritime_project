@@ -60,7 +60,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
     }
   };
 
-  const handleAddActivity = () => {
+  const handleAddActivity = async () => {
     if (!newActivity.name) {
            setSnackbarMessage("Name is required!");
            setSnackbarSeverity("error");
@@ -89,7 +89,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
       updatedActivities = [...activities, newActivity];
     }
     setActivities(updatedActivities);
-    savePreferences();
+    await savePreferences();
     setNewActivity({ name: "", duration: "", daytime: "morning", days: [] });
   };
 
