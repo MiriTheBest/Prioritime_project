@@ -9,6 +9,8 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Chip from "@mui/material/Chip";
 import { MenuItem, Select, Checkbox, FormControlLabel } from "@mui/material";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
@@ -291,7 +293,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
             Add
           </Button>
         </Box>
-
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
         <Box display="flex" flexDirection="column" mb={2}>
           <h3>Day Configuration</h3>
           <TimePicker
@@ -307,7 +309,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
             renderInput={(params) => <TextField {...params} />}
           />
         </Box>
-
+        </LocalizationProvider>
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
