@@ -46,10 +46,10 @@ const PreferencesModal = ({ open, onClose, token }) => {
           Authorization: token
         }
       });
-      setActivities(response.data.activities);
-      setDaysOff(response.data.daysOff);
-      setStartOfDay(response.data.startOfDay);
-      setEndOfDay(response.data.endOfDay);
+      setActivities(response.data.preferences);
+      setDaysOff(response.data.days_off);
+      setStartOfDay(response.data.star_time);
+      setEndOfDay(response.data.end_time);
     } catch (error) {
       console.error("Error fetching preferences:", error);
     }

@@ -238,7 +238,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
             onChange={(e) => setCustomCategory(e.target.value)}
             size="small"
             fullWidth
-            sx={{ backgroundColor: "white", marginT }}
+            sx={{ backgroundColor: "white", marginTop: "10 px" }}
           />
         )}
         <TextField
