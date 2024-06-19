@@ -5,11 +5,16 @@ import { API_URL } from "./api/config";
 import { automateMonthOrDay } from "./api/automateMonthOrDay";
 import axios from "axios";
 import moment from "moment";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const MonthPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [eventList, setEventData] = useState([]);
   const [currentYearMonth, setCurrentYearMonth] = useState(moment().format("YYYY-MM"));
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("success");
+  const [alertMessage, setAlertMessage] = useState("");
   const token = localStorage.getItem('token');
 
   const fetchEventData = async (yearMonth) => {
@@ -54,8 +59,14 @@ const MonthPage = () => {
       await automateMonthOrDay(token, currentYearMonth);
       // Fetch updated event data after re-automation
       await fetchEventData(currentYearMonth);
+      setAlertSeverity("success");
+      setAlertMessage("Month re-automated successfully.");
+      setAlertOpen(true);
     } catch (error) {
       console.error("Error re-automating month:", error);
+      setAlertSeverity("error");
+      setAlertMessage("Failed to re-automate month.");
+      setAlertOpen(true);
     }
   };
 
@@ -72,8 +83,14 @@ const MonthPage = () => {
         }
       );
       console.log(response.data);
+      setAlertSeverity("success");
+      setAlertMessage("Day off status updated successfully.");
+      setAlertOpen(true);
     } catch (error) {
       console.error("Error setting day off:", error);
+      setAlertSeverity("error");
+      setAlertMessage("Failed to set day off.");
+      setAlertOpen(true);
     }
   };
 
@@ -84,7 +101,15 @@ const MonthPage = () => {
       setDayOff(selectedDate, newDayOffStatus).then(() => {
         fetchEventData(currentYearMonth); // Refresh the data to update UI
       });
+    } else {
+      setAlertSeverity("error");
+      setAlertMessage("Please select a date first.");
+      setAlertOpen(true);
     }
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
   };
 
   const cellRender = (date, mode) => {
@@ -135,7 +160,21 @@ const MonthPage = () => {
         handleSetDayOff={handleSetDayOff}
         handleReAutomate={handleReAutomate}
         selectedDate={selectedDate}
+        setAlertSeverity={setAlertSeverity}
+        setAlertMessage={setAlertMessage}
+        setAlertOpen={setAlertOpen}
       />
+
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={5000}
+        onClose={handleAlertClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleAlertClose} severity={alertSeverity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

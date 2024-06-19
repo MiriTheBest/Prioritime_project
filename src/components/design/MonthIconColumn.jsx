@@ -11,6 +11,9 @@ const MonthIconColumn = ({
   handleSetDayOff,
   handleReAutomate,
   selectedDate,
+  setAlertSeverity,
+  setAlertMessage,
+  setAlertOpen
 }) => {
   const [isDayOffModalOpen, setIsDayOffModalOpen] = useState(false);
   const [isReAutomateModalOpen, setIsReAutomateModalOpen] = useState(false);
@@ -27,10 +30,11 @@ const MonthIconColumn = ({
   const handleEditClick = () => {
     if (selectedDate) {
       console.log("Selected date:", selectedDate);
-      // Navigate to DayPage with the selected date as a prop (replace with your navigation logic)
-      navigate(`/day`, { state: { selectedDate } }); // Using useNavigate with state
+      navigate(`/day`, { state: { selectedDate } });
     } else {
-      alert("Please select a date first.");
+      setAlertSeverity("error");
+      setAlertMessage("Please select a date first.");
+      setAlertOpen(true);
     }
   };
 

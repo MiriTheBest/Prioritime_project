@@ -7,6 +7,8 @@ import {
   Menu,
   MenuItem,
   Button,
+  Alert,
+  Snackbar,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from "@mui/icons-material/Sort";
@@ -23,6 +25,10 @@ import axios from "axios";
 import { convertMinToDuration } from "./functions/convertMintoDuration";
 
 const TaskPage = () => {
+  const [alertOpen, setAlertOpen] = useState(false);
+  const [alertSeverity, setAlertSeverity] = useState("success");
+  const [alertMessage, setAlertMessage] = useState("");
+
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true); // State to manage loading status
   const token = localStorage.getItem("token");
@@ -51,6 +57,9 @@ const TaskPage = () => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching tasks:", error);
+        setAlertSeverity("error");
+        setAlertMessage("Error fetching tasks");
+        setAlertOpen(true);
         setLoading(false);
       }
     };
@@ -68,6 +77,7 @@ const TaskPage = () => {
 
   const handleSortChange = (method) => {
     setSortMethod(method); // Update the sortMethod state
+    setSortAnchorEl(null);
   };
 
   const handleMarkDone = async (task) => {
@@ -78,10 +88,14 @@ const TaskPage = () => {
       await axios.delete(url);
       // Update the local state to remove the deleted task
       setTasks(tasks.filter((t) => t.id !== task.id));
-      alert("Task deleted successfully");
+      setAlertSeverity("success");
+      setAlertMessage("Task deleted successfully");
+      setAlertOpen(true);
     } catch (error) {
       console.error("Error deleting task:", error);
-      alert("Failed to delete task");
+      setAlertSeverity("error");
+      setAlertMessage("Failed to delete task");
+      setAlertOpen(true);
     }
     fetchTasks();
   };
@@ -94,10 +108,14 @@ const TaskPage = () => {
 
       // Update the task in the local state
       setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
-      alert("Task updated successfully");
+      setAlertSeverity("success");
+      setAlertMessage("Task updated successfully");
+      setAlertOpen(true);
     } catch (error) {
       console.error("Error updating task:", error);
-      alert("Failed to update task");
+      setAlertSeverity("error");
+      setAlertMessage("Failed to update task");
+      setAlertOpen(true);
     }
   };
 
@@ -109,14 +127,16 @@ const TaskPage = () => {
 
       // Update the task in the local state
       setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
-      alert("Task updated successfully");
+      setAlertSeverity("success");
+      setAlertMessage("Task updated successfully");
+      setAlertOpen(true);
     } catch (error) {
       console.error("Error updating task:", error);
-      alert("Failed to update task");
+      setAlertSeverity("error");
+      setAlertMessage("Failed to update task");
+      setAlertOpen(true);
     }
   };
-
-
 
   // Filter tasks based on search text and status
   const filteredTasks = tasks.filter(
@@ -154,14 +174,20 @@ const TaskPage = () => {
         // If already selecting and there are selected tasks
         try {
           await axios.post(API_URL + "/automate_task", { tasks: selectedTasks });
-          alert("Tasks sent for automation");
+          setAlertSeverity("success");
+          setAlertMessage("Tasks sent for automation");
+          setAlertOpen(true);
           setSelectedTasks([]); // Clear selected tasks after sending
         } catch (error) {
           console.error("Error sending tasks for automation", error);
-          alert("Failed to send tasks for automation");
+          setAlertSeverity("error");
+          setAlertMessage("Failed to send tasks for automation");
+          setAlertOpen(true);
         }
       } else {
-        alert("Please select at least one task to automate.");
+        setAlertSeverity("error");
+        setAlertMessage("Please select at least one task to automate.");
+        setAlertOpen(true);
       }
     }
     setIsSelectingForAutomation(!isSelectingForAutomation);
@@ -181,6 +207,10 @@ const TaskPage = () => {
     }
     setSelectedTasks(newSelectedTasks);
     console.log("Selected tasks: ", newSelectedTasks);
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
   };
 
   if (loading) {
@@ -263,6 +293,16 @@ const TaskPage = () => {
           </Grid>
         ))}
       </Grid>
+      <Snackbar
+        open={alertOpen}
+        autoHideDuration={5000}
+        onClose={handleAlertClose}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <Alert onClose={handleAlertClose} severity={alertSeverity} sx={{ width: '100%' }}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
