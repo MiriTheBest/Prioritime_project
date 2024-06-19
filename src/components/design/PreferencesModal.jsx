@@ -48,18 +48,6 @@ const PreferencesModal = ({ open, onClose, token }) => {
     }
   };
 
-  const savePreferences = async () => {
-    try {
-      await axios.post(API_URL + '/update_preferences', {preferences: activities, daysOff,}, {
-        headers: {
-          Authorization: token
-        }
-      });
-    } catch (error) {
-      console.error("Error saving preferences:", error);
-    }
-  };
-
   const handleAddActivity = async () => {
     if (!newActivity.name) {
            setSnackbarMessage("Name is required!");
@@ -124,6 +112,20 @@ const PreferencesModal = ({ open, onClose, token }) => {
       ? newActivity.days.filter((day) => day !== dayIndex)
       : [...newActivity.days, dayIndex];
     setNewActivity({ ...newActivity, days: updatedDays });
+  };
+
+  const savePreferences = async () => {
+    try {
+      await axios.post(API_URL + '/update_preferences', {
+        preferences: activities, 
+        days_off: daysOff,}, {
+        headers: {
+          Authorization: token
+        }
+      });
+    } catch (error) {
+      console.error("Error saving preferences:", error);
+    }
   };
 
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
