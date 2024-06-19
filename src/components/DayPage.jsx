@@ -16,6 +16,7 @@ import moment from 'moment';
 import sendUpdatedData from "./api/sendUpdatedData";
 import { automateMonthOrDay } from "./api/automateMonthOrDay";
 import { convertMinToDuration } from "./functions/convertMintoDuration";
+import { Alert, Snackbar } from "@mui/material";
 
 const DayPage = () => {
   const location = useLocation();
@@ -31,6 +32,8 @@ const DayPage = () => {
   // State to control the visibility of the modals
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
   const [isEditEventModalOpen, setIsEditEventModalOpen] = useState(false);
+
+  const [alertOpen, setAlertOpen] = useState(false); // State to control alert visibility
 
   const handleAutomate = async () => {
     const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
@@ -48,7 +51,6 @@ const DayPage = () => {
     if (clickedEvent.allDay) {
       idOrIdDateString = clickedEvent.id;
     } else {
-      //const startDateString = clickedEvent.start.toISOString().split("T")[0];
       idOrIdDateString = `${clickedEvent.id}/${originalEvent.start}`;
     }
     return idOrIdDateString;
@@ -64,6 +66,23 @@ const DayPage = () => {
       }
     } catch (error) {
       console.error("Error deleting event:", error);
+    }
+  };
+
+  const handleAutomateTask = async () => {
+    try {
+      if (clickedEvent) {
+        if (clickedEvent.allDay) {
+          const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");
+          const urlConcatStr = createStringForUrl(clickedEvent, { ...clickedEvent, start: formattedStart });
+          await deleteData(urlConcatStr, clickedEvent.type);
+          fetchTasksAndEvents(selectedDate);
+        } else {
+          setAlertOpen(true);
+        }
+      }
+    } catch (error) {
+      console.error("Error automating task:", error);
     }
   };
 
@@ -224,6 +243,10 @@ const DayPage = () => {
     fetchTasksAndEvents(selectedDate);
   };
 
+  const handleCloseAlert = () => {
+    setAlertOpen(false);
+  };
+
   return (
     <div className="day-container">
       <div className="day-calendar-wrapper">
@@ -247,6 +270,7 @@ const DayPage = () => {
         handleEdit={handleEdit}
         handleAutomate={handleAutomate}
         handleDeleteDay={handleDelete}
+        handleAutomateTask={handleAutomateTask}
       />
       {(clickedEvent && isEditEventModalOpen) && (
         <EditEventModal
@@ -266,6 +290,11 @@ const DayPage = () => {
           isFromCalendar={true}
         />
       )}
+      <Snackbar open={alertOpen} autoHideDuration={5000} onClose={handleCloseAlert}>
+        <Alert onClose={handleCloseAlert} severity="error">
+          This task/event is already scheduled.
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

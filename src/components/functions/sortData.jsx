@@ -31,6 +31,15 @@ export const sortTasksByDuration = (tasks) => {
   });
 };
 
+export const sortTasksByDeadline = (tasks) => {
+  return tasks.slice().sort((a, b) => {
+    const dateA = new Date(a.deadline);
+    const dateB = new Date(b.deadline);
+    return dateA - dateB;
+  });
+};
+
+
 export const sortTasksByTags = (tasks) => {
   // Helper function to sort tasks within the same tag group
   const sortTasksWithinGroup = (group) => {

@@ -18,7 +18,7 @@ import AddIcon from "@mui/icons-material/Add";
 import { convertDurationToMin } from "../functions/convertDurationToMin";
 import dayjs from "dayjs";
 
-const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromCalendar }) => {
+const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
   if(isFromCalendar) {
     const settings = { collapseExtendedProps: true };
     task = task.toPlainObject(settings);
@@ -56,7 +56,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
     return combined;
   };
 
-  const handleSave = async (automate) => {
+  const handleSave = async () => {
     let durationInMin = convertDurationToMin(duration);
     const deadline = formatDeadline(selectedDate, selectedTime);
 
@@ -71,13 +71,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
       category: category === "Other" ? customCategory : category,
       tags: tags,
     };
-
-    if (automate) {
-      onSaveAndAutomate(updatedTask);
-    } else {
-      onSave(updatedTask);
-    }
-
+    
+    onSave(updatedTask);
     onClose();
   };
 
@@ -243,7 +238,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
             onChange={(e) => setCustomCategory(e.target.value)}
             size="small"
             fullWidth
-            sx={{ backgroundColor: "white" }}
+            sx={{ backgroundColor: "white", marginT }}
           />
         )}
         <TextField
@@ -294,17 +289,8 @@ const EditTaskModal = ({ open, onClose, task, onSave, onSaveAndAutomate, isFromC
         </div>
 
         <div style={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button variant="contained" color="primary" onClick={() => handleSave(false)}>
+          <Button variant="contained" color="primary" onClick={() => handleSave()}>
             Save
-          </Button>
-          <Button
-            onClick={() => handleSave(true)}
-            style={{ marginLeft: 10 }}
-            variant="contained"
-            color="secondary"
-            size="small"
-          >
-            Save & Automate
           </Button>
           <Button
             variant="outlined"

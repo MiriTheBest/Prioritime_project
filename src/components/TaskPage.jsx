@@ -18,6 +18,7 @@ import {
   sortTasksByName,
   sortTasksByCategory,
   sortTasksByDuration,
+  sortTasksByDeadline,
   sortTasksByTags,
 } from "./functions/sortData";
 import { API_URL } from "./api/config";
@@ -119,25 +120,6 @@ const TaskPage = () => {
     }
   };
 
-  const handleSaveAutomate = async (updatedTask) => {
-    try {
-      // Update the task on the server
-      const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
-      await sendUpdatedData(updatedTask, token, apiUrl);
-
-      // Update the task in the local state
-      setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
-      setAlertSeverity("success");
-      setAlertMessage("Task updated successfully");
-      setAlertOpen(true);
-    } catch (error) {
-      console.error("Error updating task:", error);
-      setAlertSeverity("error");
-      setAlertMessage("Failed to update task");
-      setAlertOpen(true);
-    }
-  };
-
   // Filter tasks based on search text and status
   const filteredTasks = tasks.filter(
     (task) =>
@@ -160,6 +142,9 @@ const TaskPage = () => {
       break;
     case "duration":
       sortedTasks = sortTasksByDuration(sortedTasks);
+      break;
+    case "deadline":
+      sortedTasks = sortTasksByDeadline(sortedTasks);
       break;
     case "tags":
       sortedTasks = sortTasksByTags(sortedTasks);
@@ -261,6 +246,9 @@ const TaskPage = () => {
             <MenuItem onClick={() => handleSortChange("duration")}>
               Sort by Duration
             </MenuItem>
+            <MenuItem onClick={() => handleSortChange("deadline")}>
+              Sort by Deadline
+            </MenuItem>
             <MenuItem onClick={() => handleSortChange("tags")}>
               Sort by Tags
             </MenuItem>
@@ -287,7 +275,6 @@ const TaskPage = () => {
               onSave={handleSave}
               selected={isSelectingForAutomation && selectedTasks.includes(task.id)}
               onClick={handleTaskClick}
-              onSaveAndAutomate={handleSaveAutomate}
             />
 
           </Grid>

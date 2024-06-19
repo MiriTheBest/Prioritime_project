@@ -3,15 +3,6 @@ import { Alert } from "@mui/material";
 
 const AddAlert = ({ open, severity, message }) => {
   const [alertOpen, setAlertOpen] = useState(open);
-/*
-  useEffect(() => {
-    setAlertOpen(open);
-    if (open) {
-      setTimeout(() => {
-        setAlertOpen(false);
-      }, 5000);
-    }
-  }, [open]); */
 
   return (
     <Alert

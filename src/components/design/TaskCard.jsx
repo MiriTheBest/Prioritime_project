@@ -10,7 +10,7 @@ import {
 import EditTaskModal from "./EditTaskModal";
 import TaskDetailsModal from "./TaskDetailsModal";
 
-const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutomate }) => {
+const TaskCard = ({ task, onMarkDone, onSave, selected, onClick }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
 
@@ -65,7 +65,6 @@ const TaskCard = ({ task, onMarkDone, onSave, selected, onClick, onSaveAndAutoma
           onClose={() => setIsModalOpen(false)}
           task={task}
           onSave={onSave}
-          onSaveAndAutomate={onSaveAndAutomate}
           isFromCalendar={false}
         />
       )}

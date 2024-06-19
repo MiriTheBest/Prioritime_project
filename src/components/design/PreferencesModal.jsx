@@ -9,6 +9,9 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Chip from "@mui/material/Chip";
 import { MenuItem, Select, Checkbox, FormControlLabel } from "@mui/material";
+import { TimePicker } from "@mui/x-date-pickers";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { API_URL } from "../api/config";
 
 const PreferencesModal = ({ open, onClose, token }) => {
@@ -17,11 +20,16 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const [newActivity, setNewActivity] = useState({
     name: "",
     duration: "",
-    timeOfDay: "morning",
+    daytime: "morning",
     days: []
   });
   const [editIndex, setEditIndex] = useState(-1);
   const [newDayOff, setNewDayOff] = useState("");
+  const [startOfDay, setStartOfDay] = useState("");
+  const [endOfDay, setEndOfDay] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
 
   useEffect(() => {
     if (open) {
@@ -38,6 +46,8 @@ const PreferencesModal = ({ open, onClose, token }) => {
       });
       setActivities(response.data.activities);
       setDaysOff(response.data.daysOff);
+      setStartOfDay(response.data.startOfDay);
+      setEndOfDay(response.data.endOfDay);
     } catch (error) {
       console.error("Error fetching preferences:", error);
     }
@@ -45,7 +55,13 @@ const PreferencesModal = ({ open, onClose, token }) => {
 
   const savePreferences = async (preferences) => {
     try {
-      await axios.post(API_URL + '/preferences', preferences, {
+      let startTimeString = startOfDay.toTimeString().slice(0, 8);
+      let endTimeString = endOfDay.toTimeString().slice(0, 8);
+      await axios.post(API_URL + '/update_preferences', {
+        ...preferences,
+        start_time: startTimeString,
+        end_rime: endTimeString,
+      }, {
         headers: {
           Authorization: token
         }
@@ -56,6 +72,24 @@ const PreferencesModal = ({ open, onClose, token }) => {
   };
 
   const handleAddActivity = () => {
+    if (!newActivity.name) {
+      setSnackbarMessage("Name is required!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setTimeout(() => {
+        setSnackbarOpen(false);
+      }, 5000);
+      return;
+    }
+    if (activities.some(activity => activity.name === newActivity.name)) {
+      setSnackbarMessage("Name must be unique!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      setTimeout(() => {
+        setSnackbarOpen(false);
+      }, 5000);
+      return;
+    }
     let updatedActivities;
     if (editIndex >= 0) {
       updatedActivities = [...activities];
@@ -77,7 +111,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleDeleteActivity = async (index) => {
     const updatedActivities = activities.filter((_, i) => i !== index);
     setActivities(updatedActivities);
-    await savePreferences({ activities: updatedActivities, daysOff });
+    await savePreferences({ activities: updatedActivities, daysOff, startOfDay, endOfDay });
   };
 
   const handleAddDayOff = () => {
@@ -89,10 +123,10 @@ const PreferencesModal = ({ open, onClose, token }) => {
     }
   };
 
-  const handleDeleteDayOff = (day) => {
+  const handleDeleteDayOff = async (day) => {
     const updatedDaysOff = daysOff.filter((d) => d !== day);
     setDaysOff(updatedDaysOff);
-    savePreferences({ activities, daysOff: updatedDaysOff });
+    await savePreferences({ activities, daysOff: updatedDaysOff });
   };
 
   const handleDayChange = (dayIndex) => {
@@ -158,6 +192,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
             variant="outlined"
             size="small"
             sx={{ mr: 2 }}
+            required
           />
           <TextField
             label="Duration"
@@ -256,6 +291,32 @@ const PreferencesModal = ({ open, onClose, token }) => {
             Add
           </Button>
         </Box>
+
+        <Box display="flex" flexDirection="column" mb={2}>
+          <h3>Day Configuration</h3>
+          <TimePicker
+            label="Start of the Day"
+            value={startOfDay}
+            onChange={(newValue) => setStartOfDay(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+          />
+          <TimePicker
+            label="End of the Day"
+            value={endOfDay}
+            onChange={(newValue) => setEndOfDay(newValue)}
+            renderInput={(params) => <TextField {...params} />}
+          />
+        </Box>
+
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setSnackbarOpen(false)}
+        >
+          <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Box>
     </Modal>
   );
