@@ -17,8 +17,8 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const [newActivity, setNewActivity] = useState({
     name: "",
     duration: "",
-    daytime: "morning",
-    possible_days: []
+    timeOfDay: "morning",
+    days: []
   });
   const [editIndex, setEditIndex] = useState(-1);
   const [newDayOff, setNewDayOff] = useState("");
@@ -45,7 +45,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
 
   const savePreferences = async (preferences) => {
     try {
-      await axios.post(API_URL + '/update_preferences', preferences, {
+      await axios.post(API_URL + '/preferences', preferences, {
         headers: {
           Authorization: token
         }
