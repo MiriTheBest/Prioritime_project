@@ -50,36 +50,39 @@ const PreferencesModal = ({ open, onClose, token }) => {
 
   const handleAddActivity = async () => {
     if (!newActivity.name) {
-           setSnackbarMessage("Name is required!");
-           setSnackbarSeverity("error");
-           setSnackbarOpen(true);
-           setTimeout(() => {
-             setSnackbarOpen(false);
-           }, 5000);
-           return;
-            }
-           if (activities.some(activity => activity.name === newActivity.name)) {
-           setSnackbarMessage("Name must be unique!");
-           setSnackbarSeverity("error");
-           setSnackbarOpen(true);
-           setTimeout(() => {
-             setSnackbarOpen(false);
-           }, 5000);
-           return;
-          }
-      
+      setSnackbarMessage("Name is required!");
+      setSnackbarSeverity("error");
+      setSnackbarOpen(true);
+      return;
+    }
+  
     let updatedActivities;
     if (editIndex >= 0) {
+      // Editing existing activity
       updatedActivities = [...activities];
       updatedActivities[editIndex] = newActivity;
-      setEditIndex(-1);
+      setEditIndex(-1); // Reset edit index
     } else {
+      // Adding new activity
+      if (activities.some(activity => activity.name === newActivity.name)) {
+        setSnackbarMessage("Name must be unique!");
+        setSnackbarSeverity("error");
+        setSnackbarOpen(true);
+        return;
+      }
       updatedActivities = [...activities, newActivity];
     }
+  
+    // Update activities state
     setActivities(updatedActivities);
+  
+    // Save preferences
     await savePreferences();
+  
+    // Reset form fields
     setNewActivity({ name: "", duration: "", daytime: "morning", days: [] });
   };
+  
 
   const handleEditActivity = (index) => {
     setNewActivity(activities[index]);
