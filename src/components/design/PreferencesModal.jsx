@@ -90,7 +90,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
     }
     setActivities(updatedActivities);
     savePreferences();
-    setNewActivity({ name: "", duration: "", timeOfDay: "morning", days: [] });
+    setNewActivity({ name: "", duration: "", daytime: "morning", days: [] });
   };
 
   const handleEditActivity = (index) => {
@@ -153,7 +153,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
               <p>
                 <strong>Name:</strong> {activity.name} <br />
                 <strong>Duration:</strong> {activity.duration} <br />
-                <strong>Time of Day:</strong> {activity.timeOfDay} <br />
+                <strong>Time of Day:</strong> {activity.daytime} <br />
                 <strong>Days:</strong> {activity.days.map(day => daysOfWeek[day]).join(", ")}
               </p>
             </Box>
@@ -194,9 +194,9 @@ const PreferencesModal = ({ open, onClose, token }) => {
             sx={{ mr: 2 }}
           />
           <Select
-            value={newActivity.timeOfDay}
+            value={newActivity.daytime}
             onChange={(e) =>
-              setNewActivity({ ...newActivity, timeOfDay: e.target.value })
+              setNewActivity({ ...newActivity, daytime: e.target.value })
             }
             variant="outlined"
             size="small"
