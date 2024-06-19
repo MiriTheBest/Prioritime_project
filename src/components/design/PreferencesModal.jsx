@@ -73,8 +73,10 @@ const PreferencesModal = ({ open, onClose, token }) => {
       updatedActivities = [...activities, newActivity];
     }
   
-    // Update activities state
-    setActivities(updatedActivities);
+    // Update activities state using functional update pattern
+    setActivities(prevActivities => {
+      return updatedActivities;
+    });
   
     // Save preferences
     await savePreferences();
@@ -82,6 +84,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
     // Reset form fields
     setNewActivity({ name: "", duration: "", daytime: "morning", days: [] });
   };
+  
   
 
   const handleEditActivity = (index) => {
