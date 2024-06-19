@@ -48,21 +48,22 @@ const PreferencesModal = ({ open, onClose, token }) => {
       });
       setActivities(response.data.preferences);
       setDaysOff(response.data.days_off);
-      setStartOfDay(response.data.star_time);
+      setStartOfDay(response.data.start_time); // Corrected typo in 'start_time'
       setEndOfDay(response.data.end_time);
     } catch (error) {
       console.error("Error fetching preferences:", error);
     }
   };
 
-  const savePreferences = async (preferences) => {
+  const savePreferences = async () => {
     try {
-      let startTimeString = startOfDay.toTimeString().slice(0, 8);
-      let endTimeString = endOfDay.toTimeString().slice(0, 8);
+      let startTimeString = startOfDay ? startOfDay.toTimeString().slice(0, 8) : "";
+      let endTimeString = endOfDay ? endOfDay.toTimeString().slice(0, 8) : "";
       await axios.post(API_URL + '/update_preferences', {
-        ...preferences,
+        preferences: activities,
+        days_off: daysOff,
         start_time: startTimeString,
-        end_rime: endTimeString,
+        end_time: endTimeString,
       }, {
         headers: {
           Authorization: token
@@ -101,7 +102,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
       updatedActivities = [...activities, newActivity];
     }
     setActivities(updatedActivities);
-    savePreferences({ activities: updatedActivities, daysOff });
+    savePreferences();
     setNewActivity({ name: "", duration: "", timeOfDay: "morning", days: [] });
   };
 
@@ -113,14 +114,14 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleDeleteActivity = async (index) => {
     const updatedActivities = activities.filter((_, i) => i !== index);
     setActivities(updatedActivities);
-    await savePreferences({ activities: updatedActivities, daysOff, startOfDay, endOfDay });
+    await savePreferences();
   };
 
   const handleAddDayOff = () => {
     if (newDayOff && !daysOff.includes(newDayOff)) {
       const updatedDaysOff = [...daysOff, newDayOff];
       setDaysOff(updatedDaysOff);
-      savePreferences({ activities, daysOff: updatedDaysOff });
+      savePreferences();
       setNewDayOff("");
     }
   };
@@ -128,7 +129,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleDeleteDayOff = async (day) => {
     const updatedDaysOff = daysOff.filter((d) => d !== day);
     setDaysOff(updatedDaysOff);
-    await savePreferences({ activities, daysOff: updatedDaysOff });
+    await savePreferences();
   };
 
   const handleDayChange = (dayIndex) => {
@@ -272,7 +273,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
             margin="normal"
             variant="outlined"
             size="small"
-            sx={{ mr: 2 }}
+          sx={{ mr: 2 }}
             placeholder="Choose a day"
           >
             <MenuItem value="Monday">Monday</MenuItem>
@@ -293,23 +294,25 @@ const PreferencesModal = ({ open, onClose, token }) => {
             Add
           </Button>
         </Box>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
+
         <Box display="flex" flexDirection="column" mb={2}>
           <h3>Day Configuration</h3>
-          <TimePicker
-            label="Start of the Day"
-            value={startOfDay}
-            onChange={(newValue) => setStartOfDay(newValue)}
-            renderInput={(params) => <TextField {...params} />}
-          />
-          <TimePicker
-            label="End of the Day"
-            value={endOfDay}
-            onChange={(newValue) => setEndOfDay(newValue)}
-            renderInput={(params) => <TextField {...params} />}
-          />
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <TimePicker
+              label="Start of the Day"
+              value={startOfDay}
+              onChange={(newValue) => setStartOfDay(newValue)}
+              renderInput={(params) => <TextField {...params} />}
+            />
+            <TimePicker
+              label="End of the Day"
+              value={endOfDay}
+              onChange={(newValue) => setEndOfDay(newValue)}
+              renderInput={(params) => <TextField {...params} />}
+            />
+          </LocalizationProvider>
         </Box>
-        </LocalizationProvider>
+
         <Snackbar
           open={snackbarOpen}
           autoHideDuration={6000}
