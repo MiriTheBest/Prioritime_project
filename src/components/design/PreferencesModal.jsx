@@ -10,6 +10,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Chip from "@mui/material/Chip";
 import { MenuItem, Select, Checkbox, FormControlLabel } from "@mui/material";
 import { API_URL } from "../api/config";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const PreferencesModal = ({ open, onClose, token }) => {
   const [activities, setActivities] = useState([]);
@@ -17,11 +19,14 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const [newActivity, setNewActivity] = useState({
     name: "",
     duration: "",
-    timeOfDay: "morning",
+    daytime: "morning",
     days: []
   });
   const [editIndex, setEditIndex] = useState(-1);
   const [newDayOff, setNewDayOff] = useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("error");
 
   useEffect(() => {
     if (open) {
@@ -36,16 +41,16 @@ const PreferencesModal = ({ open, onClose, token }) => {
           Authorization: token
         }
       });
-      setActivities(response.data.activities);
-      setDaysOff(response.data.daysOff);
+      setActivities(response.data.preferences);
+      setDaysOff(response.data.days_off);
     } catch (error) {
       console.error("Error fetching preferences:", error);
     }
   };
 
-  const savePreferences = async (preferences) => {
+  const savePreferences = async () => {
     try {
-      await axios.post(API_URL + '/preferences', preferences, {
+      await axios.post(API_URL + '/update_preferences', {preferences: activities, daysOff,}, {
         headers: {
           Authorization: token
         }
@@ -56,6 +61,25 @@ const PreferencesModal = ({ open, onClose, token }) => {
   };
 
   const handleAddActivity = () => {
+    if (!newActivity.name) {
+           setSnackbarMessage("Name is required!");
+           setSnackbarSeverity("error");
+           setSnackbarOpen(true);
+           setTimeout(() => {
+             setSnackbarOpen(false);
+           }, 5000);
+           return;
+            }
+           if (activities.some(activity => activity.name === newActivity.name)) {
+           setSnackbarMessage("Name must be unique!");
+           setSnackbarSeverity("error");
+           setSnackbarOpen(true);
+           setTimeout(() => {
+             setSnackbarOpen(false);
+           }, 5000);
+           return;
+          }
+      
     let updatedActivities;
     if (editIndex >= 0) {
       updatedActivities = [...activities];
@@ -65,7 +89,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
       updatedActivities = [...activities, newActivity];
     }
     setActivities(updatedActivities);
-    savePreferences({ activities: updatedActivities, daysOff });
+    savePreferences();
     setNewActivity({ name: "", duration: "", timeOfDay: "morning", days: [] });
   };
 
@@ -77,14 +101,14 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleDeleteActivity = async (index) => {
     const updatedActivities = activities.filter((_, i) => i !== index);
     setActivities(updatedActivities);
-    await savePreferences({ activities: updatedActivities, daysOff });
+    await savePreferences();
   };
 
   const handleAddDayOff = () => {
     if (newDayOff && !daysOff.includes(newDayOff)) {
       const updatedDaysOff = [...daysOff, newDayOff];
       setDaysOff(updatedDaysOff);
-      savePreferences({ activities, daysOff: updatedDaysOff });
+      savePreferences();
       setNewDayOff("");
     }
   };
@@ -92,7 +116,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleDeleteDayOff = async (day) => {
     const updatedDaysOff = daysOff.filter((d) => d !== day);
     setDaysOff(updatedDaysOff);
-    await savePreferences({ activities, daysOff: updatedDaysOff });
+    await savePreferences();
   };
 
   const handleDayChange = (dayIndex) => {
@@ -256,6 +280,15 @@ const PreferencesModal = ({ open, onClose, token }) => {
             Add
           </Button>
         </Box>
+        <Snackbar
+           open={snackbarOpen}
+           autoHideDuration={6000}
+           onClose={() => setSnackbarOpen(false)}
+        >
+           <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
+             {snackbarMessage}
+           </Alert>
+         </Snackbar>
       </Box>
     </Modal>
   );
