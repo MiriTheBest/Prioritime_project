@@ -59,8 +59,9 @@ const PreferencesModal = ({ open, onClose, token }) => {
     let updatedActivities;
     if (editIndex >= 0) {
       // Editing existing activity
-      updatedActivities = [...activities];
-      updatedActivities[editIndex] = newActivity;
+      updatedActivities = activities.map((activity, index) =>
+        index === editIndex ? newActivity : activity
+      );
       setEditIndex(-1); // Reset edit index
     } else {
       // Adding new activity
@@ -77,14 +78,11 @@ const PreferencesModal = ({ open, onClose, token }) => {
     setActivities(updatedActivities);
   
     // Save preferences
-    await savePreferences();
+    await savePreferences(updatedActivities);
   
     // Reset form fields
     setNewActivity({ name: "", duration: "", daytime: "morning", days: [] });
-  };
-  
-  
-  
+  };  
 
   const handleEditActivity = (index) => {
     setNewActivity(activities[index]);
