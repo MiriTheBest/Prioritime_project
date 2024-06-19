@@ -9,9 +9,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Chip from "@mui/material/Chip";
 import { MenuItem, Select, Checkbox, FormControlLabel } from "@mui/material";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { TimePicker } from "@mui/x-date-pickers";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { API_URL } from "../api/config";
@@ -27,8 +24,6 @@ const PreferencesModal = ({ open, onClose, token }) => {
   });
   const [editIndex, setEditIndex] = useState(-1);
   const [newDayOff, setNewDayOff] = useState("");
-  const [startOfDay, setStartOfDay] = useState("");
-  const [endOfDay, setEndOfDay] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("error");
@@ -48,8 +43,6 @@ const PreferencesModal = ({ open, onClose, token }) => {
       });
       setActivities(response.data.preferences);
       setDaysOff(response.data.days_off);
-      setStartOfDay(response.data.start_time); // Corrected typo in 'start_time'
-      setEndOfDay(response.data.end_time);
     } catch (error) {
       console.error("Error fetching preferences:", error);
     }
@@ -57,13 +50,9 @@ const PreferencesModal = ({ open, onClose, token }) => {
 
   const savePreferences = async () => {
     try {
-      let startTimeString = startOfDay ? startOfDay.toTimeString().slice(0, 8) : "";
-      let endTimeString = endOfDay ? endOfDay.toTimeString().slice(0, 8) : "";
       await axios.post(API_URL + '/update_preferences', {
         preferences: activities,
         days_off: daysOff,
-        start_time: startTimeString,
-        end_time: endTimeString,
       }, {
         headers: {
           Authorization: token
@@ -297,20 +286,6 @@ const PreferencesModal = ({ open, onClose, token }) => {
 
         <Box display="flex" flexDirection="column" mb={2}>
           <h3>Day Configuration</h3>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <TimePicker
-              label="Start of the Day"
-              value={startOfDay}
-              onChange={(newValue) => setStartOfDay(newValue)}
-              renderInput={(params) => <TextField {...params} />}
-            />
-            <TimePicker
-              label="End of the Day"
-              value={endOfDay}
-              onChange={(newValue) => setEndOfDay(newValue)}
-              renderInput={(params) => <TextField {...params} />}
-            />
-          </LocalizationProvider>
         </Box>
 
         <Snackbar
