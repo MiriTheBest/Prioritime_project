@@ -18,7 +18,7 @@ const deleteData = async (idOrIdDateString, type) => {
           );
         } else {
           response = await axios.delete(
-            `${API_URL}/delete_event/${idOrIdDateString}?type=${type}`, 
+            `${API_URL}/delete_task/${idOrIdDateString}?type=${type}`, 
             {
               headers: {
                 "Content-Type": "application/json",
@@ -41,4 +41,4 @@ const deleteData = async (idOrIdDateString, type) => {
     }
 };
 
-export { deleteData};
+export {deleteData};

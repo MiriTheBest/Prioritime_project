@@ -26,6 +26,7 @@ import {
 import { API_URL } from "./api/config";
 import axios from "axios";
 import { convertMinToDuration } from "./functions/convertMintoDuration";
+import { deleteData } from "./api/deleteData";
 
 const TaskPage = () => {
   const [alertOpen, setAlertOpen] = useState(false);
@@ -113,8 +114,7 @@ const TaskPage = () => {
 
   const handleMarkDone = async (task) => {
     try {
-      const url = `${API_URL}/delete_task/${task.id}`;
-      await axios.delete(url);
+      await deleteData(task.id, task.type);
       setTasks(tasks.filter((t) => t.id !== task.id));
       setAlertSeverity("success");
       setAlertMessage("Task deleted successfully");
