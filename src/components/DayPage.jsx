@@ -72,11 +72,11 @@ const DayPage = () => {
   const handleAutomateTask = async () => {
     try {
       if (clickedEvent) {
-        if (clickedEvent.allDay) {
+        if (clickedEvent.allDay) {/*
           const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");
           const urlConcatStr = createStringForUrl(clickedEvent, { ...clickedEvent, start: formattedStart });
           await deleteData(urlConcatStr, clickedEvent.type);
-          fetchTasksAndEvents(selectedDate);
+          fetchTasksAndEvents(selectedDate);*/
         } else {
           setAlertOpen(true);
         }

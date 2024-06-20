@@ -9,9 +9,11 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Chip from "@mui/material/Chip";
 import { MenuItem, Select, Checkbox, FormControlLabel } from "@mui/material";
-import { API_URL } from "../api/config";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import { API_URL } from "../api/config";
+import { convertMinToDuration } from "../functions/convertMintoDuration";
+import { convertDurationToMin } from "../functions/convertDurationToMin";
 
 const PreferencesModal = ({ open, onClose, token }) => {
   const [activities, setActivities] = useState([]);
@@ -20,13 +22,16 @@ const PreferencesModal = ({ open, onClose, token }) => {
     name: "",
     duration: "",
     daytime: "morning",
-    days: []
+    days: [],
+    description: "", // Added description field
   });
   const [editIndex, setEditIndex] = useState(-1);
   const [newDayOff, setNewDayOff] = useState("");
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
   const [snackbarSeverity, setSnackbarSeverity] = useState("error");
+  const [startTime, setStartTime] = useState("08:00"); // default start time
+  const [endTime, setEndTime] = useState("17:00"); // default end time
 
   useEffect(() => {
     if (open) {
@@ -34,15 +39,23 @@ const PreferencesModal = ({ open, onClose, token }) => {
     }
   }, [open]);
 
+  useEffect(() => {
+    if (open) {
+      savePreferences(activities, daysOff);
+    }
+  }, [startTime, endTime]);
+
   const fetchPreferences = async () => {
     try {
-      const response = await axios.get(API_URL + '/get_preferences', {
+      const response = await axios.get(API_URL + '/get_preferences/', {
         headers: {
-          Authorization: token
+          Authorization: token,
         }
       });
       setActivities(response.data.preferences);
       setDaysOff(response.data.days_off);
+      setStartTime(response.data.start_time || "08:00");
+      setEndTime(response.data.end_time || "17:00");
     } catch (error) {
       console.error("Error fetching preferences:", error);
     }
@@ -55,7 +68,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
       setSnackbarOpen(true);
       return;
     }
-  
+
     let updatedActivities;
     if (editIndex >= 0) {
       // Editing existing activity
@@ -71,18 +84,19 @@ const PreferencesModal = ({ open, onClose, token }) => {
         setSnackbarOpen(true);
         return;
       }
+      newActivity.duration = convertDurationToMin(newActivity.duration)
       updatedActivities = [...activities, newActivity];
     }
-  
+
     // Update activities state using functional update pattern
     setActivities(updatedActivities);
-  
-    // Save preferences
-    await savePreferences(updatedActivities);
-  
+
+    // Save preferences with the updated activities
+    await savePreferences(updatedActivities, daysOff);
+
     // Reset form fields
-    setNewActivity({ name: "", duration: "", daytime: "morning", days: [] });
-  };  
+    setNewActivity({ name: "", duration: "", daytime: "morning", days: [], description: "" });
+  };
 
   const handleEditActivity = (index) => {
     setNewActivity(activities[index]);
@@ -92,14 +106,16 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleDeleteActivity = async (index) => {
     const updatedActivities = activities.filter((_, i) => i !== index);
     setActivities(updatedActivities);
-    await savePreferences();
+    await savePreferences(updatedActivities, daysOff);
   };
 
-  const handleAddDayOff = () => {
+  const handleAddDayOff = async () => {
     if (newDayOff && !daysOff.includes(newDayOff)) {
       const updatedDaysOff = [...daysOff, newDayOff];
       setDaysOff(updatedDaysOff);
-      savePreferences();
+
+      // Wait for state to update and then save preferences
+      await savePreferences(activities, updatedDaysOff);
       setNewDayOff("");
     }
   };
@@ -107,7 +123,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
   const handleDeleteDayOff = async (day) => {
     const updatedDaysOff = daysOff.filter((d) => d !== day);
     setDaysOff(updatedDaysOff);
-    await savePreferences();
+    await savePreferences(activities, updatedDaysOff);
   };
 
   const handleDayChange = (dayIndex) => {
@@ -117,11 +133,14 @@ const PreferencesModal = ({ open, onClose, token }) => {
     setNewActivity({ ...newActivity, days: updatedDays });
   };
 
-  const savePreferences = async () => {
+  const savePreferences = async (updatedActivities, updatedDaysOff) => {
     try {
       await axios.post(API_URL + '/update_preferences', {
-        preferences: activities, 
-        days_off: daysOff,}, {
+        preferences: updatedActivities, 
+        days_off: updatedDaysOff,
+        start_time: startTime,
+        end_time: endTime,
+      }, {
         headers: {
           Authorization: token
         }
@@ -153,21 +172,24 @@ const PreferencesModal = ({ open, onClose, token }) => {
 
         <h3>Activities</h3>
         {activities.map((activity, index) => (
-          <Box key={index} display="flex" alignItems="center" mb={2}>
-            <Box flexGrow={1}>
-              <p>
-                <strong>Name:</strong> {activity.name} <br />
-                <strong>Duration:</strong> {activity.duration} <br />
-                <strong>Time of Day:</strong> {activity.daytime} <br />
-                <strong>Days:</strong> {activity.days.map(day => daysOfWeek[day]).join(", ")}
-              </p>
+          <Box key={index} display="flex" flexDirection="column" alignItems="flex-start" mb={2}>
+            <Box display="flex" alignItems="center" width="100%">
+              <Box flexGrow={1}>
+                <p>
+                  <strong>Name:</strong> {activity.name} <br />
+                  <strong>Duration:</strong> {convertMinToDuration(activity.duration)} <br />
+                  <strong>Time of Day:</strong> {activity.daytime} <br />
+                  <strong>Days:</strong> {activity.days.map(day => daysOfWeek[day]).join(", ")} <br />
+                  <strong>Description:</strong> {activity.description}
+                </p>
+              </Box>
+              <IconButton onClick={() => handleEditActivity(index)}>
+                <EditIcon />
+              </IconButton>
+              <IconButton onClick={() => handleDeleteActivity(index)}>
+                <DeleteIcon />
+              </IconButton>
             </Box>
-            <IconButton onClick={() => handleEditActivity(index)}>
-              <EditIcon />
-            </IconButton>
-            <IconButton onClick={() => handleDeleteActivity(index)}>
-              <DeleteIcon />
-            </IconButton>
           </Box>
         ))}
 
@@ -228,6 +250,19 @@ const PreferencesModal = ({ open, onClose, token }) => {
           ))}
         </Box>
 
+        <TextField
+          label="Description"
+          multiline
+          rows={3}
+          fullWidth
+          value={newActivity.description}
+          onChange={(e) =>
+            setNewActivity({ ...newActivity, description: e.target.value })
+          }
+          variant="outlined"
+          sx={{ mb: 2 }}
+        />
+
         <Button
           onClick={handleAddActivity}
           variant="contained"
@@ -235,68 +270,108 @@ const PreferencesModal = ({ open, onClose, token }) => {
           size="medium"
           sx={{ mb: 2 }}
         >
-          Add
+          {editIndex >= 0 ? "Update" : "Add"}
         </Button>
 
         <h3>Days Off</h3>
         <Box display="flex" flexWrap="wrap">
           {daysOff.map((day, index) => (
             <Chip
-              key={index}
-              label={day}
-              onDelete={() => handleDeleteDayOff(day)}
-              sx={{ mr: 1, mb: 1 }}
-            />
-          ))}
-        </Box>
-
-        <Box
-          display="flex"
-          flexDirection="row"
-          alignItems="center"
-          mb={2}
-          sx={{ justifyContent: "space-between" }}
-        >
-          <Select
-            value={newDayOff}
-            onChange={(e) => setNewDayOff(e.target.value)}
-            fullWidth
-            margin="normal"
-            variant="outlined"
-            size="small"
-            sx={{ mr: 2 }}
-            placeholder="Choose a day"
-          >
-            <MenuItem value="Monday">Monday</MenuItem>
-            <MenuItem value="Tuesday">Tuesday</MenuItem>
-            <MenuItem value="Wednesday">Wednesday</MenuItem>
-            <MenuItem value="Thursday">Thursday</MenuItem>
-            <MenuItem value="Friday">Friday</MenuItem>
-            <MenuItem value="Saturday">Saturday</MenuItem>
-            <MenuItem value="Sunday">Sunday</MenuItem>
-          </Select>
-
-          <Button
-            onClick={handleAddDayOff}
-            variant="contained"
-            color="primary"
-            size="small"
-          >
-            Add
-          </Button>
-        </Box>
-        <Snackbar
-           open={snackbarOpen}
-           autoHideDuration={6000}
-           onClose={() => setSnackbarOpen(false)}
-        >
-           <Alert onClose={() => setSnackbarOpen(false)} severity={snackbarSeverity} sx={{ width: '100%' }}>
-             {snackbarMessage}
-           </Alert>
-         </Snackbar>
+            key={index}
+            label={day}
+            onDelete={() => handleDeleteDayOff(day)}
+            sx={{ mr: 1, mb: 1 }}
+          />
+        ))}
       </Box>
-    </Modal>
-  );
+
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        mb={2}
+        sx={{ justifyContent: "space-between" }}
+      >
+        <Select
+          value={newDayOff}
+          onChange={(e) => setNewDayOff(e.target.value)}
+          fullWidth
+          margin="normal"
+          variant="outlined"
+          size="small"
+          sx={{ mr: 2 }}
+          placeholder="Choose a day"
+        >
+          <MenuItem value="Monday">Monday</MenuItem>
+          <MenuItem value="Tuesday">Tuesday</MenuItem>
+          <MenuItem value="Wednesday">Wednesday</MenuItem>
+          <MenuItem value="Thursday">Thursday</MenuItem>
+          <MenuItem value="Friday">Friday</MenuItem>
+          <MenuItem value="Saturday">Saturday</MenuItem>
+          <MenuItem value="Sunday">Sunday</MenuItem>
+        </Select>
+
+        <Button
+          onClick={handleAddDayOff}
+          variant="contained"
+          color="primary"
+          size="small"
+        >
+          Add
+        </Button>
+      </Box>
+
+      <h3>Day Time</h3>
+      <Box
+        display="flex"
+        flexDirection="row"
+        alignItems="center"
+        mb={2}
+        sx={{ justifyContent: "space-between" }}
+      >
+        <TextField
+          label="Start Time"
+          type="time"
+          value={startTime}
+          onChange={(e) => setStartTime(e.target.value)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          inputProps={{
+            step: 300, // 5 min
+          }}
+          sx={{ mr: 2 }}
+        />
+        <TextField
+          label="End Time"
+          type="time"
+          value={endTime}
+          onChange={(e) => setEndTime(e.target.value)}
+          InputLabelProps={{
+            shrink: true,
+          }}
+          inputProps={{
+            step: 300, // 5 min
+          }}
+        />
+      </Box>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+      >
+        <Alert
+          onClose={() => setSnackbarOpen(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+    </Box>
+  </Modal>
+);
 };
 
 export default PreferencesModal;

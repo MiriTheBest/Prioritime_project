@@ -5,7 +5,6 @@ import {
   Route,
   useNavigate,
 } from "react-router-dom";
-import AuthorizationPage from "./AuthorizationPage";
 import DayPage from "./DayPage";
 import MonthPage from "./MonthPage";
 import AddPage from "./AddPage";
@@ -19,7 +18,6 @@ import SignUp from "./SignUp";
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // User authentication state
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Selected date for DayPage
 
   useEffect(() => {
     // Check for existing authentication (e.g., local storage, cookies)
@@ -44,25 +42,17 @@ function App() {
     localStorage.removeItem("token");
   };
 
-  const handleDateChange = (newDate) => {
-    setSelectedDate(newDate);
-  };
-
   return (
     <Router>
-      <ButtonAppBar isAuthenticated={isAuthenticated}  onLogout={handleLogout}/>
+      <ButtonAppBar isAuthenticated={isAuthenticated} onLogout={handleLogout} />
       <Routes>
         <Route
           path="/"
           element={
             isAuthenticated ? (
-              <>
-                <DayPage selectedDate={new Date()} />
-              </>
+              <DayPage selectedDate={new Date()} />
             ) : (
-              <>
-                <SignInSide onAuthorization={handleAuthorization} />
-              </>
+              <SignInSide onAuthorization={handleAuthorization} />
             )
           }
         />
@@ -73,6 +63,7 @@ function App() {
         <Route path="/tasks" element={<TaskPage />} />
         <Route path="/faq" element={<FAQPage />} />
         <Route path="/signup" element={<SignUp onAuthorization={handleAuthorization} />} />
+        <Route path="/login" element={<SignInSide onAuthorization={handleAuthorization} />} />
       </Routes>
       <Footer />
     </Router>

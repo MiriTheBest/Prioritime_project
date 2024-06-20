@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -21,38 +22,42 @@ const defaultTheme = createTheme();
 export default function SignUp({onAuthorization}) {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const formData = new FormData(event.currentTarget);
-        const userData = {
-          firstName: formData.get('firstName'),
-          lastName: formData.get('lastName'),
-          email: formData.get('email'),
-          password: formData.get('password'),
-        };
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const userData = {
+      firstName: formData.get('firstName'),
+      lastName: formData.get('lastName'),
+      email: formData.get('email'),
+      password: formData.get('password'),
+    };
 
-        if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
-          setMessage("All fields are required");
-          setSnackbarOpen(true); // Show the snackbar alert
-          setTimeout(() => setSnackbarOpen(false), 5000);
-          return;
-      }
-      
-        try {
-          const response = await axios.post(API_URL + '/register/', userData);
-          console.log(response.data); // Assuming backend returns some data upon successful registration
-          const token = response.data.token; // Assuming your backend returns a token upon successful login
-          localStorage.setItem('token', token);
-          onAuthorization(true);
-          setMessage("Please go to your profile and fill the preferences for successful automation");
-          setSnackbarOpen(true); // Show the snackbar alert
-          setTimeout(() => setSnackbarOpen(false), 10000);
-        } catch (error) {
-          console.error('Registration failed:', error);
-          // Handle registration failure (e.g., show error message to user)
-        }
-      };
+    if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
+      setMessage("All fields are required");
+      setSnackbarOpen(true); // Show the snackbar alert
+      setTimeout(() => setSnackbarOpen(false), 5000);
+      return;
+    }
+
+    try {
+      const response = await axios.post(API_URL + '/register', userData);
+      console.log(response.data); // Assuming backend returns some data upon successful registration
+      const token = response.data.token; // Assuming your backend returns a token upon successful login
+      localStorage.setItem('token', token);
+      onAuthorization(true);
+      setMessage("Please go to your profile and fill the preferences for successful automation");
+      setSnackbarOpen(true); // Show the snackbar alert
+      setTimeout(() => setSnackbarOpen(false), 10000);
+      navigate('/day'); // Navigate to DayPage
+    } catch (error) {
+      console.error('Registration failed:', error);
+      setMessage("Registration failed. Please try again.");
+      setSnackbarOpen(true); // Show the snackbar alert
+      setTimeout(() => setSnackbarOpen(false), 5000);
+    }
+  };
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -134,8 +139,8 @@ export default function SignUp({onAuthorization}) {
             <Grid container justifyContent="flex-end">
               <Grid item>
                 <RouterLink to="/login" variant="body2">
-                    {"Already have an account? Sign in"}
-                  </RouterLink>
+                  {"Already have an account? Sign in"}
+                </RouterLink>
               </Grid>
             </Grid>
           </Box>
