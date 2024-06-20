@@ -25,6 +25,7 @@ import {
 } from "./functions/sortData";
 import { API_URL } from "./api/config";
 import axios from "axios";
+import { convertDurationToMin } from "./functions/convertDurationToMin";
 import { convertMinToDuration } from "./functions/convertMintoDuration";
 import { deleteData } from "./api/deleteData";
 
@@ -130,6 +131,7 @@ const TaskPage = () => {
 
   const handleSave = async (updatedTask) => {
     try {
+      updatedTask.duration = convertDurationToMin(updatedTask.duration);
       const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
       await sendUpdatedData(updatedTask, token, apiUrl);
       // Update the task in the local state
