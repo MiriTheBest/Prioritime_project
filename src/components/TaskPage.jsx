@@ -9,6 +9,8 @@ import {
   Button,
   Alert,
   Snackbar,
+  Switch,
+  FormControlLabel,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from "@mui/icons-material/Sort";
@@ -31,63 +33,88 @@ const TaskPage = () => {
   const [alertMessage, setAlertMessage] = useState("");
 
   const [tasks, setTasks] = useState([]);
-  const [loading, setLoading] = useState(true); // State to manage loading status
+  const [recurringTasks, setRecurringTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showRecurringTasks, setShowRecurringTasks] = useState(false);
   const token = localStorage.getItem("token");
   const [searchText, setSearchText] = useState("");
-  const [sortMethod, setSortMethod] = useState("name"); // Default sort by name
-  const [sortAnchorEl, setSortAnchorEl] = useState(null); // Anchor element for sort menu
+  const [sortMethod, setSortMethod] = useState("name");
+  const [sortAnchorEl, setSortAnchorEl] = useState(null);
   const [selectedTasks, setSelectedTasks] = useState([]);
-  const [isSelectingForAutomation, setIsSelectingForAutomation] = useState(
-    false
-  );
+  const [isSelectingForAutomation, setIsSelectingForAutomation] = useState(false);
 
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axios.get(API_URL + "/get_task_list/", {
-          headers: {
-            Authorization: token,
-          },
-        });
-        const tasksWithConvertedDuration = response.data.task_list.map(task => ({
-          ...task,
-          id: task._id,
-          duration: task.duration ? convertMinToDuration(task.duration) : "",
-        }));
-        setTasks(tasksWithConvertedDuration);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-        setAlertSeverity("error");
-        setAlertMessage("Error fetching tasks");
-        setAlertOpen(true);
-        setLoading(false);
-      }
-    };
-
     fetchTasks();
   }, []);
 
+
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(API_URL + "/get_task_list/", {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const tasksWithConvertedDuration = response.data.task_list.map(task => ({
+        ...task,
+        id: task._id,
+        duration: task.duration ? convertMinToDuration(task.duration) : "",
+      }));
+      setTasks(tasksWithConvertedDuration);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      setAlertSeverity("error");
+      setAlertMessage("Error fetching tasks");
+      setAlertOpen(true);
+      setLoading(false);
+    }
+    fetchRecurringTasks();
+  };
+
+  const fetchRecurringTasks = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(API_URL + "/get_recurring_tasks", {
+        headers: {
+          Authorization: token,
+        },
+      });
+      const tasksWithConvertedDuration = response.data.recurring_tasks.map(task => ({
+        ...task,
+        id: task._id,
+        duration: task.duration ? convertMinToDuration(task.duration) : "",
+      }));
+      setRecurringTasks(tasksWithConvertedDuration);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching recurring tasks:", error);
+      setAlertSeverity("error");
+      setAlertMessage("Error fetching recurring tasks");
+      setAlertOpen(true);
+      setLoading(false);
+    }
+  };
+
+
   const handleSortMenuOpen = (event) => {
-    setSortAnchorEl(event.currentTarget); // Open sort menu
+    setSortAnchorEl(event.currentTarget);
   };
 
   const handleSortMenuClose = () => {
-    setSortAnchorEl(null); // Close sort menu
+    setSortAnchorEl(null);
   };
 
   const handleSortChange = (method) => {
-    setSortMethod(method); // Update the sortMethod state
+    setSortMethod(method);
     setSortAnchorEl(null);
   };
 
   const handleMarkDone = async (task) => {
     try {
-      // Construct the URL with the task ID
       const url = `${API_URL}/delete_task/${task.id}`;
-      // Call the delete_task API endpoint with the constructed URL
       await axios.delete(url);
-      // Update the local state to remove the deleted task
       setTasks(tasks.filter((t) => t.id !== task.id));
       setAlertSeverity("success");
       setAlertMessage("Task deleted successfully");
@@ -103,10 +130,8 @@ const TaskPage = () => {
 
   const handleSave = async (updatedTask) => {
     try {
-      // Update the task on the server
       const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
       await sendUpdatedData(updatedTask, token, apiUrl);
-
       // Update the task in the local state
       setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
       setAlertSeverity("success");
@@ -118,20 +143,76 @@ const TaskPage = () => {
       setAlertMessage("Failed to update task");
       setAlertOpen(true);
     }
+    fetchTasks();
   };
-
-  // Filter tasks based on search text and status
-  const filteredTasks = tasks.filter(
-    (task) =>
-      task.name.toLowerCase().includes(searchText.toLowerCase()) &&
-      task.status === "pending"
-  );
 
   const handleSearchChange = (event) => {
     setSearchText(event.target.value);
   };
 
-  // Sort tasks based on the selected sort method
+  const handleAutomateClick = async () => {
+    if (isSelectingForAutomation) {
+      if (selectedTasks.length > 0) {
+        try {
+          await axios.post(
+            API_URL + "/automatic_scheduling",
+            { tasks: selectedTasks },
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          setAlertSeverity("success");
+          setAlertMessage("Tasks sent for automation");
+          setAlertOpen(true);
+          setSelectedTasks([]);
+        } catch (error) {
+          console.error("Error sending tasks for automation", error);
+          setAlertSeverity("error");
+          setAlertMessage("Failed to send tasks for automation");
+          setAlertOpen(true);
+        }
+      } else {
+        setAlertSeverity("error");
+        setAlertMessage("Please select at least one task to automate.");
+        setAlertOpen(true);
+      }
+    }
+    setIsSelectingForAutomation(!isSelectingForAutomation);
+  };
+
+  const handleTaskClick = (task) => {
+    if (!isSelectingForAutomation) return;
+
+    const taskId = task.id;
+    const newSelectedTasks = [...selectedTasks];
+    const taskIndex = newSelectedTasks.indexOf(taskId);
+
+    if (taskIndex !== -1) {
+      newSelectedTasks.splice(taskIndex, 1);
+    } else {
+      newSelectedTasks.push(taskId);
+    }
+    setSelectedTasks(newSelectedTasks);
+  };
+
+  const handleAlertClose = () => {
+    setAlertOpen(false);
+  };
+
+  const handleToggleRecurringTasks = () => {
+    setShowRecurringTasks(!showRecurringTasks);
+  };
+
+  const tasksToDisplay = showRecurringTasks ? recurringTasks : tasks;
+
+  const filteredTasks = tasksToDisplay.filter(
+    (task) =>
+      task.name.toLowerCase().includes(searchText.toLowerCase()) &&
+      task.status === "pending"
+  );
+
   let sortedTasks = filteredTasks;
   switch (sortMethod) {
     case "name":
@@ -153,54 +234,10 @@ const TaskPage = () => {
       break;
   }
 
-  const handleAutomateClick = async () => {
-    if (isSelectingForAutomation) {
-      if (selectedTasks.length > 0) {
-        // If already selecting and there are selected tasks
-        try {
-          await axios.post(API_URL + "/automate_task", { tasks: selectedTasks });
-          setAlertSeverity("success");
-          setAlertMessage("Tasks sent for automation");
-          setAlertOpen(true);
-          setSelectedTasks([]); // Clear selected tasks after sending
-        } catch (error) {
-          console.error("Error sending tasks for automation", error);
-          setAlertSeverity("error");
-          setAlertMessage("Failed to send tasks for automation");
-          setAlertOpen(true);
-        }
-      } else {
-        setAlertSeverity("error");
-        setAlertMessage("Please select at least one task to automate.");
-        setAlertOpen(true);
-      }
-    }
-    setIsSelectingForAutomation(!isSelectingForAutomation);
-  };
-
-  const handleTaskClick = (task) => {
-    if (!isSelectingForAutomation) return; // Don't handle click if not in selection mode
-
-    const taskId = task.id;
-    const newSelectedTasks = [...selectedTasks];
-    const taskIndex = newSelectedTasks.indexOf(taskId);
-
-    if (taskIndex !== -1) {
-      newSelectedTasks.splice(taskIndex, 1);
-    } else {
-      newSelectedTasks.push(taskId);
-    }
-    setSelectedTasks(newSelectedTasks);
-    console.log("Selected tasks: ", newSelectedTasks);
-  };
-
-  const handleAlertClose = () => {
-    setAlertOpen(false);
-  };
-
   if (loading) {
-    return <div>Loading...</div>; // Render a loading indicator while fetching tasks
+    return <div>Loading...</div>;
   }
+
 
   return (
     <div style={{ padding: "3rem" }}>
@@ -213,7 +250,7 @@ const TaskPage = () => {
             fullWidth
             value={searchText}
             onChange={handleSearchChange}
-            style={{ backgroundColor: "white", marginBottom: "15px" }} // Style search bar
+            style={{ backgroundColor: "white", marginBottom: "15px" }}
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -265,6 +302,18 @@ const TaskPage = () => {
             {isSelectingForAutomation ? "Submit" : "Automate"}
           </Button>
         </Grid>
+        <Grid item>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={showRecurringTasks}
+                onChange={handleToggleRecurringTasks}
+                color="primary"
+              />
+            }
+            label="Recurring Tasks"
+          />
+        </Grid>
       </Grid>
       <Grid container spacing={2}>
         {sortedTasks.map((task) => (
@@ -276,7 +325,6 @@ const TaskPage = () => {
               selected={isSelectingForAutomation && selectedTasks.includes(task.id)}
               onClick={handleTaskClick}
             />
-
           </Grid>
         ))}
       </Grid>
