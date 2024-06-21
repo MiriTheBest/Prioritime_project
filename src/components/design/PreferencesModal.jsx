@@ -327,7 +327,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
         flexDirection="row"
         alignItems="center"
         mb={2}
-        sx={{ justifyContent: "space-between" }}
+        sx={{ justifyContent: "space-between", gap: 2 }}
       >
         <TextField
           label="Start Time"

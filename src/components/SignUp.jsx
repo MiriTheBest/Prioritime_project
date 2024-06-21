@@ -138,7 +138,7 @@ export default function SignUp({onAuthorization}) {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <RouterLink to="/login" variant="body2">
+                <RouterLink to="/" variant="body2">
                   {"Already have an account? Sign in"}
                 </RouterLink>
               </Grid>

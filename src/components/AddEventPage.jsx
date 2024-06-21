@@ -30,7 +30,7 @@ const AddEventPage = () => {
   const locationRef = useRef(null);
   const detailsRef = useRef(null);
   const [isRecurring, setIsRecurring] = useState(false);
-  const [frequency, setFrequency] = useState("once");
+  const [frequency, setFrequency] = useState("Once");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [tags, setTags] = useState([]); // State for tags
   const [reminder, setReminder] = useState(""); // State for reminder
@@ -125,7 +125,7 @@ const AddEventPage = () => {
     const location = locationRef.current.value;
     const details = detailsRef.current.value;
     const isRecurring = isRecurring;
-    const frequency = isRecurring ? frequency : "once";
+    const frequency = isRecurring ? frequency : "Once";
 
     const selectedCategory = selectedCategory;
 
@@ -133,7 +133,7 @@ const AddEventPage = () => {
     const tags = [...tags]; // Create a copy to avoid mutation
 
     // Set reminder to "once" if not chosen
-    const reminder = reminder ? reminder : "once";
+    const reminder = reminder ? reminder : "Once";
 
     // 3. Prepare data for database
     const eventData = {

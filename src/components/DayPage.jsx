@@ -61,7 +61,7 @@ const DayPage = () => {
       if (clickedEvent) {
         const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");
         const urlConcatStr = createStringForUrl(clickedEvent, { ...clickedEvent, start: formattedStart });
-        await deleteData(urlConcatStr, clickedEvent.type);
+        await deleteData(urlConcatStr, clickedEvent.extendedProps.type);
         fetchTasksAndEvents(selectedDate);
       }
     } catch (error) {

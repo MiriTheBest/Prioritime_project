@@ -25,7 +25,6 @@ import {
 } from "./functions/sortData";
 import { API_URL } from "./api/config";
 import axios from "axios";
-import { convertDurationToMin } from "./functions/convertDurationToMin";
 import { convertMinToDuration } from "./functions/convertMintoDuration";
 import { deleteData } from "./api/deleteData";
 
@@ -115,7 +114,7 @@ const TaskPage = () => {
 
   const handleMarkDone = async (task) => {
     try {
-      await deleteData(task.id, task.type);
+      await deleteData(task.id, task.item_type);
       setTasks(tasks.filter((t) => t.id !== task.id));
       setAlertSeverity("success");
       setAlertMessage("Task deleted successfully");
@@ -131,11 +130,8 @@ const TaskPage = () => {
 
   const handleSave = async (updatedTask) => {
     try {
-      updatedTask.duration = convertDurationToMin(updatedTask.duration);
       const apiUrl = `${API_URL}/update_task/${updatedTask.id}`;
       await sendUpdatedData(updatedTask, token, apiUrl);
-      // Update the task in the local state
-      setTasks(tasks.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
       setAlertSeverity("success");
       setAlertMessage("Task updated successfully");
       setAlertOpen(true);
@@ -182,6 +178,7 @@ const TaskPage = () => {
       }
     }
     setIsSelectingForAutomation(!isSelectingForAutomation);
+    fetchTasks();
   };
 
   const handleTaskClick = (task) => {
