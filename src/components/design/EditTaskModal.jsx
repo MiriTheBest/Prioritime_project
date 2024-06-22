@@ -293,61 +293,45 @@ const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
           size="small"
           sx={{ backgroundColor: "white" }}
         />
-        <div>
+        <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <AddIcon />
           <TextField
-            label="Add Tag"
+            placeholder="Add Tag"
+            size="small"
             value={tagInput}
             onChange={handleTagInput}
-            onKeyPress={(event) => {
-              if (event.key === "Enter") {
-                event.preventDefault();
-                handleAddTag();
-              }
-            }}
-            fullWidth
-            margin="normal"
-            size="small"
-            sx={{ backgroundColor: "white" }}
+            onBlur={handleAddTag}
+            onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
           />
-          <Button
-            variant="contained"
-            onClick={handleAddTag}
-            startIcon={<AddIcon />}
-            fullWidth
-          >
-            Add Tag
-          </Button>
-          <div style={{ marginTop: "10px" }}>
-            {tags.map((tag, index) => (
-              <Chip
-                key={index}
-                label={tag}
-                onDelete={() => handleDeleteTag(index)}
-                style={{ marginRight: "5px", marginTop: "5px" }}
-              />
-            ))}
-          </div>
         </div>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSave}
-          fullWidth
-          style={{ marginTop: "20px" }}
-        >
-          Save
-        </Button>
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={onClose}
-          fullWidth
-          style={{ marginTop: "10px" }}
-        >
-          Cancel
-        </Button>
       </div>
-    </Modal>
+    <div style={{ marginTop: "10px" }}>
+      {tags.map((tag, index) => (
+        <Chip
+          key={index}
+          label={`#${tag}`}
+          onDelete={() => handleDeleteTag(index)}
+          style={{ marginRight: "5px", backgroundColor: "#79DAE8" }}
+        />
+      ))}
+    </div>
+
+    <div style={{ display: "flex", justifyContent: "flex-end" }}>
+      <Button variant="contained" color="primary" onClick={() => handleSave()}>
+        Save
+      </Button>
+      <Button
+        variant="outlined"
+        color="secondary"
+        style={{ marginLeft: 10 }}
+        onClick={onClose}
+      >
+        Cancel
+      </Button>
+    </div>
+  </div>
+</Modal>
   );
 };
 
