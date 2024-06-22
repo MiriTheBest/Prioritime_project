@@ -221,7 +221,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
               backgroundColor: "white",
             }}
           >
-            <MenuItem value="">Select Frequency</MenuItem>
+            <MenuItem value="Once">Select Frequency</MenuItem>
             <MenuItem value="Every Day">Every Day</MenuItem>
             <MenuItem value="Every Week">Every Week</MenuItem>
             <MenuItem value="Every 2 Weeks">Every 2 Weeks</MenuItem>

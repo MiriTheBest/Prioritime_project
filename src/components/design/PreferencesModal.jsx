@@ -14,6 +14,7 @@ import Alert from "@mui/material/Alert";
 import { API_URL } from "../api/config";
 import { convertMinToDuration } from "../functions/convertMintoDuration";
 import { convertDurationToMin } from "../functions/convertDurationToMin";
+import { duration } from "moment";
 
 const PreferencesModal = ({ open, onClose, token }) => {
   const [activities, setActivities] = useState([]);
@@ -69,6 +70,8 @@ const PreferencesModal = ({ open, onClose, token }) => {
       return;
     }
 
+    newActivity.duration = newActivity.duration ? convertDurationToMin(newActivity.duration) : newActivity.duration
+
     let updatedActivities;
     if (editIndex >= 0) {
       // Editing existing activity
@@ -84,7 +87,6 @@ const PreferencesModal = ({ open, onClose, token }) => {
         setSnackbarOpen(true);
         return;
       }
-      newActivity.duration = convertDurationToMin(newActivity.duration)
       updatedActivities = [...activities, newActivity];
     }
 
@@ -99,7 +101,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
   };
 
   const handleEditActivity = (index) => {
-    setNewActivity(activities[index]);
+    setNewActivity({...activities[index], duration: activities[index].duration ? convertMinToDuration(activities[index].duration) : activities[index].duration});
     setEditIndex(index);
   };
 
@@ -177,7 +179,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
               <Box flexGrow={1}>
                 <p>
                   <strong>Name:</strong> {activity.name} <br />
-                  <strong>Duration:</strong> {convertMinToDuration(activity.duration)} <br />
+                  <strong>Duration:</strong> {activity.duration ? convertMinToDuration(activity.duration) : activity.duration} <br />
                   <strong>Time of Day:</strong> {activity.daytime} <br />
                   <strong>Days:</strong> {activity.days.map(day => daysOfWeek[day]).join(", ")} <br />
                   <strong>Description:</strong> {activity.description}
@@ -327,7 +329,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
         flexDirection="row"
         alignItems="center"
         mb={2}
-        sx={{ justifyContent: "space-between", gap: 2 }}
+        sx={{ justifyContent: "space-between" }}
       >
         <TextField
           label="Start Time"

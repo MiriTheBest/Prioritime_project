@@ -72,19 +72,32 @@ const DayPage = () => {
   const handleAutomateTask = async () => {
     try {
       if (clickedEvent) {
-        if (clickedEvent.allDay) {/*
+        if (clickedEvent.allDay) {
           const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");
-          const urlConcatStr = createStringForUrl(clickedEvent, { ...clickedEvent, start: formattedStart });
-          await deleteData(urlConcatStr, clickedEvent.type);
-          fetchTasksAndEvents(selectedDate);*/
+          const selectedTasks = [clickedEvent.id]
+          await axios.post(
+            API_URL + "/automatic_scheduling",
+            { 
+              tasks: selectedTasks,
+              start_date: formattedStart,
+              end_date: formattedStart
+            },
+            {
+              headers: {
+                Authorization: token,
+              },
+            }
+          );
+          fetchTasksAndEvents(selectedDate);
         } else {
           setAlertOpen(true);
         }
       }
     } catch (error) {
       console.error("Error automating task:", error);
-    }
+   }
   };
+
 
   const fetchTasksAndEvents = async (date) => {
     try {
