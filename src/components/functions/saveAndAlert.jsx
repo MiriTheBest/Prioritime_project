@@ -9,7 +9,7 @@ const saveAndAlert = async (formData, setAlertSeverity, setAlertMessage, setAler
       setAlertSeverity("success");
       setAlertMessage("Task/event saved successfully!");
     } else {
-      if(formData.status === "task") 
+      if(formData.status === "active") 
       response = await saveAutomateTask(formData, token);
       setAlertSeverity("success");
       setAlertMessage("Task saved and automated successfully!");
