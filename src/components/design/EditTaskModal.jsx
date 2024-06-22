@@ -49,28 +49,6 @@ const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
   //   setIsRecurring(task.isRecurring || false);
   // }, [task.isRecurring]);
 
-  // useEffect to update state when task changes
-  useEffect(() => {
-    if(task) {
-    setName(task.title || task.name);
-    setDuration(task.duration || "");
-    setSelectedDate(dayjs(task.deadline) ? dayjs(task.deadline) : null);
-    setSelectedTime(dayjs(task.deadline) ? dayjs(task.deadline) : null);
-    setLocation(task.location || "");
-    setDetails(task.description || "");
-    setIsRecurring((task.frequency != "Once") || false);
-    setFrequency(task.frequency || "");
-    if (task.category && !categories.includes(task.category)) {
-      setCustomCategory(task.category);
-      setCategory("Other");
-    } else {
-      setCategory(task.category || "");
-      setCustomCategory("");
-    }
-    setTags(task.tags || []);
-    }
-  }, [task]);
-
   // Function to combine date and time into a single string
   const formatDeadline = (date, time) => {
     if (!date || !time) return null;
@@ -256,82 +234,75 @@ const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
             label="Custom Category"
             id="customCategory"
             name="customCategory"
-            placeholder="Enter custom category"
             value={customCategory}
             onChange={(e) => setCustomCategory(e.target.value)}
-            fullWidth
-            margin="normal"
             size="small"
-            sx={{ backgroundColor: "white" }}
+            fullWidth
+            sx={{ backgroundColor: "white", marginTop: "10 px" }}
           />
         )}
-
         <TextField
           label="Location"
           id="location"
           name="location"
-          placeholder="Enter location"
+          placeholder="Enter location (optional)"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           fullWidth
-          margin="normal"
           size="small"
+          margin="normal"
           sx={{ backgroundColor: "white" }}
         />
-
         <TextField
+          id="outlined-multiline-static"
           label="Details"
-          id="details"
-          name="details"
-          placeholder="Enter details"
+          multiline
+          rows={2}
+          size="small"
           value={details}
           onChange={(e) => setDetails(e.target.value)}
-          fullWidth
-          multiline
-          rows={4}
-          margin="normal"
-          size="small"
+          style={{ width: "100%", margin: "10px 0" }}
           sx={{ backgroundColor: "white" }}
         />
         <div style={{ display: "flex", alignItems: "center", marginTop: "10px" }}>
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <AddIcon />
-          <TextField
-            placeholder="Add Tag"
-            size="small"
-            value={tagInput}
-            onChange={handleTagInput}
-            onBlur={handleAddTag}
-            onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
-          />
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <AddIcon />
+            <TextField
+              placeholder="Add Tag"
+              size="small"
+              value={tagInput}
+              onChange={handleTagInput}
+              onBlur={handleAddTag}
+              onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
+            />
+          </div>
+        </div>
+        <div style={{ marginTop: "10px" }}>
+          {tags.map((tag, index) => (
+            <Chip
+              key={index}
+              label={`#${tag}`}
+              onDelete={() => handleDeleteTag(index)}
+              style={{ marginRight: "5px", backgroundColor: "#79DAE8" }}
+            />
+          ))}
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <Button variant="contained" color="primary" onClick={() => handleSave()}>
+            Save
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            style={{ marginLeft: 10 }}
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
         </div>
       </div>
-    <div style={{ marginTop: "10px" }}>
-      {tags.map((tag, index) => (
-        <Chip
-          key={index}
-          label={`#${tag}`}
-          onDelete={() => handleDeleteTag(index)}
-          style={{ marginRight: "5px", backgroundColor: "#79DAE8" }}
-        />
-      ))}
-    </div>
-
-    <div style={{ display: "flex", justifyContent: "flex-end" }}>
-      <Button variant="contained" color="primary" onClick={() => handleSave()}>
-        Save
-      </Button>
-      <Button
-        variant="outlined"
-        color="secondary"
-        style={{ marginLeft: 10 }}
-        onClick={onClose}
-      >
-        Cancel
-      </Button>
-    </div>
-  </div>
-</Modal>
+    </Modal>
   );
 };
 
