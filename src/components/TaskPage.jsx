@@ -11,7 +11,7 @@ import {
   Snackbar,
   Switch,
   FormControlLabel,
-  LinearProgress, // Import LinearProgress
+  LinearProgress,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from "@mui/icons-material/Sort";
@@ -163,15 +163,14 @@ const TaskPage = () => {
             }
           );
 
-          // Format the alert message with scheduling information
           const scheduledTasks = response.data.scheduled_tasks;
           const formattedMessage = scheduledTasks.map(task => {
-            if (task.start_date) {
-              return `"${task.name}" scheduled to ${task.start_date}`;
+            if (task.start_time) {
+              return `"${task.name}" scheduled to ${task.start_time}`;
             } else {
               return `"${task.name}" not scheduled`;
             }
-          }).join("\n");
+          }).join("/n");
 
           setAlertSeverity("success");
           setAlertMessage(formattedMessage);
@@ -344,7 +343,7 @@ const TaskPage = () => {
         onClose={handleAlertClose}
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
-        <Alert onClose={handleAlertClose} severity={alertSeverity} sx={{ width: '100%' }}>
+        <Alert onClose={handleAlertClose} severity={alertSeverity} sx={{ width: "100%", whiteSpace: "pre-line" }}>
           {alertMessage}
         </Alert>
       </Snackbar>
