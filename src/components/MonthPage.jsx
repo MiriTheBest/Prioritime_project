@@ -56,7 +56,7 @@ const MonthPage = () => {
   const handleReAutomate = async () => {
     try {
       console.log("Re-automating this month");
-      await automateMonthOrDay(token, currentYearMonth);
+      await automateMonthOrDay(token, "?month=" + currentYearMonth);
       // Fetch updated event data after re-automation
       await fetchEventData(currentYearMonth);
       setAlertSeverity("success");

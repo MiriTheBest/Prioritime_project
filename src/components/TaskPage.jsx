@@ -11,6 +11,7 @@ import {
   Snackbar,
   Switch,
   FormControlLabel,
+  LinearProgress, // Import LinearProgress
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import SortIcon from "@mui/icons-material/Sort";
@@ -152,7 +153,7 @@ const TaskPage = () => {
     if (isSelectingForAutomation) {
       if (selectedTasks.length > 0) {
         try {
-          await axios.post(
+          const response = await axios.post(
             API_URL + "/automatic_scheduling",
             { tasks: selectedTasks },
             {
@@ -161,10 +162,22 @@ const TaskPage = () => {
               },
             }
           );
+
+          // Format the alert message with scheduling information
+          const scheduledTasks = response.data.scheduled_tasks;
+          const formattedMessage = scheduledTasks.map(task => {
+            if (task.start_date) {
+              return `"${task.name}" scheduled to ${task.start_date}`;
+            } else {
+              return `"${task.name}" not scheduled`;
+            }
+          }).join("\n");
+
           setAlertSeverity("success");
-          setAlertMessage("Tasks sent for automation");
+          setAlertMessage(formattedMessage);
           setAlertOpen(true);
           setSelectedTasks([]);
+          fetchTasks();
         } catch (error) {
           console.error("Error sending tasks for automation", error);
           setAlertSeverity("error");
@@ -178,7 +191,6 @@ const TaskPage = () => {
       }
     }
     setIsSelectingForAutomation(!isSelectingForAutomation);
-    fetchTasks();
   };
 
   const handleTaskClick = (task) => {
@@ -232,11 +244,6 @@ const TaskPage = () => {
     default:
       break;
   }
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
 
   return (
     <div style={{ padding: "3rem" }}>
@@ -314,19 +321,23 @@ const TaskPage = () => {
           />
         </Grid>
       </Grid>
-      <Grid container spacing={2}>
-        {sortedTasks.map((task) => (
-          <Grid item key={task.id} xs={12} md={6} lg={4}>
-            <TaskCard
-              task={task}
-              onMarkDone={handleMarkDone}
-              onSave={handleSave}
-              selected={isSelectingForAutomation && selectedTasks.includes(task.id)}
-              onClick={handleTaskClick}
-            />
-          </Grid>
-        ))}
-      </Grid>
+      {loading ? (
+        <LinearProgress /> // Show LinearProgress while loading
+      ) : (
+        <Grid container spacing={2}>
+          {sortedTasks.map((task) => (
+            <Grid item key={task.id} xs={12} md={6} lg={4}>
+              <TaskCard
+                task={task}
+                onMarkDone={handleMarkDone}
+                onSave={handleSave}
+                selected={isSelectingForAutomation && selectedTasks.includes(task.id)}
+                onClick={handleTaskClick}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
       <Snackbar
         open={alertOpen}
         autoHideDuration={5000}
