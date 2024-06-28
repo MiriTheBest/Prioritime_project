@@ -296,7 +296,7 @@ const AddEventPage = () => {
           <MenuItem value="Work">Work</MenuItem>
           <MenuItem value="Other">Other</MenuItem>
         </Select>
-        {selectedCategory === "other" && (
+        {selectedCategory === "Other" && (
           <TextField
             label="Custom Category"
             id="customCategory"
