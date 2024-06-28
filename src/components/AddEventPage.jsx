@@ -133,7 +133,7 @@ const AddEventPage = () => {
     const isRecurring = isRecurring;
     const frequency = isRecurring ? frequency : "Once";
 
-    const finalSelectedCategory = selectedCategory === "other" ? customCategory : selectedCategory;
+    const finalSelectedCategory = selectedCategory === "Other" ? customCategory : selectedCategory;
 
     // Extract tags from state array
     //const tags = [...tags]; // Create a copy to avoid mutation

@@ -98,7 +98,7 @@ const AddPage = () => {
     }
 
     // Determine selected category based on custom input or predefined value
-    const finalSelectedCategory = selectedCategory === "other" ? customCategory : selectedCategory;
+    const finalSelectedCategory = selectedCategory === "Other" ? customCategory : selectedCategory;
     const taskData = {
       name,
       deadline:selectedDateTime,
