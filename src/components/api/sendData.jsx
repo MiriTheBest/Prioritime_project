@@ -8,7 +8,7 @@ const sendData = async (newData, token) => {
     if (newData.type === 'event') {
       // Send data to event endpoint
       response = await axios.post(
-        `${API_URL}/add_event`,
+        `${API_URL}/add_event/`,
         newData,
         {
           headers: {

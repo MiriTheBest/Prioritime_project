@@ -166,11 +166,11 @@ const TaskPage = () => {
           const scheduledTasks = response.data.scheduled_tasks;
           const formattedMessage = scheduledTasks.map(task => {
             if (task.start_time) {
-              return `"${task.name}" scheduled to ${task.start_time}`;
+              return `"${task.name}" scheduled to ${task.start_time.replace('T',' ')}`;
             } else {
               return `"${task.name}" not scheduled`;
             }
-          }).join("/n");
+          }).join("\n");
 
           setAlertSeverity("success");
           setAlertMessage(formattedMessage);

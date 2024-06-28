@@ -18,6 +18,9 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
+import saveAndAlert from "./functions/saveAndAlert";
+import AddAlert from "./design/AddAlert";
+import dayjs from "dayjs";
 
 const AddEventPage = () => {
   const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -32,6 +35,7 @@ const AddEventPage = () => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("Once");
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [customCategory, setCustomCategory] = useState("");
   const [tags, setTags] = useState([]); // State for tags
   const [reminder, setReminder] = useState(""); // State for reminder
   const [anchorEl, setAnchorEl] = useState(null); // Anchor element for reminder menu
@@ -78,8 +82,10 @@ const AddEventPage = () => {
     nameRef.current.value = "";
     locationRef.current.value = "";
     detailsRef.current.value = "";
+    setSelectedCategory("");
+    setCustomCategory("");
     setIsRecurring(false);
-    setFrequency("");
+    setFrequency("Once");
     setTags([]);
     setReminder("");
     setTagInput("");
@@ -96,10 +102,10 @@ const AddEventPage = () => {
   }
 
     // Get date and time from date pickers (assuming using @mui/x-date-pickers)
-    const startDateValue = startDate ? startDate.toDate() : null;
-    const startTimeValue = startTime ? startTime.toDate() : null;
-    const endDateValue = endDate ? endDate.toDate() : null;
-    const endTimeValue = endTime ? endTime.toDate() : null;
+    let startDateValue = startDate ? startDate.toDate() : null;
+    let startTimeValue = startTime ? startTime.toDate() : null;
+    let endDateValue = endDate ? endDate.toDate() : null;
+    let endTimeValue = endTime ? endTime.toDate() : null;
 
 
     if (startDateValue && startTimeValue) {
@@ -109,7 +115,7 @@ const AddEventPage = () => {
     }
 
     if(startDateValue) {
-      startDateValue = startDateValue.toISOString;
+      startDateValue = dayjs(startDateValue).format("YYYY-MM-DDTHH:mm:ss");
     }
 
     if (endDateValue && endTimeValue) {
@@ -119,7 +125,7 @@ const AddEventPage = () => {
     }
 
     if(endDateValue) {
-      endDateValue = endDateValue.toISOString;
+      endDateValue = dayjs(endDateValue).format("YYYY-MM-DDTHH:mm:ss");
     }
 
     const location = locationRef.current.value;
@@ -127,26 +133,24 @@ const AddEventPage = () => {
     const isRecurring = isRecurring;
     const frequency = isRecurring ? frequency : "Once";
 
-    const selectedCategory = selectedCategory;
+    const finalSelectedCategory = selectedCategory === "other" ? customCategory : selectedCategory;
 
     // Extract tags from state array
-    const tags = [...tags]; // Create a copy to avoid mutation
+    //const tags = [...tags]; // Create a copy to avoid mutation
 
     // Set reminder to "once" if not chosen
-    const reminder = reminder ? reminder : "Once";
+    //const reminder = reminder ? reminder : "Once";
 
     // 3. Prepare data for database
     const eventData = {
       name,
-      startDate,
-      startTime,
-      endDate,
-      endTime,
+      start_time: startDateValue,
+      end_time: endDateValue,
       location,
-      details,
+      description: details,
       isRecurring,
-      frequency,
-      selectedCategory,
+      frequency: isRecurring ? frequency : "Once",
+      category: finalSelectedCategory,
       tags,
       reminder,
       status: "active",
@@ -267,11 +271,11 @@ const AddEventPage = () => {
               backgroundColor: "white",
             }}
           >
-            <MenuItem value="">Select Frequency</MenuItem>
-            <MenuItem value="everyDay">Every Day</MenuItem>
-            <MenuItem value="everyWeek">Every Week</MenuItem>
-            <MenuItem value="every2Weeks">Every 2 Weeks</MenuItem>
-            <MenuItem value="everyMonth">Every Month</MenuItem>
+            <MenuItem value="Once">Select Frequency</MenuItem>
+            <MenuItem value="Every Day">Every Day</MenuItem>
+            <MenuItem value="Every Week">Every Week</MenuItem>
+            <MenuItem value="Every 2 Weeks">Every 2 Weeks</MenuItem>
+            <MenuItem value="Every Month">Every Month</MenuItem>
           </Select>
         )}
 
@@ -292,13 +296,15 @@ const AddEventPage = () => {
           <MenuItem value="Work">Work</MenuItem>
           <MenuItem value="Other">Other</MenuItem>
         </Select>
-        {selectedCategory === "Other" && (
+        {selectedCategory === "other" && (
           <TextField
             label="Custom Category"
             id="customCategory"
             name="customCategory"
+            value={customCategory}
+            onChange={(e) => setCustomCategory(e.target.value)}
             fullWidth
-            sx={{ backgroundColor: "white", marginTop: "10px" }}
+            sx={{ backgroundColor: "white" }}
           />
         )}
         <TextField
