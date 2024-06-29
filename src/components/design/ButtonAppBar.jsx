@@ -55,6 +55,7 @@ export default function ButtonAppBar({ isAuthenticated, onLogout }) {  // Added 
     localStorage.removeItem("isAuthenticated");
     localStorage.removeItem("token");
     onLogout();
+    handleClose();
     navigate("/");
   };
 

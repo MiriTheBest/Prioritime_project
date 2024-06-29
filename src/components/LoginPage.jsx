@@ -22,7 +22,6 @@ export default function SignInSide({ onAuthorization }) {
     email: '',
     password: ''
   });
-  const [error, setError] = useState('');
   const [alert, setAlert] = useState({ message: "", severity: "" });
 
   const handleChange = (e) => {
@@ -32,6 +31,15 @@ export default function SignInSide({ onAuthorization }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!formData.email || !formData.password) {
+      setAlert({ message: "Email and password are required.", severity: "error" });
+      setTimeout(() => {
+        setAlert({ message: "", severity: "" });
+      }, 5000); // Clear the alert after 5 seconds
+      return;
+    }
+
     try {
       const endpoint = API_URL + '/login';
       const response = await axios.post(endpoint, formData);
@@ -39,8 +47,10 @@ export default function SignInSide({ onAuthorization }) {
       localStorage.setItem('token', token);
       onAuthorization(true);
     } catch (error) {
-      setError(error.response.data.message); // Assuming your backend returns error messages
       setAlert({ message: error.response?.data?.message || "An error occurred while saving.", severity: "error" });
+      setTimeout(() => {
+        setAlert({ message: "", severity: "" });
+      }, 5000); // Clear the alert after 5 seconds
     }
   };
 
@@ -63,11 +73,11 @@ export default function SignInSide({ onAuthorization }) {
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        {alert.message && (
-          <Alert severity={alert.severity} sx={{ mb: 2 }}>
-            {alert.message}
-          </Alert>
-        )}
+          {alert.message && (
+            <Alert severity={alert.severity} sx={{ mb: 2 }}>
+              {alert.message}
+            </Alert>
+          )}
           <Box
             sx={{
               my: 8,
@@ -108,11 +118,6 @@ export default function SignInSide({ onAuthorization }) {
                 value={formData.password}
                 onChange={handleChange}
               />
-              {error && (
-                <Typography color="error" variant="body2">
-                  {error}
-                </Typography>
-              )}
               <Button
                 type="submit"
                 fullWidth

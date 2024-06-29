@@ -22,6 +22,7 @@ const DayPage = () => {
   const location = useLocation();
   const initialSelectedDate = location.state?.selectedDate || new Date(); // Default to current date if not provided
   const [selectedDate, setSelectedDate] = useState(initialSelectedDate);
+  const [yearViewOpen, setYearViewOpen] = useState(false); // State to track if yearView is open
   const token = localStorage.getItem('token');
   
   // State to store fetched events
@@ -97,7 +98,6 @@ const DayPage = () => {
       console.error("Error automating task:", error);
    }
   };
-
 
   const fetchTasksAndEvents = async (date) => {
     try {
@@ -284,6 +284,7 @@ const DayPage = () => {
         handleAutomate={handleAutomate}
         handleDeleteDay={handleDelete}
         handleAutomateTask={handleAutomateTask}
+        yearViewOpen={yearViewOpen} // Pass yearViewOpen state as prop
       />
       {(clickedEvent && isEditEventModalOpen) && (
         <EditEventModal

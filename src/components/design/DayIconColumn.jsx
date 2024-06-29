@@ -7,7 +7,7 @@ import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import ModalConfirm from "./ModalConfirm";
 
-const DayIconColumn = ({ handleEdit, handleAutomate, handleDeleteDay, handleAutomateTask }) => {
+const DayIconColumn = ({ handleEdit, handleAutomate, handleDeleteDay, handleAutomateTask, yearViewOpen }) => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isAutomateModalOpen, setIsAutomateModalOpen] = useState(false);
   const [isAutomateTaskModalOpen, setIsAutomateTaskModalOpen] = useState(false);
@@ -54,8 +54,11 @@ const DayIconColumn = ({ handleEdit, handleAutomate, handleDeleteDay, handleAuto
         }}
       />
       <Tooltip title="Edit Task/Event">
-        <IconButton sx={{ backgroundColor: "#0AA1DD", margin: "10px" }}
-        onClick={handleEdit}>
+        <IconButton
+          sx={{ backgroundColor: "#0AA1DD", margin: "10px" }}
+          onClick={handleEdit}
+          disabled={yearViewOpen}
+        >
           <EditCalendarIcon />
         </IconButton>
       </Tooltip>
@@ -63,6 +66,7 @@ const DayIconColumn = ({ handleEdit, handleAutomate, handleDeleteDay, handleAuto
         <IconButton
           sx={{ backgroundColor: "#0AA1DD", margin: "10px" }}
           onClick={handleDeleteConfirmation}
+          disabled={yearViewOpen}
         >
           <DeleteForeverIcon />
         </IconButton>
@@ -71,6 +75,7 @@ const DayIconColumn = ({ handleEdit, handleAutomate, handleDeleteDay, handleAuto
         <IconButton
           sx={{ backgroundColor: "#0AA1DD", margin: "10px" }}
           onClick={handleAutomateTaskConfirmation}
+          disabled={yearViewOpen}
         >
           <ScheduleSendIcon />
         </IconButton>
@@ -79,6 +84,7 @@ const DayIconColumn = ({ handleEdit, handleAutomate, handleDeleteDay, handleAuto
         <IconButton
           sx={{ backgroundColor: "#0AA1DD", margin: "10px" }}
           onClick={handleAutomateConfirmation}
+          disabled={yearViewOpen}
         >
           <AutorenewRoundedIcon />
         </IconButton>

@@ -22,8 +22,6 @@ const ProfileModal = ({ open, onClose, token }) => {
       const timer = setTimeout(() => {
         onClose();
       }, 5000); // Set the timeout for 5 seconds
-
-      return () => clearTimeout(timer); // Clear the timeout if the component unmounts or the modal closes
     }
   }, [open]);
 
