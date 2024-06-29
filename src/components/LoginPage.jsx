@@ -47,7 +47,7 @@ export default function SignInSide({ onAuthorization }) {
       localStorage.setItem('token', token);
       onAuthorization(true);
     } catch (error) {
-      setAlert({ message: error.response?.data?.message || "An error occurred while saving.", severity: "error" });
+      setAlert({ message: error.response?.data?.error || "An error occurred while saving.", severity: "error" });
       setTimeout(() => {
         setAlert({ message: "", severity: "" });
       }, 5000); // Clear the alert after 5 seconds

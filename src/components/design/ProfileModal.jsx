@@ -19,9 +19,6 @@ const ProfileModal = ({ open, onClose, token }) => {
   useEffect(() => {
     if (open) {
       fetchProfile();
-      const timer = setTimeout(() => {
-        onClose();
-      }, 5000); // Set the timeout for 5 seconds
     }
   }, [open]);
 
@@ -41,12 +38,14 @@ const ProfileModal = ({ open, onClose, token }) => {
   const saveProfile = async () => {
     if (!profile.firstName || !profile.lastName || !profile.email) {
       setAlert({ message: "All fields are required.", severity: "error" });
+      setTimeout(() => setAlert({ message: "", severity: "" }), 5000); // Clear alert after 5 seconds
       return;
     }
 
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(profile.email)) {
       setAlert({ message: "Please enter a valid email address.", severity: "error" });
+      setTimeout(() => setAlert({ message: "", severity: "" }), 5000); // Clear alert after 5 seconds
       return;
     }
 
@@ -60,6 +59,7 @@ const ProfileModal = ({ open, onClose, token }) => {
     } catch (error) {
       console.error("Error saving profile:", error);
       setAlert({ message: error.response?.data?.message || "An error occurred while saving.", severity: "error" });
+      setTimeout(() => setAlert({ message: "", severity: "" }), 5000); // Clear alert after 5 seconds
     }
   };
 
