@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Alert from "@mui/material/Alert";
 import { API_URL } from "../api/config";
 
 const ProfileModal = ({ open, onClose, token }) => {
@@ -13,9 +14,16 @@ const ProfileModal = ({ open, onClose, token }) => {
     email: ""
   });
 
+  const [alert, setAlert] = useState({ message: "", severity: "" });
+
   useEffect(() => {
     if (open) {
       fetchProfile();
+      const timer = setTimeout(() => {
+        onClose();
+      }, 5000); // Set the timeout for 5 seconds
+
+      return () => clearTimeout(timer); // Clear the timeout if the component unmounts or the modal closes
     }
   }, [open]);
 
@@ -33,6 +41,17 @@ const ProfileModal = ({ open, onClose, token }) => {
   };
 
   const saveProfile = async () => {
+    if (!profile.firstName || !profile.lastName || !profile.email) {
+      setAlert({ message: "All fields are required.", severity: "error" });
+      return;
+    }
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(profile.email)) {
+      setAlert({ message: "Please enter a valid email address.", severity: "error" });
+      return;
+    }
+
     try {
       await axios.put(API_URL + '/update_user_info', profile, {
         headers: {
@@ -42,12 +61,14 @@ const ProfileModal = ({ open, onClose, token }) => {
       onClose(); // Close the modal after saving
     } catch (error) {
       console.error("Error saving profile:", error);
+      setAlert({ message: error.response?.data?.message || "An error occurred while saving.", severity: "error" });
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setProfile({ ...profile, [name]: value });
+    setAlert({ message: "", severity: "" }); // Clear any previous alerts when the user starts typing
   };
 
   return (
@@ -65,6 +86,11 @@ const ProfileModal = ({ open, onClose, token }) => {
         }}
       >
         <h2>Profile</h2>
+        {alert.message && (
+          <Alert severity={alert.severity} sx={{ mb: 2 }}>
+            {alert.message}
+          </Alert>
+        )}
         <TextField
           label="First Name"
           name="firstName"

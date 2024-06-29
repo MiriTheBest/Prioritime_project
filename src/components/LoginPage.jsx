@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { API_URL } from './api/config';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
+import Alert from "@mui/material/Alert";
 
 const defaultTheme = createTheme();
 
@@ -22,6 +23,7 @@ export default function SignInSide({ onAuthorization }) {
     password: ''
   });
   const [error, setError] = useState('');
+  const [alert, setAlert] = useState({ message: "", severity: "" });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,13 +33,14 @@ export default function SignInSide({ onAuthorization }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const endpoint = API_URL + '/login'; // Assuming login endpoint
+      const endpoint = API_URL + '/login';
       const response = await axios.post(endpoint, formData);
-      const token = response.data.token; // Assuming your backend returns a token upon successful login
+      const token = response.data.token;
       localStorage.setItem('token', token);
       onAuthorization(true);
     } catch (error) {
       setError(error.response.data.message); // Assuming your backend returns error messages
+      setAlert({ message: error.response?.data?.message || "An error occurred while saving.", severity: "error" });
     }
   };
 
@@ -60,6 +63,11 @@ export default function SignInSide({ onAuthorization }) {
           }}
         />
         <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        {alert.message && (
+          <Alert severity={alert.severity} sx={{ mb: 2 }}>
+            {alert.message}
+          </Alert>
+        )}
           <Box
             sx={{
               my: 8,

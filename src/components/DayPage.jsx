@@ -148,7 +148,7 @@ const DayPage = () => {
       const allDayTasks = taskData.task_list.map(task => ({
         id: task._id,
         title: task.name, // Use task name for all-day display
-        extendedProps: {duration: convertMinToDuration(task.duration) || '', deadline: task.deadline}, // Convert duration using the function
+        extendedProps: {duration: task.duration ? convertMinToDuration(task.duration) : '', deadline: task.deadline},
         allDay: true, // Mark as all-day task
         start: task.deadline, // Use deadline as start
         category: task.category,
