@@ -38,7 +38,7 @@ const DayPage = () => {
   const handleAutomate = async () => {
     const formattedDate = moment(selectedDate).format('YYYY-MM-DD');
     try {
-      await automateMonthOrDay(token, formattedDate);
+      await automateMonthOrDay(token, "?date=" + formattedDate);
       // Fetch updated event data after re-automation
       await fetchTasksAndEvents(formattedDate);
     } catch (error) {
@@ -101,7 +101,7 @@ const DayPage = () => {
 
   const fetchTasksAndEvents = async (date) => {
     try {
-      const formattedDate = new Date(date).toISOString().split('T')[0];
+      const formattedDate = dayjs(date).format('YYYY-MM-DD');
       const taskResponse = await axios.get(
         `${API_URL}/get_task_list/?date=${formattedDate}`,
         {

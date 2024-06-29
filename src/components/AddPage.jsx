@@ -94,7 +94,7 @@ const AddPage = () => {
     }
 
     if (selectedDateTime) {
-      selectedDateTime = dayjs(startDateTime).format("YYYY-MM-DDTHH:mm:ss"); // Removing timezone
+      selectedDateTime = dayjs(selectedDateTime).format("YYYY-MM-DDTHH:mm:ss"); // Removing timezone
     }
 
     // Determine selected category based on custom input or predefined value

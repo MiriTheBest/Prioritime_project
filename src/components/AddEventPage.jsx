@@ -130,7 +130,6 @@ const AddEventPage = () => {
 
     const location = locationRef.current.value;
     const details = detailsRef.current.value;
-    const isRecurring = isRecurring;
     const frequency = isRecurring ? frequency : "Once";
 
     const finalSelectedCategory = selectedCategory === "Other" ? customCategory : selectedCategory;
