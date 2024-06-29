@@ -22,14 +22,14 @@ function MainDrawer({ open, onClose }) {
 
     switch (text) {
       case "Month":
-        navigate("/month"); // Navigate to MonthPage using its route path
+        navigate("/month");
         break;
       case "Day":
         const today = new Date().toISOString().split("T")[0]; // Get today's date string
         navigate(`/day`, { state: { selectedDate: today } }); // Pass today's date
         break;
       case "Tasks":
-        navigate("/tasks"); // Navigate to TaskPage using its route path
+        navigate("/tasks");
         break;
 
       case "Add Task":
@@ -56,9 +56,9 @@ function MainDrawer({ open, onClose }) {
           <ListItem key={text} disablePadding>
             <ListItemButton onClick={() => handleListItemClick(text)}>
               <ListItemIcon>
-                {index === 0 && <CalendarMonthIcon />} {/* Icon for "Month" */}
-                {index === 1 && <CalendarTodayIcon />} {/* Icon for "Day" */}
-                {index === 2 && <TaskIcon />} {/* Icon for "Tasks" */}
+                {index === 0 && <CalendarMonthIcon />} 
+                {index === 1 && <CalendarTodayIcon />}
+                {index === 2 && <TaskIcon />}
               </ListItemIcon>
               <ListItemText primary={text} />
             </ListItemButton>

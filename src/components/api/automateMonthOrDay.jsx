@@ -8,7 +8,7 @@ try {
       {},
       {
         headers: {
-          Authorization: `${token}` // Add token to Authorization header
+          Authorization: `${token}`
         }
       }
     );

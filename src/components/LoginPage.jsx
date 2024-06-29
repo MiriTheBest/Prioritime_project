@@ -36,7 +36,7 @@ export default function SignInSide({ onAuthorization }) {
       setAlert({ message: "Email and password are required.", severity: "error" });
       setTimeout(() => {
         setAlert({ message: "", severity: "" });
-      }, 5000); // Clear the alert after 5 seconds
+      }, 5000);
       return;
     }
 
@@ -45,12 +45,12 @@ export default function SignInSide({ onAuthorization }) {
       const response = await axios.post(endpoint, formData);
       const token = response.data.token;
       localStorage.setItem('token', token);
-      onAuthorization(true);
+      onAuthorization(true);//set flag that the user is authorized succesfully
     } catch (error) {
       setAlert({ message: error.response?.data?.error || "An error occurred while saving.", severity: "error" });
       setTimeout(() => {
         setAlert({ message: "", severity: "" });
-      }, 5000); // Clear the alert after 5 seconds
+      }, 5000);
     }
   };
 

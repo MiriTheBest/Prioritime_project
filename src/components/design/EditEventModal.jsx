@@ -19,7 +19,7 @@ import AddCommentIcon from "@mui/icons-material/AddComment";
 import dayjs from "dayjs";
 
 const EditEventModal = ({ open, onClose, event, onSave }) => {
-  const settings = { collapseExtendedProps: true };
+  const settings = { collapseExtendedProps: true }; //transform FullCalendar object to a regular one
   event = event.toPlainObject(settings);
   console.log('event', event);
 
@@ -50,15 +50,11 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
     return event.category || "";
   });
 
-  // useEffect(() => {
-  //   setIsRecurring(event.isRecurring || false);
-  // }, [event.isRecurring]);
-
   const handleSave = async () => {
     const updatedEvent = {
       ...event,
       title: name,
-      start: dayjs(startDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"), // Removing timezone
+      start: dayjs(startDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"),
       end: dayjs(endDateTimeValue).format("YYYY-MM-DDTHH:mm:ss"),
       location: location,
       description: details,
@@ -88,7 +84,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
   const handleAddTag = () => {
     if (tagInput.trim() !== "") {
       setTags([...tags, tagInput.trim()]);
-      setTagInput("");  // Clear the input after adding
+      setTagInput("");
     }
   };
 
@@ -200,7 +196,7 @@ const EditEventModal = ({ open, onClose, event, onSave }) => {
               backgroundColor: "white",
             }}
           >
-            <MenuItem value="Once">Select Frequency</MenuItem>
+            <MenuItem value="Once">Once</MenuItem>
             <MenuItem value="Every Day">Every Day</MenuItem>
             <MenuItem value="Every Week">Every Week</MenuItem>
             <MenuItem value="Every 2 Weeks">Every 2 Weeks</MenuItem>

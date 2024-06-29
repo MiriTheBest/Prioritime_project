@@ -24,7 +24,7 @@ const MonthPage = () => {
         `${API_URL}/get_monthly_schedule/${yearMonth}`,
         {
           headers: {
-            Authorization: `${token}` // Add token to Authorization header
+            Authorization: `${token}`
           }
         }
       );
@@ -48,7 +48,7 @@ const MonthPage = () => {
   };
 
   const onSelect = (date) => {
-    const formattedDate = date.format("YYYY-MM-DD");
+    const formattedDate = date.format("YYYY-MM-DD");//make sure the format is right
     setSelectedDate(formattedDate);
     console.log("Selected date:", formattedDate);
   };
@@ -77,7 +77,7 @@ const MonthPage = () => {
         { day_off: isDayOff },
         {
           headers: {
-            Authorization: `${token}`, // Add token to Authorization header
+            Authorization: `${token}`,
             'Content-Type': 'application/json'
           }
         }
@@ -95,7 +95,7 @@ const MonthPage = () => {
   };
 
   const handleSetDayOff = () => {
-    if (selectedDate) {
+    if (selectedDate) {//find the right day
       const dayData = eventList.find(day => `${currentYearMonth}-${String(day.date).padStart(2, '0')}` === selectedDate);
       const newDayOffStatus = !dayData?.day_off;
       setDayOff(selectedDate, newDayOffStatus).then(() => {
@@ -114,7 +114,7 @@ const MonthPage = () => {
 
   const cellRender = (date, mode) => {
     if (mode === "year") {
-      return <span>...</span>; // Placeholder content in year view
+      return <span>...</span>; //handle the year view to be free of tasks and events
     } else {
       const dayOfMonth = date.date();
       const isCurrentMonth = date.format("YYYY-MM") === currentYearMonth;

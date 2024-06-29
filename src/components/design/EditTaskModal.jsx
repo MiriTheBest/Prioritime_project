@@ -20,18 +20,18 @@ import dayjs from "dayjs";
 
 const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
   if(isFromCalendar) {
-    const settings = { collapseExtendedProps: true };
+    const settings = { collapseExtendedProps: true };//transform FullCalendar object to a regular one if sent from DayPage
     task = task.toPlainObject(settings);
   }
   const categories = ["Personal", "Home", "Sport", "School", "Work", "Other"];
-  const [name, setName] = useState(task.title || task.name); // State for name, pre-populated with existing name or empty string
-  const [duration, setDuration] = useState(task.duration || ""); // Pre-populate with existing duration
+  const [name, setName] = useState(task.title || task.name);
+  const [duration, setDuration] = useState(task.duration || "");
 
-  const [selectedDate, setSelectedDate] = useState(dayjs(task.deadline) || null); // Pre-populate with existing deadline date
-  const [selectedTime, setSelectedTime] = useState(dayjs(task.deadline) || null); // Pre-populate with existing deadline time
-  const [location, setLocation] = useState(task.location || ""); // Pre-populate with existing location
-  const [details, setDetails] = useState(task.description || ""); // Pre-populate with existing description
-  const [isRecurring, setIsRecurring] = useState((task.frequency != "Once") || false); // Initialize based on task property
+  const [selectedDate, setSelectedDate] = useState(dayjs(task.deadline) || null);
+  const [selectedTime, setSelectedTime] = useState(dayjs(task.deadline) || null);
+  const [location, setLocation] = useState(task.location || ""); 
+  const [details, setDetails] = useState(task.description || "");
+  const [isRecurring, setIsRecurring] = useState((task.frequency != "Once") || false);
   const [frequency, setFrequency] = useState(task.frequency || "");
   const [customCategory, setCustomCategory] = useState(task.category && !categories.includes(task.category) ? task.category : "");
   const [category, setCategory] = useState(() => {
@@ -44,10 +44,6 @@ const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
   
   const [tags, setTags] = useState(task.tags || []);
   const [tagInput, setTagInput] = useState("");
-
-  // useEffect(() => {
-  //   setIsRecurring(task.isRecurring || false);
-  // }, [task.isRecurring]);
 
   // Function to combine date and time into a single string
   const formatDeadline = (date, time) => {
@@ -199,7 +195,7 @@ const EditTaskModal = ({ open, onClose, task, onSave, isFromCalendar }) => {
               backgroundColor: "white",
             }}
           >
-            <MenuItem value="Once">Select Frequency</MenuItem>
+            <MenuItem value="Once">Once</MenuItem>
             <MenuItem value="Every Day">Every Day</MenuItem>
             <MenuItem value="Every Week">Every Week</MenuItem>
             <MenuItem value="Every 2 Weeks">Every 2 Weeks</MenuItem>

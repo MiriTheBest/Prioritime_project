@@ -20,7 +20,7 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false); // User authentication state
 
   useEffect(() => {
-    // Check for existing authentication (e.g., local storage, cookies)
+    // Check for existing authentication
     const storedAuth = localStorage.getItem('isAuthenticated');
     setIsAuthenticated(storedAuth === 'true');
   }, []);  // Run only on initial render
@@ -28,7 +28,7 @@ function App() {
   const handleAuthorization = (success) => {
     setIsAuthenticated(success);
     if (success) {
-      // Store authentication state (e.g., local storage)
+      // Store authentication state
       localStorage.setItem("isAuthenticated", "true");
     } else {
       // Handle failed authorization

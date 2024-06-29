@@ -28,7 +28,7 @@ const DayPage = () => {
   // State to store fetched events
   const [events, setEvents] = useState([]);
   const [clickedEvent, setClickedEvent] = useState(null);
-  const [clickedEventId, setClickedEventId] = useState(null); // State to track clicked event ID
+  const [clickedEventId, setClickedEventId] = useState(null);
 
   // State to control the visibility of the modals
   const [isEditTaskModalOpen, setIsEditTaskModalOpen] = useState(false);
@@ -47,7 +47,7 @@ const DayPage = () => {
     }
   };
 
-  function createStringForUrl(clickedEvent, originalEvent) {
+  function createStringForUrl(clickedEvent, originalEvent) {//create a string for url depending on type
     let idOrIdDateString;
     if (clickedEvent.allDay) {
       idOrIdDateString = clickedEvent.id;
@@ -60,7 +60,7 @@ const DayPage = () => {
   const handleDelete = async () => {
     try {
       if (clickedEvent) {
-        const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");
+        const formattedStart = dayjs(clickedEvent.start).format("YYYY-MM-DDTHH:mm:ss");//make sure the string is in right format
         const urlConcatStr = createStringForUrl(clickedEvent, { ...clickedEvent, start: formattedStart });
         await deleteData(urlConcatStr, clickedEvent.extendedProps.type);
         fetchTasksAndEvents(selectedDate);
@@ -89,7 +89,7 @@ const DayPage = () => {
               },
             }
           );
-          fetchTasksAndEvents(selectedDate);
+          fetchTasksAndEvents(selectedDate);//fetch data after successful automation
         } else {
           setAlertOpen(true);
         }
@@ -125,6 +125,7 @@ const DayPage = () => {
       const eventList = response.data.event_list;
 
       // Transform tasks and events into FullCalendar's event format
+      // Although there are fields that we need to be like in original object, them we put inside extendedProps
       const transformedEvents = eventList.map(item => {
         return {
           id: item._id,
@@ -140,8 +141,8 @@ const DayPage = () => {
           tags: item.tags,
           type: item.item_type,
           allDay: false,
-          backgroundColor: item.backgroundColor || '', // Use existing color or default
-          borderColor: item.borderColor || '', // Use existing color or default
+          backgroundColor: item.backgroundColor || '',
+          borderColor: item.borderColor || '',
         };
       }).filter(event => event !== null);
 
@@ -159,8 +160,8 @@ const DayPage = () => {
         tags: task.tags,
         type: task.item_type,
         status: task.status,
-        backgroundColor: task.backgroundColor || '', // Use existing color or default
-        borderColor: task.borderColor || '', // Use existing color or default
+        backgroundColor: task.backgroundColor || '',
+        borderColor: task.borderColor || '',
       }));
 
       // Combine events and all-day tasks
@@ -221,14 +222,14 @@ const DayPage = () => {
     try {
       let response;
       let apiUrl;
-      if (!updatedEvent.allDay) {
+      if (!updatedEvent.allDay) {//if event is saved
         apiUrl = `${API_URL}/update_event/${urlConcatStr}`;
         response = await axios.put(apiUrl, updatedEvent, {
           headers: {
             Authorization: token
           }
         });
-      } else {
+      } else {//if task is saved
         apiUrl = `${API_URL}/update_task/${urlConcatStr}`;
         response = await sendUpdatedData(updatedEvent, token, apiUrl);
       }
@@ -284,7 +285,7 @@ const DayPage = () => {
         handleAutomate={handleAutomate}
         handleDeleteDay={handleDelete}
         handleAutomateTask={handleAutomateTask}
-        yearViewOpen={yearViewOpen} // Pass yearViewOpen state as prop
+        yearViewOpen={yearViewOpen}
       />
       {(clickedEvent && isEditEventModalOpen) && (
         <EditEventModal

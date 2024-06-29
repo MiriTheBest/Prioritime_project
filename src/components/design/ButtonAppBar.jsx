@@ -13,9 +13,9 @@ import PreferencesModal from "./PreferencesModal";
 import ProfileModal from "./ProfileModal";
 import { useNavigate } from "react-router-dom";
 
-export default function ButtonAppBar({ isAuthenticated, onLogout }) {  // Added onLogout prop
+export default function ButtonAppBar({ isAuthenticated, onLogout }) {
   const [anchorEl, setAnchorEl] = useState(null);
-  const [preferencesOpen, setPreferencesOpen] = useState(false); // State for PreferencesModal
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const token = localStorage.getItem('token');
   const navigate = useNavigate();
@@ -119,12 +119,12 @@ export default function ButtonAppBar({ isAuthenticated, onLogout }) {  // Added 
             onClose={handleClose}
           >
             <MenuItem onClick={handleProfileOpen}>Profile</MenuItem>
-            <MenuItem onClick={handlePreferencesOpen}>Preferences</MenuItem> {/* Open PreferencesModal on click */}
-            <MenuItem onClick={handleLogout}>Log Out</MenuItem> {/* Log Out */}
+            <MenuItem onClick={handlePreferencesOpen}>Preferences</MenuItem>
+            <MenuItem onClick={handleLogout}>Log Out</MenuItem>
           </Menu>
         </Toolbar>
       </AppBar>
-      <PreferencesModal open={preferencesOpen} onClose={handlePreferencesClose} token={token} /> {/* Add PreferencesModal */}
+      <PreferencesModal open={preferencesOpen} onClose={handlePreferencesClose} token={token} />
       <ProfileModal open={profileOpen} onClose={handleProfileClose} token={token} />
     </Box>
   );

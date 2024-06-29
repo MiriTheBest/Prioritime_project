@@ -1,5 +1,5 @@
 export const convertDurationToMin = (input) => {
-  const regex = /(\d+)\s*(minute|min|hour|day|minutes|hours|days)/gi;
+  const regex = /(\d+)\s*(minute|min|hour|day|minutes|hours|days)/gi;//all options for user to enter duration not including typos
   let match;
   let totalMinutes = 0;
 

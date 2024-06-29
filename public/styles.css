@@ -1,7 +1,8 @@
 body {
   background-color: #e8f9fd;
   color: #2155cd;
-  min-height: 100vh; /* Minimum height of the viewport */
+  min-height: 100vh; 
+  height: 100%;
 }
 
 #prioritime-heading {

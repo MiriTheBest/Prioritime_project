@@ -24,7 +24,7 @@ const PreferencesModal = ({ open, onClose, token }) => {
     duration: "",
     daytime: "morning",
     days: [],
-    description: "", // Added description field
+    description: "",
   });
   const [editIndex, setEditIndex] = useState(-1);
   const [newDayOff, setNewDayOff] = useState("");

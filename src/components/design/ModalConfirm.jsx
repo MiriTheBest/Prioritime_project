@@ -16,8 +16,8 @@ const ModalConfirm = ({ isOpen, actionName, onClose, onConfirm }) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 400, // Adjust width as needed
-          backgroundColor: "#f5f5f5", // Set background color (optional)
+          width: 400,
+          backgroundColor: "#f5f5f5",
           boxShadow: 24,
           p: 4,
           borderRadius: 10, // Rounded corners

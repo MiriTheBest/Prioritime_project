@@ -6,7 +6,6 @@ const sendData = async (newData, token) => {
     let response;
 
     if (newData.type === 'event') {
-      // Send data to event endpoint
       response = await axios.post(
         `${API_URL}/add_event/`,
         newData,
@@ -14,12 +13,10 @@ const sendData = async (newData, token) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: token,
-            // Add any other headers here if needed
           },
         },
       );
     } else {
-      // Send data to task endpoint
       response = await axios.post(
         `${API_URL}/add_task`,
         newData,
@@ -27,7 +24,6 @@ const sendData = async (newData, token) => {
           headers: {
             "Content-Type": "application/json",
             Authorization: token,
-            // Add any other headers here if needed
           },
         },
       );
@@ -37,7 +33,7 @@ const sendData = async (newData, token) => {
     return response.data;
   } catch (error) {
     console.error("Error saving data:", error);
-    throw error; // Throw the error for the calling component to handle
+    throw error;
   }
 };
 

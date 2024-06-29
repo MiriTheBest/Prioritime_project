@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-const FAQPage = () => {
+const FAQPage = () => {//hardcoded ipsums for illustration only, later will be changed to actual FAQ
   const faqs = [
     {
       question: "Yar Pirate ipsum?",

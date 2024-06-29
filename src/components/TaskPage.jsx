@@ -51,7 +51,7 @@ const TaskPage = () => {
 
 
   const fetchTasks = async () => {
-    setLoading(true);
+    setLoading(true);//show loading bar
     try {
       const response = await axios.get(API_URL + "/get_task_list/", {
         headers: {
@@ -62,7 +62,7 @@ const TaskPage = () => {
         ...task,
         id: task._id,
         duration: task.duration ? convertMinToDuration(task.duration) : "",
-      }));
+      }));//convert minutes to string in duration for better view
       setTasks(tasksWithConvertedDuration);
       setLoading(false);
     } catch (error) {
@@ -75,7 +75,7 @@ const TaskPage = () => {
     fetchRecurringTasks();
   };
 
-  const fetchRecurringTasks = async () => {
+  const fetchRecurringTasks = async () => {//separate function to get recurring tasks
     setLoading(true);
     try {
       const response = await axios.get(API_URL + "/get_recurring_tasks", {
@@ -151,7 +151,7 @@ const TaskPage = () => {
 
   const handleAutomateClick = async () => {
     if (isSelectingForAutomation) {
-      if (selectedTasks.length > 0) {
+      if (selectedTasks.length > 0) {//if at least one task is seslected for scheduling
         try {
           const response = await axios.post(
             API_URL + "/automatic_scheduling",
@@ -181,6 +181,7 @@ const TaskPage = () => {
           console.error("Error sending tasks for automation", error);
           setAlertSeverity("error");
           setAlertMessage("Failed to send tasks for automation");
+          setSelectedTasks([]);
           setAlertOpen(true);
         }
       } else {
@@ -189,10 +190,10 @@ const TaskPage = () => {
         setAlertOpen(true);
       }
     }
-    setIsSelectingForAutomation(!isSelectingForAutomation);
+    setIsSelectingForAutomation(!isSelectingForAutomation);//reset the UI
   };
 
-  const handleTaskClick = (task) => {
+  const handleTaskClick = (task) => {//adds green border for selected tasks
     if (!isSelectingForAutomation) return;
 
     const taskId = task.id;
@@ -217,7 +218,7 @@ const TaskPage = () => {
 
   const tasksToDisplay = showRecurringTasks ? recurringTasks : tasks;
 
-  const filteredTasks = tasksToDisplay.filter(
+  const filteredTasks = tasksToDisplay.filter(//unscheduled tasks have status pending for locating them
     (task) =>
       task.name.toLowerCase().includes(searchText.toLowerCase()) &&
       task.status === "pending"
@@ -321,12 +322,12 @@ const TaskPage = () => {
         </Grid>
       </Grid>
       {loading ? (
-        <LinearProgress /> // Show LinearProgress while loading
+        <LinearProgress />
       ) : (
         <Grid container spacing={2}>
           {sortedTasks.map((task) => (
             <Grid item key={task.id} xs={12} md={6} lg={4}>
-              <TaskCard
+              <TaskCard //task card for each task
                 task={task}
                 onMarkDone={handleMarkDone}
                 onSave={handleSave}

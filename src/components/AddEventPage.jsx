@@ -14,7 +14,6 @@ import {
   Chip,
   Alert,
   Snackbar,
-
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import AddCommentIcon from "@mui/icons-material/AddComment";
@@ -23,7 +22,7 @@ import AddAlert from "./design/AddAlert";
 import dayjs from "dayjs";
 
 const AddEventPage = () => {
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);//Initialize empty fields
   const [message, setMessage] = useState("");
   const [startDate, setStartDate] = useState(null);
   const [startTime, setStartTime] = useState(null);
@@ -36,10 +35,10 @@ const AddEventPage = () => {
   const [frequency, setFrequency] = useState("Once");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [customCategory, setCustomCategory] = useState("");
-  const [tags, setTags] = useState([]); // State for tags
-  const [reminder, setReminder] = useState(""); // State for reminder
-  const [anchorEl, setAnchorEl] = useState(null); // Anchor element for reminder menu
-  const [tagInput, setTagInput] = useState(""); // State for tag input
+  const [tags, setTags] = useState([]);
+  const [reminder, setReminder] = useState("");
+  const [anchorEl, setAnchorEl] = useState(null);
+  const [tagInput, setTagInput] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
   const [alertSeverity, setAlertSeverity] = useState("success");
   const [alertMessage, setAlertMessage] = useState("");
@@ -96,12 +95,12 @@ const AddEventPage = () => {
     const name = nameRef.current.value;
     if (!name || !startDate || !endDate) {
       setMessage("Name and dates are required");
-      setSnackbarOpen(true); // Show the snackbar alert
+      setSnackbarOpen(true);
       setTimeout(() => setSnackbarOpen(false), 5000);
       return;
   }
 
-    // Get date and time from date pickers (assuming using @mui/x-date-pickers)
+    // Get date and time from date pickers and adjust them for backend in the right format
     let startDateValue = startDate ? startDate.toDate() : null;
     let startTimeValue = startTime ? startTime.toDate() : null;
     let endDateValue = endDate ? endDate.toDate() : null;
@@ -130,18 +129,10 @@ const AddEventPage = () => {
 
     const location = locationRef.current.value;
     const details = detailsRef.current.value;
-    const frequency = isRecurring ? frequency : "Once";
 
     const finalSelectedCategory = selectedCategory === "Other" ? customCategory : selectedCategory;
 
-    // Extract tags from state array
-    //const tags = [...tags]; // Create a copy to avoid mutation
-
-    // Set reminder to "once" if not chosen
-    //const reminder = reminder ? reminder : "Once";
-
-    // 3. Prepare data for database
-    const eventData = {
+    const eventData = {//create an object
       name,
       start_time: startDateValue,
       end_time: endDateValue,
@@ -179,7 +170,7 @@ const AddEventPage = () => {
           placeholder="Enter event name"
           fullWidth
           inputRef={nameRef}
-          sx={{ backgroundColor: "white", marginBottom: "1rem" }} // Added styling for white background
+          sx={{ backgroundColor: "white", marginBottom: "1rem" }}
         />
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <div
@@ -197,7 +188,7 @@ const AddEventPage = () => {
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
-                /> // Added styling for white background
+                /> 
               )}
             />
             <TimePicker
@@ -211,7 +202,7 @@ const AddEventPage = () => {
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
-                /> // Added styling for white background
+                /> 
               )}
             />
           </div>
@@ -230,7 +221,7 @@ const AddEventPage = () => {
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
-                /> // Added styling for white background
+                />
               )}
             />
             <TimePicker
@@ -244,7 +235,7 @@ const AddEventPage = () => {
                   fullWidth
                   margin="normal"
                   sx={{ backgroundColor: "white" }}
-                /> // Added styling for white background
+                />
               )}
             />
             <FormControlLabel
@@ -314,23 +305,23 @@ const AddEventPage = () => {
           inputRef={locationRef}
           fullWidth
           margin="normal"
-          sx={{ backgroundColor: "white" }} // Added styling for white background
+          sx={{ backgroundColor: "white" }}
         />
-        <TextField // Replaced TextareaAutosize with TextField
+        <TextField
           label="Details"
           id="details"
           name="details"
           placeholder="Add additional details (optional)"
           inputRef={detailsRef}
-          multiline // Enables multiline input
-          rows={3} // Sets the initial number of rows
+          multiline
+          rows={3}
           style={{ width: "100%", margin: "10px 0" }}
-          sx={{ backgroundColor: "white" }} // White background for details
+          sx={{ backgroundColor: "white" }}
         />
         <div
           style={{ display: "flex", alignItems: "center", marginTop: "10px" }}
         >
-          {/* Add Tag */}
+
           <div style={{ display: "flex", alignItems: "center" }}>
             <AddIcon />
             <TextField
@@ -342,7 +333,7 @@ const AddEventPage = () => {
               onKeyDown={(e) => e.key === "Enter" && handleAddTag()}
             />
           </div>
-          {/* Add Reminder */}
+
           <div
             style={{
               display: "flex",
@@ -374,7 +365,7 @@ const AddEventPage = () => {
             </Menu>
           </div>
         </div>
-        {/* Tags Display */}
+
         <div style={{ marginTop: "10px" }}>
           {tags.map((tag, index) => (
             <Chip

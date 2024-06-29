@@ -10,7 +10,6 @@ const saveAutomateTask = async (newData, token) => {
         headers: {
           "Content-Type": "application/json",
           Authorization: token,
-          // Add any other headers here if needed
         },
       },
     );

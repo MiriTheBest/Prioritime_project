@@ -21,7 +21,7 @@ import { convertDurationToMin } from "./functions/convertDurationToMin";
 import dayjs from "dayjs";
 
 const AddPage = () => {
-  const [name, setName] = useState("");
+  const [name, setName] = useState("");//Initialize empty fields
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
   const [duration, setDuration] = useState("");
@@ -30,7 +30,7 @@ const AddPage = () => {
   const [isRecurring, setIsRecurring] = useState(false);
   const [frequency, setFrequency] = useState("Once");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [customCategory, setCustomCategory] = useState(""); // State for custom category
+  const [customCategory, setCustomCategory] = useState("");
   const [tags, setTags] = useState([]);
   const [tagInput, setTagInput] = useState("");
   const [alertOpen, setAlertOpen] = useState(false);
@@ -66,7 +66,7 @@ const AddPage = () => {
     setIsRecurring(false);
     setFrequency("Once");
     setSelectedCategory("");
-    setCustomCategory(""); // Reset custom category state
+    setCustomCategory("");
     setTags([]);
     setTagInput("");
   };
@@ -84,6 +84,7 @@ const AddPage = () => {
 
     let durationInMin = duration ? convertDurationToMin(duration) : null;
 
+    //covert date to the right format for backend
     let selectedDateTime = selectedDateValue
       ? new Date(selectedDateValue)
       : null;
@@ -94,10 +95,9 @@ const AddPage = () => {
     }
 
     if (selectedDateTime) {
-      selectedDateTime = dayjs(selectedDateTime).format("YYYY-MM-DDTHH:mm:ss"); // Removing timezone
+      selectedDateTime = dayjs(selectedDateTime).format("YYYY-MM-DDTHH:mm:ss");
     }
 
-    // Determine selected category based on custom input or predefined value
     const finalSelectedCategory = selectedCategory === "Other" ? customCategory : selectedCategory;
     const taskData = {
       name,

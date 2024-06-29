@@ -36,25 +36,25 @@ export default function SignUp({onAuthorization}) {
 
     if (!userData.firstName || !userData.lastName || !userData.email || !userData.password) {
       setMessage("All fields are required");
-      setSnackbarOpen(true); // Show the snackbar alert
+      setSnackbarOpen(true);
       setTimeout(() => setSnackbarOpen(false), 5000);
       return;
     }
 
     try {
       const response = await axios.post(API_URL + '/register', userData);
-      console.log(response.data); // Assuming backend returns some data upon successful registration
-      const token = response.data.token; // Assuming your backend returns a token upon successful login
+      console.log(response.data);
+      const token = response.data.token;
       localStorage.setItem('token', token);
       onAuthorization(true);
       setMessage("Please go to your profile and fill the preferences for successful automation");
-      setSnackbarOpen(true); // Show the snackbar alert
+      setSnackbarOpen(true);
       setTimeout(() => setSnackbarOpen(false), 10000);
       navigate('/day'); // Navigate to DayPage
     } catch (error) {
       console.error('Registration failed:', error);
       setMessage("Registration failed. Please try again.");
-      setSnackbarOpen(true); // Show the snackbar alert
+      setSnackbarOpen(true);
       setTimeout(() => setSnackbarOpen(false), 5000);
     }
   };
