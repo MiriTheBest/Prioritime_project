@@ -65,11 +65,13 @@ Users can create tasks that repeat at specific intervals, ensuring efficient wor
 Edit Task Modal: Allows users to modify existing tasks quickly.
 Edit Event Modal: Enables easy updates to scheduled events.
 
-
 ✔ Event Management:
 
 Users can add custom events alongside tasks.
 Supports reminders and recurrence settings for events.
+
+![pr4](https://github.com/user-attachments/assets/4b379cc6-b8aa-4d69-bbaa-e44aedec49c5)
+
 
 ⚙️ User Preferences & Customization
 
