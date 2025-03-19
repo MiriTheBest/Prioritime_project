@@ -56,8 +56,6 @@ Users can bulk automate multiple tasks with one click.
 Tasks can be categorized into predefined categories (personal, home, school, sport, work) or custom user-defined categories.
 Tags offer an additional layer of organization for grouping similar tasks.
 
-![pr3](https://github.com/user-attachments/assets/ecd6e9c0-f51b-4f99-8b21-fbd90342f1b6)
-
 ✔ Recurring Task Support:
 
 Users can create tasks that repeat at specific intervals, ensuring efficient workflow automation.
