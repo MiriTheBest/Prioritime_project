@@ -1,4 +1,5 @@
 Prioritime Frontend 🖥️ – Automated Task Scheduling UI
+
 📌 Overview
 The frontend of Prioritime is a React-based web application designed to provide users with an intuitive and dynamic task scheduling experience. It enables users to set scheduling preferences, automate task assignments, and manually manage tasks and events. With interactive calendar views, color-coded tasks, and easy task organization, Prioritime ensures efficient task management while maintaining user flexibility.
 
@@ -19,7 +20,9 @@ Flexbox & Grid – Ensures proper alignment and layout responsiveness.
 
 
 🛠️ Core Features & Components
+
 📆 Calendar & Scheduling
+
 ✔ Month View Page:
 
 Displays an overview of all scheduled tasks & events for the month.
@@ -58,6 +61,7 @@ Tags offer an additional layer of organization for grouping similar tasks.
 ✔ Recurring Task Support:
 
 Users can create tasks that repeat at specific intervals, ensuring efficient workflow automation.
+
 ✔ Task & Event Editing:
 
 Edit Task Modal: Allows users to modify existing tasks quickly.
@@ -68,7 +72,9 @@ Edit Event Modal: Enables easy updates to scheduled events.
 
 Users can add custom events alongside tasks.
 Supports reminders and recurrence settings for events.
+
 ⚙️ User Preferences & Customization
+
 ✔ Preferences Modal:
 
 Users can set task scheduling preferences, including preferred work periods (morning, afternoon, evening, night).
